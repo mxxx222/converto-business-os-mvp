@@ -39,7 +39,7 @@ componentDidCatch(error, errorInfo) {
 
 // 3. Promise-rejections
 window.addEventListener('unhandledrejection', (event) => {
-  Sentry固化Exception(event.reason);
+  Sentry.captureException(event.reason);
 });
 ```
 
@@ -381,7 +381,7 @@ Sentry lähettää automaattisesti ilmoituksia kun:
 2. ✅ **Performance monitoring** - 20% requesteista mitataan
 3. ✅ **Session replay** - 10% istunnoista tallennetaan
 4. ✅ **Context collection** - user, browser, device info
-5. ✅ **Breadcrumbs** Pyrkinut käyttäjän toiminnot
+5. ✅ **Breadcrumbs** - käyttäjän toiminnot (clicks, navigation, API calls)
 6. ✅ **Alerting** - ilmoitukset uusista virheistä
 7. ✅ **Deduplication** - samat virheet yhdistetään
 8. ✅ **Security filtering** - salasanoja, API-avaimia ei lähetetä
