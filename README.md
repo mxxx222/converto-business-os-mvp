@@ -142,6 +142,9 @@ git push origin main
 ### 💼 Business & Marketing
 - [**Markkinat Menestys**](MARKKINAT_MENESTYS.md) - 🎯 **1000 sanaa miksi tämä on menestysratkaisu**
 
+### 🔧 Technical Features
+- [**Tekniset Ominaisuudet**](TEKNISET_OMINAISUUDET.md) - 🔧 **Kattava lista kaikista teknologioista ja työkaluista**
+
 ### 🔧 Technical Guides
 - [**MCP OpenAI Setup**](docs/MCP_OPENAI_SETUP.md)
 - [**Supabase Setup (Auth/Storage/Realtime)**](docs/SUPABASE_SETUP.md)
