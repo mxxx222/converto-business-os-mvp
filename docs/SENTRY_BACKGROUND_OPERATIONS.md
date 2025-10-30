@@ -320,7 +320,7 @@ before_send=lambda event, hint: event if not any(
    ├── P95: 450ms (95% requesteista < 450ms)
    ├── P99: 1200ms (99% requesteista < 1200ms)
    ├── Throughput: 120 req/min
-   └── Slow деqueries:
+   └── Slow Queries:
        └── SELECT receipts: 45ms avg (database)
 ```
 
