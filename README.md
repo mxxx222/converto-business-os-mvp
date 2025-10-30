@@ -90,6 +90,7 @@ git push origin main
 - [**FINAL_STATUS.md**](FINAL_STATUS.md) - Complete feature list
 - [**README_CORE.md**](README_CORE.md) - Architecture details
 - [**MCP OpenAI Setup**](docs/MCP_OPENAI_SETUP.md)
+- [**Supabase Setup (Auth/Storage/Realtime)**](docs/SUPABASE_SETUP.md)
 - [**Sprint Backlog (UI/UX)**](docs/sprint-backlog-uiux.md)
 - [**Brand Book**](BRAND_BOOK.md)
 - [**Security UX**](docs/SECURITY_UX.md)

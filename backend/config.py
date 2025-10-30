@@ -22,7 +22,9 @@ class Settings(BaseSettings):
     cors_origins_str: str = "http://localhost:3000,http://localhost:8080"
     allowed_origin_regex: str = r".*"
     
-    # Auth
+    # Supabase
+    supabase_url: str = ""
+    supabase_service_role_key: str = ""
     supabase_auth_enabled: bool = False
     
     # Email
