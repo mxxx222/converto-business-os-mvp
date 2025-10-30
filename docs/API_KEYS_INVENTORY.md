@@ -21,6 +21,8 @@
 | **GitHub** | `GITHUB_TOKEN` | GitHub automation | `mcp_github_server.cjs` | ✅ MCP Server |
 | **Vercel** | `VERCEL_TOKEN` | Vercel deployment | `mcp_auto_deploy_server.js` | ✅ MCP Server |
 | **Notion** | `NOTION_TOKEN` | Notion automation | `mcp_notion_server.js` | ✅ MCP Server |
+| **Sentry** | `SENTRY_DSN` | Error tracking (Frontend) | `sentry.client.config.ts` | ⚠️ Asennettu, ei aktiivisessa käytössä |
+| **Sentry** | `SENTRY_DSN` | Error tracking (Backend) | `requirements.txt` (sentry-sdk) | ⚠️ Asennettu, ei aktiivisessa käytössä |
 
 ---
 
@@ -263,6 +265,63 @@ database_url: str = "postgresql://demo:demo@demo.supabase.co:5432/demo"
 - `package-mcp.json`
 
 **Required:** ⚠️ **Valinnainen** (Jos käytät Notion MCP-tools)
+
+---
+
+## 🐛 **Error Tracking (Sentry)**
+
+### 12. **Sentry DSN**
+
+**Environment Variable:** `SENTRY_DSN`
+
+**Käyttötarkoitus:**
+- Error tracking & monitoring
+- Frontend: Browser errors, React errors
+- Backend: FastAPI exception tracking
+- Performance monitoring
+
+**Koodi:**
+- Frontend: `sentry.client.config.ts`, `sentry.server.config.ts`
+- Backend: `sentry-sdk[fastapi]` (requirements.txt)
+
+**Status:** ⚠️ **Asennettu, mutta EI konfiguroitu käyttöön**
+
+**Syy:**
+- Frontend: Config-tiedostot löytyvät, mutta ei ole aktiivista integraatiota `layout.tsx`:ään
+- Backend: Package asennettu, mutta ei ole `main.py`:ssä Sentry-initialisointia
+- DSN ei ole konfiguroitu environment variablesissa
+
+**Käyttöönotto:**
+1. **Frontend:**
+   ```typescript
+   // frontend/app/layout.tsx
+   import * as Sentry from '@sentry/nextjs';
+   // Sentry init tapahtuu automaattisesti sentry.client.config.ts:ssä
+   ```
+
+2. **Backend:**
+   ```python
+   # backend/main.py
+   import sentry_sdk
+   from sentry_sdk.integrations.fastapi import FastApiIntegration
+   
+   sentry_sdk.init(
+       dsn=os.getenv("SENTRY_DSN"),
+       integrations=[FastApiIntegration()],
+       traces_sample_rate=0.2,
+       environment=settings.environment,
+   )
+   ```
+
+3. **Environment Variables:**
+   ```env
+   SENTRY_DSN=https://xxxx@xxxx.ingest.sentry.io/xxxx
+   ```
+
+**Required:** ❌ **Ei** (Error tracking on valinnainen)
+
+**Where to get:**
+- https://sentry.io/ → Create project → Get DSN
 
 ---
 
