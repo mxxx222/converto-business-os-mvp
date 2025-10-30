@@ -45,6 +45,13 @@
 
 ## 🚀 Quick Start
 
+### ⚡ **SETUP NYT (Prioriteetit 1-3):**
+👉 **[SETUP_NOW.md](SETUP_NOW.md)** - Nopea setup-ohje (~12 min)
+
+1. Backend Environment Variables (Render)
+2. Frontend Environment Variables (Vercel/Render)
+3. Enable Supabase Realtime
+
 ### Local Development (Docker)
 ```bash
 # Clone repository
@@ -84,6 +91,10 @@ git push origin main
 ---
 
 ## 📚 Documentation
+
+### ⚡ **GETTING STARTED:**
+- [**SETUP_NOW.md**](SETUP_NOW.md) - ⚡ **Start here!** Quick setup guide (12 min)
+- [**IMPLEMENTATION_COMPLETE.md**](IMPLEMENTATION_COMPLETE.md) - Project status & summary
 
 ### 🏗️ Enterprise & Architecture
 - [**CONVERTO_ENTERPRISE_BLUEPRINT.md**](CONVERTO_ENTERPRISE_BLUEPRINT.md) - Complete development pipeline (Day 1-15), ROI, spin-off products
