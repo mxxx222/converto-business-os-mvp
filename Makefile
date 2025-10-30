@@ -93,6 +93,16 @@ test-integrations: ## Testaa backend/frontend integraatiot
 	@echo "$(BLUE)🧪 Running integration tests...$(NC)"
 	@./scripts/test-integrations.sh
 
+# Dashboard tests
+test-dashboard: ## Testaa dashboard toimivuus
+	@echo "$(BLUE)🧪 Running dashboard tests...$(NC)"
+	@./scripts/test-dashboard.sh
+
+# Dashboard setup validation
+validate-dashboard: ## Tarkista dashboard setup
+	@echo "$(BLUE)🔍 Validating dashboard setup...$(NC)"
+	@./scripts/validate-dashboard-setup.sh
+
 # Puhdista Docker-resurssit
 clean: ## Puhdista Docker-resurssit
 	@echo "$(YELLOW)🧹 Puhdistetaan Docker-resurssit...$(NC)"

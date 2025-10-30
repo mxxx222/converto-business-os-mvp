@@ -69,6 +69,28 @@ docker-compose up
 open http://localhost:3000
 ```
 
+### Dashboard Development (SSR Mode)
+```bash
+# Frontend with SSR (for dashboard)
+cd frontend
+NEXT_PUBLIC_STATIC_EXPORT=false npm run dev
+
+# Dashboard available at:
+# http://localhost:3000/dashboard
+```
+
+### Testing
+```bash
+# Validate dashboard setup
+make validate-dashboard
+
+# Test dashboard endpoints
+make test-dashboard
+
+# Integration tests
+make test-integrations
+```
+
 ### Production Deployment (Render)
 ```bash
 # 1. Push to GitHub
@@ -105,6 +127,10 @@ git push origin main
 - [**PILOT_CHECKLIST.md**](PILOT_CHECKLIST.md) - Customer onboarding
 - [**FINAL_STATUS.md**](FINAL_STATUS.md) - Complete feature list
 - [**README_CORE.md**](README_CORE.md) - Architecture details
+
+### 📊 Dashboard & Setup
+- [**Dashboard Fix Guide**](DASHBOARD_FIX_GUIDE.md) - ⚡ **Dashboard setup complete guide**
+- [**Dashboard Status**](docs/DASHBOARD_STATUS.md) - Dashboard implementation status
 
 ### 🔧 Technical Guides
 - [**MCP OpenAI Setup**](docs/MCP_OPENAI_SETUP.md)
