@@ -24,6 +24,13 @@
 !frontend/
 !frontend/app/
 !frontend/app/**
+!frontend/lib/
+!frontend/lib/**
+!frontend/hooks/
+!frontend/hooks/**
+!frontend/types/
+!frontend/types/**
+!frontend/middleware.ts
 !scripts/
 !frontend/.nvmrc
 !frontend/next.config.js
