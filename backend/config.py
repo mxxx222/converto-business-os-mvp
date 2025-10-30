@@ -24,8 +24,11 @@ class Settings(BaseSettings):
     
     # Supabase
     supabase_url: str = ""
-    supabase_service_role_key: str = ""
-    supabase_auth_enabled: bool = False
+    supabase_service_role_key: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+    supabase_auth_enabled: bool = os.getenv("SUPABASE_AUTH_ENABLED", "false").lower() in ("true", "1", "yes")
+    
+    # Sentry
+    sentry_dsn: str = ""
     
     # Email
     resend_api_key: str = ""
