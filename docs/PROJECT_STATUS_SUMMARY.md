@@ -64,7 +64,7 @@
 
 ### **🔌 MCP Servers:**
 - ✅ `RENDER_API_KEY` - Deployment automation
-- ✅ `GITHUB_TOKEN` algorithmic GitHub automation
+- ✅ `GITHUB_TOKEN` - GitHub automation
 - ✅ `VERCEL_TOKEN` - Vercel deployment (valinnainen)
 - ✅ `NOTION_TOKEN` - Notion automation (valinnainen)
 
