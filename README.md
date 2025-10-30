@@ -101,6 +101,9 @@ git push origin main
 - [**Sprint Backlog (UI/UX)**](docs/sprint-backlog-uiux.md)
 - [**Security UX**](docs/SECURITY_UX.md)
 - [**CSV Export Spec**](docs/CSV_EXPORT_SPEC.md)
+- [**API Keys Inventory**](docs/API_KEYS_INVENTORY.md) - All configured API keys
+- [**Sentry Background Operations**](docs/SENTRY_BACKGROUND_OPERATIONS.md) - Error tracking explained
+- [**Project Status Summary**](docs/PROJECT_STATUS_SUMMARY.md) - Complete project overview
 
 ---
 
