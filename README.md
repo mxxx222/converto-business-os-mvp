@@ -115,7 +115,9 @@ git push origin main
 ## 📚 Documentation
 
 ### ⚡ **GETTING STARTED:**
-- [**SETUP_NOW.md**](SETUP_NOW.md) - ⚡ **Start here!** Quick setup guide (12 min)
+- [**QUICK_START.md**](QUICK_START.md) - ⚡ **Fastest!** 3-step setup (~15 min)
+- [**SETUP_NOW.md**](SETUP_NOW.md) - Detailed setup guide (12 min)
+- [**FINAL_CHECKLIST.md**](FINAL_CHECKLIST.md) - Production launch checklist
 - [**IMPLEMENTATION_COMPLETE.md**](IMPLEMENTATION_COMPLETE.md) - Project status & summary
 
 ### 🏗️ Enterprise & Architecture
