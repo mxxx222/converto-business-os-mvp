@@ -45,8 +45,12 @@
 
 ## 🚀 Quick Start
 
+### ⚡ **START HERE:**
+👉 **[START_HERE.md](START_HERE.md)** - **Aloita tästä!** Nopein tapa alkuun
+
 ### ⚡ **SETUP NYT (Prioriteetit 1-3):**
-👉 **[SETUP_NOW.md](SETUP_NOW.md)** - Nopea setup-ohje (~12 min)
+👉 **[QUICK_START.md](QUICK_START.md)** - 3 askelta (~15 min) ⚡ **Nopein!**
+👉 **[SETUP_NOW.md](SETUP_NOW.md)** - Yksityiskohtainen setup (~12 min)
 
 1. Backend Environment Variables (Render)
 2. Frontend Environment Variables (Vercel/Render)
