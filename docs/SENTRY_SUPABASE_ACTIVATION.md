@@ -39,7 +39,7 @@
 ```env
 # Build full DSN from: https://sentry.io/settings/YOUR-ORG/projects/YOUR-PROJECT/keys/
 # Format: https://PUBLIC_KEY@HOST/PROJECT_ID
-SENTRY_DSN=https://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@o看4507887226847232.ingest.sentry.io/4507887226847232
+SENTRY_DSN=https://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@o4507887226847232.ingest.sentry.io/4507887226847232
 ```
 
 **Frontend (alternative):**
