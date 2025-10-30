@@ -85,14 +85,20 @@ git push origin main
 
 ## 📚 Documentation
 
+### 🏗️ Enterprise & Architecture
+- [**CONVERTO_ENTERPRISE_BLUEPRINT.md**](CONVERTO_ENTERPRISE_BLUEPRINT.md) - Complete development pipeline (Day 1-15), ROI, spin-off products
+- [**ML Ops Suite**](docs/ML_OPS_SUITE_README.md) - Commercializable spin-off products (Auto-Tuning, Cost Guardian, Predictive Core, etc.)
+
+### 🚀 Deployment & Setup
 - [**RENDER_DEPLOY_GUIDE.md**](RENDER_DEPLOY_GUIDE.md) - Step-by-step deployment
 - [**PILOT_CHECKLIST.md**](PILOT_CHECKLIST.md) - Customer onboarding
 - [**FINAL_STATUS.md**](FINAL_STATUS.md) - Complete feature list
 - [**README_CORE.md**](README_CORE.md) - Architecture details
+
+### 🔧 Technical Guides
 - [**MCP OpenAI Setup**](docs/MCP_OPENAI_SETUP.md)
 - [**Supabase Setup (Auth/Storage/Realtime)**](docs/SUPABASE_SETUP.md)
 - [**Sprint Backlog (UI/UX)**](docs/sprint-backlog-uiux.md)
-- [**Brand Book**](BRAND_BOOK.md)
 - [**Security UX**](docs/SECURITY_UX.md)
 - [**CSV Export Spec**](docs/CSV_EXPORT_SPEC.md)
 
