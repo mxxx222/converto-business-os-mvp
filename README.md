@@ -74,6 +74,13 @@ git push origin main
 ./scripts/pilot_setup.sh "Company Name" "email@company.com"
 ```
 
+### API Quick Start (90 s)
+- OpenAPI: back end exposes `/openapi.json` and docs at `/docs`
+- Health check: `GET /health`
+- Metrics: `GET /metrics`
+- Lead create: `POST /api/leads` `{ email, consent }`
+- Postman: `docs/postman_collection.json` (set `API_URL` variable)
+
 ---
 
 ## 📚 Documentation
@@ -82,6 +89,11 @@ git push origin main
 - [**PILOT_CHECKLIST.md**](PILOT_CHECKLIST.md) - Customer onboarding
 - [**FINAL_STATUS.md**](FINAL_STATUS.md) - Complete feature list
 - [**README_CORE.md**](README_CORE.md) - Architecture details
+- [**MCP OpenAI Setup**](docs/MCP_OPENAI_SETUP.md)
+- [**Sprint Backlog (UI/UX)**](docs/sprint-backlog-uiux.md)
+- [**Brand Book**](BRAND_BOOK.md)
+- [**Security UX**](docs/SECURITY_UX.md)
+- [**CSV Export Spec**](docs/CSV_EXPORT_SPEC.md)
 
 ---
 
