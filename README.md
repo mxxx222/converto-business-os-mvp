@@ -139,6 +139,9 @@ git push origin main
 - [**Dashboard Fix Guide**](DASHBOARD_FIX_GUIDE.md) - ⚡ **Dashboard setup complete guide**
 - [**Dashboard Status**](docs/DASHBOARD_STATUS.md) - Dashboard implementation status
 
+### 💼 Business & Marketing
+- [**Markkinat Menestys**](MARKKINAT_MENESTYS.md) - 🎯 **1000 sanaa miksi tämä on menestysratkaisu**
+
 ### 🔧 Technical Guides
 - [**MCP OpenAI Setup**](docs/MCP_OPENAI_SETUP.md)
 - [**Supabase Setup (Auth/Storage/Realtime)**](docs/SUPABASE_SETUP.md)
