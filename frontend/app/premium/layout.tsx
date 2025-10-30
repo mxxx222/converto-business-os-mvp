@@ -66,6 +66,10 @@ export default function PremiumLayout({
   return (
     <>
       {children}
+      {/* Mobile sticky CTA */}
+      <div className="sticky-cta">
+        <a className="btn btn-primary" href="#start">Aloita pilotti</a>
+      </div>
       
       {/* Structured Data - FAQPage Schema */}
       <script
