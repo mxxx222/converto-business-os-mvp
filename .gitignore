@@ -32,6 +32,8 @@
 !frontend/types/**
 !frontend/middleware.ts
 !scripts/
+!scripts/**
+!QUICK_SETUP_GUIDE.md
 !frontend/.nvmrc
 !frontend/next.config.js
 !frontend/Dockerfile
