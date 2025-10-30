@@ -229,7 +229,7 @@ database_url: str = "postgresql://demo:demo@demo.supabase.co:5432/demo"
 - `mcp_github_server.cjs`
 - `package-mcp.json`
 
-**Required validator:** ✅ **Kyllä** (Jos käytät GitHub MCP-tools)
+**Required:** ✅ **Kyllä** (Jos käytät GitHub MCP-tools)
 
 ---
 
