@@ -69,6 +69,10 @@
 
 **Run Integration Tests:**
 ```bash
+# Option 1: Using make
+make test-integrations
+
+# Option 2: Direct script
 chmod +x scripts/test-integrations.sh
 ./scripts/test-integrations.sh
 ```
