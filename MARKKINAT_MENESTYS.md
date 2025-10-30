@@ -6,7 +6,7 @@
 
 ## Ongelma: Pienet Yritykset Jäävät Automaation Ulkopuolelle
 
-Suomessa on yli technologie **330 000 pient Crescend keskisuurta yritystä**, jotka kärsivät päivittäin samasta ongelmasta: heidän on pakko kilpailla suurten yhtiöiden kanssa, mutta heillä ei ole pääsyä samoihin automaatio- ja tekoälytyökaluihin. Suuret yritykset käyttävät kalliita ERP-järjestelmiä到场, joihin pienen yrityksen budjetti ei millään riitä.
+Suomessa on yli **330 000 pientä ja keskisuurta yritystä**, jotka kärsivät päivittäin samasta ongelmasta: heidän on pakko kilpailla suurten yhtiöiden kanssa, mutta heillä ei ole pääsyä samoihin automaatio- ja tekoälytyökaluihin. Suuret yritykset käyttävät kalliita ERP-järjestelmiä, joihin pienen yrityksen budjetti ei millään riitä.
 
 **Tilastot puhuvat selkeää kieltä:**
 - Pienyritykset käyttävät keskimäärin **15-20 tuntia viikossa** hallinnolliseen työhön
@@ -34,7 +34,7 @@ Yksi suurimmista riskeistä pienyrityksille on jäädä jälkeen verosäädöksi
 Perinteiset kirjanpitojärjestelmät antavat tiedon vasta kuukausien viiveellä. Converto tarjoaa **reaaliaikaisen näkymän** yrityksen taloudesta, myynnistä ja kuluista. Tämä tarkoittaa, että yrittäjä voi tehdä tietoon perustuvia päätöksiä välittömästi.
 
 **4. Gamifikaatio ja Motivaatio**
-Liiketoiminnan automatisointi ei ole ainoastaan työaikaa säästävää – se voi myös olla hauskaa. Converto sisältää pelillistāniselementtejä, jotka motivoivat tiimejä pitämään järjestelmän ajan tasalla ja oppimaan uusia ominaisuuksia.
+Liiketoiminnan automatisointi ei ole ainoastaan työaikaa säästävää – se voi myös olla hauskaa. Converto sisältää pelillistysmiselementtejä, jotka motivoivat tiimejä pitämään järjestelmän ajan tasalla ja oppimaan uusia ominaisuuksia.
 
 ---
 
@@ -49,7 +49,7 @@ Käyttäjä ottaa kuvan kuitista tai laskusta. Kuva lähetetään **OpenAI Visio
 Tunnistettu data prosessoidaan automaattisesti: summat lasketaan, ALV-kannat vahvistetaan Vero.fi-tietokannasta, kategoriat määritetään tekoälyn avulla. Kaikki tämä tapahtuu **alle sekunnissa**.
 
 **3. Integraatio-kerros (Supabase + Realtime)**
-Data tallennetaan **Supabase**-pilvipalveluun, joka on GDPR-yhteensopiva ja sijaitsee EU-alueella. Reaaliaikaupd-päivitykset varmistavat, että dashboard on aina ajantasalla. Kaikki yhteydet ovat **salattuja (TLS 1.3)** ja data on **salattuna levossa (AES-256)**.
+Data tallennetaan **Supabase**-pilvipalveluun, joka on GDPR-yhteensopiva ja sijaitsee EU-alueella. Reaaliaikaiset päivitykset varmistavat, että dashboard on aina ajantasalla. Kaikki yhteydet ovat **salattuja (TLS 1.3)** ja data on **salattuna levossa (AES-256)**.
 
 **Tietoturva ja GDPR:**
 - Data säilytetään **EU-alueella** (Supabase, GDPR-yhteensopiva)
@@ -105,7 +105,7 @@ Verkkokaupan järjestelmä integroituu Converton API:in, joten kaikki transaktio
 | Ominaisuus | Converto Business OS | Perinteinen ERP | Kevyt Kirjanpito |
 |------------|---------------------|-----------------|------------------|
 | **Hinta** | 29-99€/kk | 50 000-200 000€ | 15-30€/kk |
-| **Käyttöönotto** | Samana päivänä | 3-6][kuukautta | 1-7 päivää |
+| **Käyttöönotto** | Samana päivänä | 3-6 kuukautta | 1-7 päivää |
 | **OCR + AI** | ✅ 95-100% tarkkuus | ❌ Ei | ❌ Ei |
 | **Reaaliaikainen data** | ✅ Kyllä | ⚠️ Rajoitettu | ❌ Ei |
 | **Suomen lakisäädäntö** | ✅ Automaattinen | ⚠️ Manuaalinen | ⚠️ Manuaalinen |
