@@ -83,6 +83,16 @@ launch-check: ## Täydellinen julkaisuvalmius-tarkistus
 	@make test-lighthouse
 	@echo "$(GREEN)✅ Julkaisuvalmius-tarkistus valmis!$(NC)"
 
+# Validate setup
+validate-setup: ## Tarkista environment variables
+	@echo "$(BLUE)🔍 Validating setup...$(NC)"
+	@./scripts/validate-setup.sh
+
+# Integration tests
+test-integrations: ## Testaa backend/frontend integraatiot
+	@echo "$(BLUE)🧪 Running integration tests...$(NC)"
+	@./scripts/test-integrations.sh
+
 # Puhdista Docker-resurssit
 clean: ## Puhdista Docker-resurssit
 	@echo "$(YELLOW)🧹 Puhdistetaan Docker-resurssit...$(NC)"
