@@ -1,0 +1,28 @@
+{
+  "info": {
+    "name": "Converto API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{API_URL}}/health" }
+    },
+    {
+      "name": "Metrics",
+      "request": { "method": "GET", "url": "{{API_URL}}/metrics" }
+    },
+    {
+      "name": "Create Lead",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{API_URL}}/api/leads",
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"demo@example.com\",\n  \"consent\": true\n}" }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "API_URL", "value": "http://localhost:8000" }
+  ]
+}
