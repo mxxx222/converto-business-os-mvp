@@ -7,14 +7,14 @@ export default function PremiumHero(): JSX.Element {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const response = await fetch('/api/pilot-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, source: 'premium_hero' })
       })
-      
+
       if (response.ok) {
         // Success - redirect to thank you page
         window.location.href = '/kiitos'
@@ -41,7 +41,7 @@ export default function PremiumHero(): JSX.Element {
 
           {/* Subheadline - StoryBrand "Problem" */}
           <p className="hero-subtitle">
-            Converto Business OS automatisoi yrityksesi rutiinit, säästää 20+ tuntia viikossa 
+            Converto Business OS automatisoi yrityksesi rutiinit, säästää 20+ tuntia viikossa
             ja tuplaa tuottavuutesi ilman teknistä osaamista.
           </p>
 
@@ -81,19 +81,23 @@ export default function PremiumHero(): JSX.Element {
             </p>
           </form>
 
-          {/* Trust Indicators */}
+          {/* Trust Indicators (EU-hosting • Tietoturva • SLA • Tuki 9–17) */}
           <div className="trust-indicators">
             <div className="trust-item">
+              <span className="trust-icon">🇪🇺</span>
+              <span className="trust-text">EU‑hosting</span>
+            </div>
+            <div className="trust-item">
               <span className="trust-icon">🔒</span>
-              <span className="trust-text">Tietoturvallinen</span>
+              <span className="trust-text">Tietoturva</span>
             </div>
             <div className="trust-item">
-              <span className="trust-icon">⚡</span>
-              <span className="trust-text">5 min setup</span>
+              <span className="trust-icon">🛡️</span>
+              <span className="trust-text">SLA saatavilla</span>
             </div>
             <div className="trust-item">
-              <span className="trust-icon">🎯</span>
-              <span className="trust-text">Tulokset 24h</span>
+              <span className="trust-icon">📞</span>
+              <span className="trust-text">Asiakastuki 9–17</span>
             </div>
           </div>
         </div>

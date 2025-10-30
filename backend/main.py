@@ -10,20 +10,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from backend.app.routes.leads import router as leads_router
+from backend.app.routes.metrics import router as metrics_router
 from backend.config import get_settings
+from backend.modules.email.router import router as email_router
 from backend.routes.csp import router as csp_router
 from shared_core.middleware.auth import dev_auth
 from shared_core.middleware.supabase_auth import supabase_auth
-from shared_core.utils.db import Base, engine
 from shared_core.modules.ai.router import router as ai_router
+from shared_core.modules.clients.router import router as clients_router
 from shared_core.modules.linear.router import router as linear_router
 from shared_core.modules.notion.router import router as notion_router
 from shared_core.modules.ocr.router import router as ocr_router
 from shared_core.modules.receipts.router import router as receipts_router
-from shared_core.modules.clients.router import router as clients_router
 from shared_core.modules.supabase.router import router as supabase_router
-from backend.app.routes.metrics import router as metrics_router
-from backend.modules.email.router import router as email_router
+from shared_core.utils.db import Base, engine
 
 settings = get_settings()
 logger = logging.getLogger("converto.backend")
@@ -105,11 +106,13 @@ def create_app() -> FastAPI:
     app.include_router(clients_router)
     app.include_router(metrics_router)
     app.include_router(email_router)
+    app.include_router(leads_router)
 
     # Back-compat alias: preserve body via 307 redirect
     @app.api_route("/api/v1/ocr-ai/scan", methods=["POST", "OPTIONS"], include_in_schema=False)
     async def ocr_ai_scan_alias() -> RedirectResponse:
         return RedirectResponse(url="/api/v1/ocr/power", status_code=307)
+
     return app
 
 

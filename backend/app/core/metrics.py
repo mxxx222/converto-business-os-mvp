@@ -14,10 +14,16 @@ REQUEST_DURATION: Histogram = Histogram(
 
 # Business metrics
 PILOT_SIGNUPS: Counter = Counter("pilot_signups_total", "Total pilot signups")
+LEADS_CREATED: Counter = Counter("leads_created_total", "Total leads created")
+LEADS_ERRORS: Counter = Counter("leads_errors_total", "Total lead creation errors")
 
-OCR_PROCESSING: Counter = Counter("ocr_processing_total", "Total OCR processing requests", ["status"])
+OCR_PROCESSING: Counter = Counter(
+    "ocr_processing_total", "Total OCR processing requests", ["status"]
+)
 
-API_CALLS: Counter = Counter("api_calls_total", "Total API calls", ["service", "endpoint", "status"])
+API_CALLS: Counter = Counter(
+    "api_calls_total", "Total API calls", ["service", "endpoint", "status"]
+)
 
 # System metrics
 ACTIVE_CONNECTIONS: Gauge = Gauge("active_connections", "Number of active connections")
@@ -58,6 +64,16 @@ def record_pilot_signup() -> None:
     PILOT_SIGNUPS.inc()
 
 
+def record_lead_created() -> None:
+    """Record successful lead creation"""
+    LEADS_CREATED.inc()
+
+
+def record_lead_error() -> None:
+    """Record lead creation error"""
+    LEADS_ERRORS.inc()
+
+
 def record_ocr_processing(status: str) -> None:
     """Record OCR processing"""
     OCR_PROCESSING.labels(status=status).inc()
@@ -88,7 +104,9 @@ def set_redis_connections(count: int) -> None:
     REDIS_CONNECTIONS.set(count)
 
 
-def create_custom_metric(name: str, metric_type: str, description: str, labels: list[str] = None) -> None:
+def create_custom_metric(
+    name: str, metric_type: str, description: str, labels: list[str] = None
+) -> None:
     """Create custom metric"""
     if metric_type == "counter":
         CUSTOM_METRICS[name] = Counter(name, description, labels or [])

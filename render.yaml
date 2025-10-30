@@ -1,14 +1,17 @@
 services:
-  # Frontend (Marketing Site) - Premium Landing Page
-  - type: web
+  # Frontend (Marketing Site) - Static Export
+  - type: static_site
     name: converto-marketing
-    env: node
-    plan: starter
-    buildCommand: cd frontend && npm ci && npm run build
-    startCommand: cd frontend && npm start
-    rootDir: frontend
-    healthCheckPath: /premium
-    
+    buildCommand: cd frontend && npm ci && npm run build && npx next export
+    publishPath: frontend/out
+    routes:
+      - type: rewrite
+        source: /premium
+        destination: /premium.html
+      - type: rewrite
+        source: /kiitos
+        destination: /kiitos.html
+
   # Backend (Business OS) - FastAPI Backend
   - type: web
     name: converto-business-os-quantum-mvp-1
