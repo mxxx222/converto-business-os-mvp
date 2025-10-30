@@ -52,7 +52,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
 **Vaiheet:**
-1. Vercel rul：/Render → Project Settings → Environment Variables
+1. Vercel/Render → Project Settings → Environment Variables
 2. Lisää kaikki `NEXT_PUBLIC_*` muuttujat
 3. Redeploy
 4. Testaa: Avaa https://converto.fi/premium
@@ -61,7 +61,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 
 ## 🔧 **PRIORITEETTI 2: Supabase Configuration (0.5 päivä)**
 
-### **1 supervisor Enable Realtime**
+### **1. Enable Realtime**
 
 **Vaiheet:**
 1. Supabase Dashboard → Table Editor
