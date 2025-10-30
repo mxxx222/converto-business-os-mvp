@@ -2,7 +2,7 @@ services:
   # Frontend (Marketing Site) - Static Export
   - type: static_site
     name: converto-marketing
-    buildCommand: cd frontend && npm ci && npm run build && npx next export
+    buildCommand: cd frontend && npm ci && NEXT_PUBLIC_STATIC_EXPORT=true npm run build && npx next export
     publishPath: frontend/out
     routes:
       - type: rewrite
@@ -11,6 +11,28 @@ services:
       - type: rewrite
         source: /kiitos
         destination: /kiitos.html
+
+  # Dashboard (SSR) - Requires Supabase Auth & Realtime
+  - type: web
+    name: converto-dashboard
+    env: node
+    plan: starter
+    buildCommand: cd frontend && npm ci && NEXT_PUBLIC_STATIC_EXPORT=false npm run build
+    startCommand: cd frontend && npm run start
+    rootDir: frontend
+    healthCheckPath: /dashboard
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: NEXT_PUBLIC_STATIC_EXPORT
+        value: 'false'
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://your-project.supabase.co  # UPDATE THIS
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        value: eyJhbGc...  # UPDATE THIS
+      - key: NEXT_PUBLIC_SENTRY_DSN
+        value: https://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@o4507887226847232.ingest.sentry.io/4507887226847232
+ italiano
 
   # Backend (Business OS) - FastAPI Backend
   - type: web
