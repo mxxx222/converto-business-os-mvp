@@ -227,8 +227,8 @@ make test-lighthouse
 ## ✅ **Implementation Checklist**
 
 ### **Tänään:**
-- [ ] Run validation script: `./scripts/validate-setup.sh`
-- [ ] Run integration tests:舅舅`./scripts/test-integrations.sh`
+- [ ] Run validation script: `make validate-setup`
+- [ ] Run integration tests: `make test-integrations`
 - [ ] Setup Sentry alerts
 - [ ] Configure health check monitoring
 

@@ -31,7 +31,7 @@
    - Value: `https://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@o4507887226847232.ingest.sentry.io/4507887226847232`
    - Save
 
-3. **Ym重复:** Lisää kaikki muut muuttujat
+3. **Yksi kerrallaan:** Lisää kaikki muut muuttujat
 
 4. **Redeploy:**
    - Manual Deploy → Deploy latest commit
