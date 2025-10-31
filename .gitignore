@@ -40,6 +40,8 @@
 !frontend/app/**
 !frontend/lib/
 !frontend/lib/**
+!frontend/components/
+!frontend/components/**
 !frontend/hooks/
 !frontend/hooks/**
 !frontend/types/
