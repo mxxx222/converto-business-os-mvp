@@ -17,8 +17,8 @@ services:
     name: converto-dashboard
     env: node
     plan: starter
-    buildCommand: cd frontend && npm ci && NEXT_PUBLIC_STATIC_EXPORT=false npm run build
-    startCommand: cd frontend && npm run start
+    buildCommand: npm ci && NEXT_PUBLIC_STATIC_EXPORT=false npm run build
+    startCommand: npm run start
     rootDir: frontend
     healthCheckPath: /dashboard
     envVars:
@@ -32,6 +32,8 @@ services:
         value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3Z2h1cWt4cnl4Z25uc25zaWFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4NjY4NTcsImV4cCI6MjA3NzQ0Mjg1N30.jj89OSBznwr8UnQORBHXVASZcydJRB3tl9vdyjeHCoU
       - key: NEXT_PUBLIC_SENTRY_DSN
         value: https://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@o4507887226847232.ingest.sentry.io/4507887226847232
+      - key: NEXT_PUBLIC_API_URL
+        value: https://api.converto.fi
 
   # Backend (Business OS) - FastAPI Backend
   - type: web
@@ -57,8 +59,8 @@ services:
         value: https://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@o4507887226847232.ingest.sentry.io/4507887226847232
       - key: OCR_PROVIDER
         value: tesseract
-      - key: ALLOWED_ORIGINS
-        value: https://app.converto.fi,https://converto.fi
+      - key: CORS_ORIGINS_STR
+        value: https://app.converto.fi,https://converto.fi,http://localhost:3000
       - key: LOG_LEVEL
         value: info
       - key: UPLOAD_V2_ENABLED
@@ -75,3 +77,7 @@ services:
         value: demo
       - key: S3_SECRET_ACCESS_KEY
         value: demo
+      - key: RESEND_API_KEY
+        value: ${RESEND_API_KEY}
+      - key: RESEND_FROM_EMAIL
+        value: info@converto.fi
