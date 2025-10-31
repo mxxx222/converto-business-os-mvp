@@ -301,6 +301,43 @@ deployment_notification = DeploymentNotificationWorkflow()
 error_alert = ErrorAlertWorkflow()
 
 
+class EmailWorkflows:
+    """Container class for all email workflows."""
+    
+    def __init__(self, email_service=None):
+        """Initialize workflows container."""
+        self.pilot_onboarding = pilot_onboarding
+        self.deployment_notification = deployment_notification
+        self.error_alert = error_alert
+        
+        # Direct access to workflow instances
+        self.onboarding = self.pilot_onboarding
+        self.deployment = self.deployment_notification
+        self.alert = self.error_alert
+    
+    async def start_pilot_onboarding(self, user_name: str, user_email: str, locale: str = "fi") -> Dict[str, Any]:
+        """Start pilot onboarding workflow."""
+        return await pilot_onboarding.start_onboarding(user_name, user_email, locale)
+    
+    async def notify_deployment_success(self, service_name: str, recipient: str = "max@herbspot.fi") -> Dict[str, Any]:
+        """Notify deployment success."""
+        return await deployment_notification.notify_deployment_success(service_name, recipient)
+    
+    async def notify_deployment_failure(self, service_name: str, error_message: str, 
+                                      recipient: str = "max@herbspot.fi") -> Dict[str, Any]:
+        """Notify deployment failure."""
+        return await deployment_notification.notify_deployment_failure(service_name, error_message, recipient)
+    
+    async def send_error_alert(self, service_name: str, severity: str, error_message: str,
+                             recipient: str = "max@herbspot.fi") -> Dict[str, Any]:
+        """Send error alert."""
+        return await error_alert.send_error_alert(service_name, severity, error_message, recipient)
+    
+    async def check_and_alert_errors(self, service_name: str, error_count: int) -> bool:
+        """Check error count and send alert if needed."""
+        return await error_alert.check_error_threshold(service_name, error_count)
+
+
 # Convenience functions
 async def start_pilot_onboarding(user_name: str, user_email: str, locale: str = "fi") -> Dict[str, Any]:
     """Start pilot onboarding workflow."""
