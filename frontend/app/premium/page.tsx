@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from 'react'
-import { analytics } from '@/lib/analytics'
+import { analytics } from '../../lib/analytics'
 import PremiumNavbar from './_components/PremiumNavbar'
 import WowNavbar from './_components/WowNavbar'
 import PremiumHero from './_components/PremiumHero'

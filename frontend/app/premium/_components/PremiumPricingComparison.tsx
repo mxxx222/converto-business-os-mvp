@@ -1,6 +1,6 @@
 "use client"
 
-import { analytics } from '@/lib/analytics'
+import { analytics } from '../../../lib/analytics'
 
 const pricingPlans = [
   {
