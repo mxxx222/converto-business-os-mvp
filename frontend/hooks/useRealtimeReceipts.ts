@@ -4,7 +4,7 @@
  */
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import type { Receipt } from '@/types/receipt';
 
 export function useRealtimeReceipts() {
@@ -43,7 +43,7 @@ export function useRealtimeReceipts() {
             schema: 'public',
             table: 'receipts',
           },
-          (payload) => {
+          (payload: RealtimePostgresChangesPayload<Receipt>) => {
             console.log('New receipt inserted (realtime):', payload.new);
             setReceipts((prev) => [payload.new as Receipt, ...prev]);
           }
@@ -55,11 +55,14 @@ export function useRealtimeReceipts() {
             schema: 'public',
             table: 'receipts',
           },
-          (payload) => {
+          (payload: RealtimePostgresChangesPayload<Receipt>) => {
             console.log('Receipt updated (realtime):', payload.new);
-            setReceipts((prev) =>
-              prev.map((r) => (r.id === payload.new.id ? (payload.new as Receipt) : r))
-            );
+            const updatedReceipt = payload.new as Receipt;
+            if (updatedReceipt?.id) {
+              setReceipts((prev) =>
+                prev.map((r) => (r.id === updatedReceipt.id ? updatedReceipt : r))
+              );
+            }
           }
         )
         .on(
@@ -69,12 +72,15 @@ export function useRealtimeReceipts() {
             schema: 'public',
             table: 'receipts',
           },
-          (payload) => {
+          (payload: RealtimePostgresChangesPayload<Receipt>) => {
             console.log('Receipt deleted (realtime):', payload.old);
-            setReceipts((prev) => prev.filter((r) => r.id !== payload.old.id));
+            const deletedReceipt = payload.old as Receipt;
+            if (deletedReceipt?.id) {
+              setReceipts((prev) => prev.filter((r) => r.id !== deletedReceipt.id));
+            }
           }
         )
-        .subscribe((status) => {
+        .subscribe((status: string) => {
           if (status === 'SUBSCRIBED') {
             console.log('Successfully subscribed to receipts realtime channel');
           } else if (status === 'CHANNEL_ERROR') {
