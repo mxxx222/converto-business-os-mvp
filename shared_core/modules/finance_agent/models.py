@@ -95,8 +95,8 @@ class AgentMemory(Base):
     content_id = Column(String(255), nullable=True, index=True)
     content_text = Column(Text, nullable=False)  # Text used for embedding
     
-    # Metadata
-    metadata = Column(JSON, nullable=True)
+    # Metadata (renamed to avoid SQLAlchemy reserved word conflict)
+    custom_metadata = Column(JSON, nullable=True, name="metadata")
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
