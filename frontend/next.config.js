@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const { withSentryConfig } = require('@sentry/nextjs');
+
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
@@ -11,7 +13,9 @@ const securityHeaders = [
 ];
 
 // Conditional export: static for marketing site, SSR for dashboard
-const enrolledStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT !== 'false';
+// Dashboard REQUIRES SSR for Tailwind CSS and Supabase
+// Only enable static export when explicitly set to 'true'
+const enrolledStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true';
 
 const nextConfig = {
   reactStrictMode: true,
@@ -54,4 +58,12 @@ const nextConfig = {
   }),
 };
 
-module.exports = nextConfig;
+// Wrap Next.js config with Sentry
+const sentryWebpackPluginOptions = {
+  // Suppresses source map uploading logs during build
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+};
+
+module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
