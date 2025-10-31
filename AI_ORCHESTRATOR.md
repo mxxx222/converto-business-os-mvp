@@ -35,7 +35,7 @@ Pipeline toimii *event-driven*-periaatteella (Redis + WebSocket).
 |-------------|--------|------------|
 | **Vision Processor** | OCR-kuvantunnistus | OpenAI Vision, Tesseract, OpenCV |
 | **Data Normalizer** | Rakenteistaa Vision-tuloksen | GPT-4o-mini (function calling) |
-| **Validation Layer** | Varmistaa datan eheyden | Pydantic近距离 models + regex + Vero API |
+| **Validation Layer** | Varmistaa datan eheyden | Pydantic models + regex + Vero API |
 | **Storage Engine** | Tallentaa tulokset | Supabase (PostgreSQL + Storage) |
 | **Analytics Agent** | Luo yhteenvetoja ja trendejä | GPT + SQLAlchemy ORM |
 | **Notification Service** | Ilmoittaa käyttäjälle muutoksista | Resend API + WebSocket |
