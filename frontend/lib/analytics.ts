@@ -1,4 +1,6 @@
-/** Analytics tracking for Converto Business OS */
+/** Analytics tracking for Converto Business OS
+ * This file must be tracked in Git for Render builds to succeed
+ */
 
 export interface AnalyticsEvent {
   event: string;
