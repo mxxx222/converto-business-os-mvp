@@ -18,6 +18,11 @@ export class Analytics {
   }
 
   track(event: string, properties?: Record<string, any>): void {
+    // Only track on client-side
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const analyticsEvent: AnalyticsEvent = {
       event,
       properties: {
@@ -30,13 +35,13 @@ export class Analytics {
     };
 
     this.events.push(analyticsEvent);
-    
+
     // Send to server-side analytics
     this.sendToServer(analyticsEvent);
-    
+
     // Send to client-side analytics (Plausible/GA4)
     this.sendToClient(analyticsEvent);
-    
+
     console.log('Analytics Event:', analyticsEvent);
   }
 
@@ -120,11 +125,15 @@ export class Analytics {
 
   // Get UTM parameters
   getUTMParams(): Record<string, string> {
+    if (typeof window === 'undefined') {
+      return {};
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const utmParams: Record<string, string> = {};
-    
+
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-    
+
     utmKeys.forEach(key => {
       const value = urlParams.get(key);
       if (value) {
