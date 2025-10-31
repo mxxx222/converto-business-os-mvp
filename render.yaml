@@ -4,7 +4,7 @@ services:
     name: converto-dashboard
     env: node
     plan: starter
-    buildCommand: npm ci && NEXT_PUBLIC_STATIC_EXPORT=false npm run build
+    buildCommand: npm ci --include=dev && NEXT_PUBLIC_STATIC_EXPORT=false npm run build
     startCommand: npm run start
     rootDir: frontend
     healthCheckPath: /dashboard
