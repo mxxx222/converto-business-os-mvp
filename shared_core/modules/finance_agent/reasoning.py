@@ -198,3 +198,4 @@ Return JSON with: pattern_type, description, confidence (0-1), examples (3-5 tra
             logger.error(f"Pattern classification failed: {e}")
             return {"pattern_type": "unknown", "description": "Analysis failed"}
 
+

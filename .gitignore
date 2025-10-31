@@ -45,6 +45,8 @@
 !frontend/types/
 !frontend/types/**
 !frontend/middleware.ts
+!shared_core/
+!shared_core/**
 !scripts/
 !scripts/**
 !QUICK_SETUP_GUIDE.md
