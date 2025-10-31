@@ -44,7 +44,7 @@ services:
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.11.0
       - key: DATABASE_URL
         value: postgresql://demo:demo@demo.supabase.co:5432/demo
       - key: SUPABASE_URL
