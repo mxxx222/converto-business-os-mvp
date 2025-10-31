@@ -148,6 +148,7 @@ git push origin main
 ### 🏗️ Architecture & Development
 - [**Developer Architecture**](DEVELOPER_ARCHITECTURE.md) - 🧱 **Täydellinen arkkitehtuurikuvaus kehittäjille ja CTO:ille**
 - [**AI Orchestrator**](AI_ORCHESTRATOR.md) - 🤖 **AI Backend Orchestrator - kuinka tekoäly orkestroi prosessit**
+- [**FinanceAgent**](docs/FINANCE_AGENT.md) - 💰 **AI Financial Advisor Agent - oppiva talousassistentti**
 
 ### 🔧 Technical Guides
 - [**MCP OpenAI Setup**](docs/MCP_OPENAI_SETUP.md)
