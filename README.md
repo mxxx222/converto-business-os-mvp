@@ -145,6 +145,10 @@ git push origin main
 ### 🔧 Technical Features
 - [**Tekniset Ominaisuudet**](TEKNISET_OMINAISUUDET.md) - 🔧 **Kattava lista kaikista teknologioista ja työkaluista**
 
+### 🏗️ Architecture & Development
+- [**Developer Architecture**](DEVELOPER_ARCHITECTURE.md) - 🧱 **Täydellinen arkkitehtuurikuvaus kehittäjille ja CTO:ille**
+- [**AI Orchestrator**](AI_ORCHESTRATOR.md) - 🤖 **AI Backend Orchestrator - kuinka tekoäly orkestroi prosessit**
+
 ### 🔧 Technical Guides
 - [**MCP OpenAI Setup**](docs/MCP_OPENAI_SETUP.md)
 - [**Supabase Setup (Auth/Storage/Realtime)**](docs/SUPABASE_SETUP.md)
