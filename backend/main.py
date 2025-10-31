@@ -23,6 +23,7 @@ from shared_core.middleware.auth import dev_auth
 from shared_core.middleware.supabase_auth import supabase_auth
 from shared_core.modules.ai.router import router as ai_router
 from shared_core.modules.clients.router import router as clients_router
+from shared_core.modules.finance_agent.router import router as finance_agent_router
 from shared_core.modules.linear.router import router as linear_router
 from shared_core.modules.notion.router import router as notion_router
 from shared_core.modules.ocr.router import router as ocr_router
@@ -126,6 +127,7 @@ def create_app() -> FastAPI:
         return {"status": "healthy"}
 
     app.include_router(ai_router)
+    app.include_router(finance_agent_router)
     app.include_router(ocr_router)
     app.include_router(receipts_router)
     app.include_router(supabase_router)
