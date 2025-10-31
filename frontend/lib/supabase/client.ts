@@ -9,11 +9,33 @@ export function createClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error(
-      'Missing Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set'
-    );
+    // Return a mock client that gracefully handles missing config
+    // This allows the dashboard to load without Supabase configured
+    return {
+      auth: {
+        getUser: async () => ({ data: { user: null }, error: { message: 'Supabase not configured' } }),
+        signIn: async () => ({ data: { user: null }, error: { message: 'Supabase not configured' } }),
+        signOut: async () => ({ error: { message: 'Supabase not configured' } }),
+      },
+      from: () => ({
+        select: () => ({
+          order: () => ({
+            limit: async () => ({ data: [], error: { message: 'Supabase not configured' } }),
+          }),
+        }),
+      }),
+      channel: () => ({
+        on: () => ({
+          on: () => ({
+            on: () => ({
+              subscribe: () => {},
+            }),
+          }),
+        }),
+      }),
+      removeAllChannels: () => {},
+    } as any;
   }
 
   return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
-
