@@ -27,9 +27,9 @@ services:
       - key: NEXT_PUBLIC_STATIC_EXPORT
         value: 'false'
       - key: NEXT_PUBLIC_SUPABASE_URL
-        value: https://your-project.supabase.co  # UPDATE THIS
+        value: https://pwghuqkxryxgnnsnsiah.supabase.co
       - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-        value: eyJhbGc...  # UPDATE THIS
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3Z2h1cWt4cnl4Z25uc25zaWFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4NjY4NTcsImV4cCI6MjA3NzQ0Mjg1N30.jj89OSBznwr8UnQORBHXVASZcydJRB3tl9vdyjeHCoU
       - key: NEXT_PUBLIC_SENTRY_DSN
         value: https://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@o4507887226847232.ingest.sentry.io/4507887226847232
 
@@ -38,7 +38,7 @@ services:
     name: converto-business-os-quantum-mvp-1
     env: python
     plan: starter
-    buildCommand: pip install -r requirements.txt && pip install -e .
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
     rootDir: .
     healthCheckPath: /health
@@ -47,6 +47,14 @@ services:
         value: 3.11
       - key: DATABASE_URL
         value: postgresql://demo:demo@demo.supabase.co:5432/demo
+      - key: SUPABASE_URL
+        value: https://pwghuqkxryxgnnsnsiah.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: sbp_3239ba703a96cee5e258396939111c5db2aecd9c
+      - key: SUPABASE_AUTH_ENABLED
+        value: 'true'
+      - key: SENTRY_DSN
+        value: https://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@o4507887226847232.ingest.sentry.io/4507887226847232
       - key: OCR_PROVIDER
         value: tesseract
       - key: ALLOWED_ORIGINS
