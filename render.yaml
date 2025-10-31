@@ -1,17 +1,4 @@
 services:
-  # Frontend (Marketing Site) - Static Export
-  - type: static_site
-    name: converto-marketing
-    buildCommand: cd frontend && npm ci && NEXT_PUBLIC_STATIC_EXPORT=true npm run build && npx next export
-    publishPath: frontend/out
-    routes:
-      - type: rewrite
-        source: /premium
-        destination: /premium.html
-      - type: rewrite
-        source: /kiitos
-        destination: /kiitos.html
-
   # Dashboard (SSR) - Requires Supabase Auth & Realtime
   - type: web
     name: converto-dashboard
