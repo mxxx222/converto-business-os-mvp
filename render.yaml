@@ -20,6 +20,7 @@ services:
     buildCommand: npm ci && NEXT_PUBLIC_STATIC_EXPORT=false npm run build
     startCommand: npm run start
     rootDir: frontend
+    # Auto-deploy on new commits to main branch
     healthCheckPath: /dashboard
     envVars:
       - key: NODE_VERSION
