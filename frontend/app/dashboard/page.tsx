@@ -165,7 +165,7 @@ export default function DashboardPage() {
     const headers = ['Päivämäärä', 'Kauppa', 'Summa', 'ALV', 'Kategoria'];
     const rows = receipts.map(r => [
       r.created_at ? new Date(r.created_at).toLocaleDateString('fi-FI') : '',
-      r.merchant_name || '',
+      r.vendor || '',
       (r.total_amount || 0).toFixed(2),
       (r.vat_amount || 0).toFixed(2),
       r.category || '',

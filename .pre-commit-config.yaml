@@ -33,11 +33,11 @@ repos:
         additional_dependencies: ["pydantic>=2.5.0"]
 
   # Optional AI autofix (runs only if OPENAI_API_KEY is set)
-  - repo: local
-    hooks:
-      - id: ai-autofix
-        name: AI Autofix (OpenAI)
-        entry: python scripts/ai_autofix.py
-        language: system
-        pass_filenames: true
-        stages: [pre-commit]
+  # - repo: local
+  #   hooks:
+  #     - id: ai-autofix
+  #       name: AI Autofix (OpenAI)
+  #       entry: python scripts/ai_autofix.py
+  #       language: system
+  #       pass_filenames: true
+  #       stages: [pre-commit]

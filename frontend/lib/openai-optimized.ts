@@ -48,16 +48,7 @@ class ConvertoOpenAIOptimizer {
   private requestCount = 0;
 
   constructor(config: OptimizedOpenAIConfig) {
-    this.config = {
-      cacheExpiry: 24 * 60 * 60 * 1000, // 24 hours
-      maxCacheSize: 10000,
-      rateLimitPerMinute: 60,
-      enableSmartRouting: true,
-      enableTokenOptimization: true,
-      costAlertThreshold: 0.01, // $0.01 per day
-      ...config
-    };
-
+    this.config = config;
     this.loadCacheFromStorage();
   }
 
@@ -269,7 +260,7 @@ class ConvertoOpenAIOptimizer {
 
   // Retry logic with exponential backoff
   private async executeWithRetry(prompt: string, options: any, maxRetries = 3): Promise<any> {
-    let lastError: Error;
+    let lastError: Error | null = null;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
@@ -305,7 +296,7 @@ class ConvertoOpenAIOptimizer {
       }
     }
 
-    throw lastError;
+    throw lastError || new Error('Request failed after retries');
   }
 
   // Cost estimation
@@ -492,13 +483,20 @@ let instance: ConvertoOpenAIOptimizer | null = null;
 
 export function getOpenAIOptimizer(config?: Partial<OptimizedOpenAIConfig>): ConvertoOpenAIOptimizer {
   if (!instance) {
-    instance = new ConvertoOpenAIOptimizer({
+    const defaultConfig: OptimizedOpenAIConfig = {
       apiKey: process.env.OPENAI_API_KEY || '',
       baseURL: 'https://api.openai.com/v1',
       cacheEnabled: true,
       batchProcessing: true,
+      cacheExpiry: 24 * 60 * 60 * 1000,
+      maxCacheSize: 10000,
+      rateLimitPerMinute: 60,
+      enableSmartRouting: true,
+      enableTokenOptimization: true,
+      costAlertThreshold: 0.01,
       ...config
-    });
+    };
+    instance = new ConvertoOpenAIOptimizer(defaultConfig);
   }
 
   return instance;
