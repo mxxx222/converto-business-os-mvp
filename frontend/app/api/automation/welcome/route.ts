@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null as unknown as Resend;
 
 export async function POST(req: Request) {
   try {
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     }
 
     const now = new Date()
-    
+
     // Day 3: Demo reminder
     const day3 = new Date(now)
     day3.setDate(day3.getDate() + 3)
@@ -69,8 +69,8 @@ export async function POST(req: Request) {
       day7
     )
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: "Welcome email sent + sequence scheduled",
     })
   } catch (error) {

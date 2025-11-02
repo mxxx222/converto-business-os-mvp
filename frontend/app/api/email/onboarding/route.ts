@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
 // Resend API key - can be server-side only (no NEXT_PUBLIC needed for API routes)
-const resend = new Resend(process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY);
+const resend = (process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY) ? new Resend(process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY || '') : null as unknown as Resend;
 
 const ONBOARDING_SEQUENCE = [
   {
