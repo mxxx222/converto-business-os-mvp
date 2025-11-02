@@ -101,10 +101,10 @@ export async function POST(request: NextRequest) {
       }
 
       case 'invoice.payment_succeeded': {
-        const invoice = event.data.object as Stripe.Invoice;
+        const invoice = event.data.object as any;
         const subscriptionId = typeof invoice.subscription === 'string'
           ? invoice.subscription
-          : (invoice.subscription as Stripe.Subscription | null)?.id || null;
+          : (invoice.subscription as any)?.id || null;
 
         await fetch(`${API_URL}/api/v1/stripe/webhook`, {
           method: 'POST',
@@ -124,10 +124,10 @@ export async function POST(request: NextRequest) {
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice;
+        const invoice = event.data.object as any;
         const subscriptionId = typeof invoice.subscription === 'string'
           ? invoice.subscription
-          : (invoice.subscription as Stripe.Subscription | null)?.id || null;
+          : (invoice.subscription as any)?.id || null;
 
         await fetch(`${API_URL}/api/v1/stripe/webhook`, {
           method: 'POST',
