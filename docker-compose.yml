@@ -1,0 +1,90 @@
+version: "3.9"
+
+services:
+  backend:
+    container_name: converto_backend
+    build: ./backend
+    restart: always
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - SMTP_HOST=mail.converto.fi
+      - SMTP_PORT=465
+      - SMTP_USER=noreply@converto.fi
+      - SMTP_PASS=${SMTP_PASS}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - supabase
+      - redis
+
+  supabase:
+    image: supabase/postgres
+    container_name: converto_supabase
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: converto
+    ports:
+      - "5432:5432"
+    volumes:
+      - supabase_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: converto_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: converto_grafana
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASS}
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - supabase
+
+  email_relay:
+    container_name: converto_email_relay
+    build: ./email_relay
+    restart: always
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - SMTP_HOST=mail.converto.fi
+      - SMTP_PORT=465
+      - SMTP_USER=noreply@converto.fi
+      - SMTP_PASS=${SMTP_PASS}
+    depends_on:
+      - backend
+      - supabase
+    command: ["python", "relay_service.py"]
+
+  email_logger:
+    container_name: converto_email_logger
+    build: ./email_logger
+    restart: always
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    depends_on:
+      - supabase
+    command: ["python", "logger_service.py"]
+
+volumes:
+  supabase_data:
+  redis_data:
+  grafana_data:
