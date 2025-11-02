@@ -8,7 +8,7 @@ if (!stripeSecretKey) {
   console.warn('Stripe secret key not found. Checkout will not work.');
 }
 
-const stripe = new Stripe(stripeSecretKey);
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null as unknown as Stripe;
 
 // Price IDs - check both server-side and NEXT_PUBLIC
 const getEnvVar = (key: string, fallback: string) =>
