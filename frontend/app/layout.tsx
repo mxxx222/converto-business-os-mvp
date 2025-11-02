@@ -156,3 +156,10 @@ export default function RootLayout({
     </html>
   );
 }
+
+// Type augmentation for window.plausible
+declare global {
+  interface Window {
+    plausible?: any;
+  }
+}
