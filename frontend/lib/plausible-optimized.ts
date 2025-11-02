@@ -298,10 +298,3 @@ export function usePlausible() {
     getConversionFunnel: (period?: string) => plausible.getConversionFunnel(period),
   };
 }
-
-// Global window types for Plausible
-declare global {
-  interface Window {
-    plausible?: any;
-  }
-}
