@@ -1,7 +1,7 @@
 """Authentication and security middleware for Converto Business OS."""
 
-from .auth import dev_auth, DevAuthMiddleware
-from .supabase_auth import supabase_auth, SupabaseAuthMiddleware
+from .auth import DevAuthMiddleware, dev_auth
+from .supabase_auth import SupabaseAuthMiddleware, supabase_auth
 
 __all__ = [
     "dev_auth",
@@ -9,4 +9,3 @@ __all__ = [
     "supabase_auth",
     "SupabaseAuthMiddleware",
 ]
-

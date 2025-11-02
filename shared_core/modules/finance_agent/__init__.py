@@ -1,13 +1,13 @@
 """FinanceAgent - AI-powered financial advisor agent for Converto Business OS."""
 
-from .service import FinanceAgentService
 from .models import (
     AgentDecision,
-    AgentInsight,
     AgentFeedback,
+    AgentInsight,
     FinancialPattern,
     SpendingAlert,
 )
+from .service import FinanceAgentService
 
 __all__ = [
     "FinanceAgentService",
@@ -17,5 +17,3 @@ __all__ = [
     "FinancialPattern",
     "SpendingAlert",
 ]
-
-
