@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from typing import Any, Optional, Callable
+from typing import Any
 
 try:
     import redis  # type: ignore
@@ -23,10 +23,14 @@ except ImportError:
 logger = logging.getLogger("converto.redis")
 
 # Global Redis client instance
-_redis_client: redis.Redis | None = None
+try:
+    # Type hint only if redis is available
+    _redis_client: Any = None  # type: ignore
+except Exception:
+    _redis_client = None
 
 
-def get_redis_client() -> redis.Redis | None:
+def get_redis_client() -> Any | None:
     """Get Redis client instance (singleton pattern).
 
     Returns:
@@ -79,7 +83,7 @@ def get_redis_client() -> redis.Redis | None:
 class SessionManager:
     """Session management using Redis."""
 
-    def __init__(self, redis_client: redis.Redis | None = None, ttl: int = 3600):
+    def __init__(self, redis_client: Any | None = None, ttl: int = 3600):
         """Initialize session manager.
 
         Args:
@@ -159,7 +163,7 @@ class SessionManager:
 class RateLimiter:
     """Rate limiting using Redis."""
 
-    def __init__(self, redis_client: redis.Redis | None = None):
+    def __init__(self, redis_client: Any | None = None):
         """Initialize rate limiter.
 
         Args:
@@ -207,7 +211,7 @@ class RateLimiter:
 class QueueManager:
     """Queue management using Redis."""
 
-    def __init__(self, redis_client: redis.Redis | None = None):
+    def __init__(self, redis_client: Any | None = None):
         """Initialize queue manager.
 
         Args:
@@ -291,7 +295,7 @@ class QueueManager:
 class PubSubManager:
     """Pub/Sub messaging using Redis."""
 
-    def __init__(self, redis_client: redis.Redis | None = None):
+    def __init__(self, redis_client: Any | None = None):
         """Initialize pub/sub manager.
 
         Args:
@@ -355,7 +359,7 @@ class PubSubManager:
 class AdvancedCache:
     """Advanced caching with Redis."""
 
-    def __init__(self, redis_client: redis.Redis | None = None, default_ttl: int = 3600):
+    def __init__(self, redis_client: Any | None = None, default_ttl: int = 3600):
         """Initialize advanced cache.
 
         Args:

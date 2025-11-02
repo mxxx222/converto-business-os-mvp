@@ -15,6 +15,7 @@ from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from backend.app.routes.leads import router as leads_router
+from backend.app.routes.linear_optimized import router as linear_optimized_router
 from backend.app.routes.metrics import router as metrics_router
 from backend.app.routes.redis import router as redis_router
 from backend.app.routes.stripe import router as stripe_router
@@ -27,7 +28,6 @@ from shared_core.modules.agent_orchestrator.router import router as agent_orches
 from shared_core.modules.ai.router import router as ai_router
 from shared_core.modules.clients.router import router as clients_router
 from shared_core.modules.finance_agent.router import router as finance_agent_router
-from shared_core.modules.linear.router import router as linear_router
 from shared_core.modules.notion.router import router as notion_router
 from shared_core.modules.ocr.router import router as ocr_router
 from shared_core.modules.receipts.router import router as receipts_router
@@ -162,7 +162,7 @@ def create_app() -> FastAPI:
     app.include_router(receipts_router)
     app.include_router(supabase_router)
     app.include_router(notion_router)
-    app.include_router(linear_router)
+    # app.include_router(linear_router)  # Replaced by linear_optimized_router
     app.include_router(csp_router)
     app.include_router(clients_router)
     app.include_router(metrics_router)
@@ -170,6 +170,9 @@ def create_app() -> FastAPI:
     app.include_router(leads_router)
     app.include_router(stripe_router)
     app.include_router(redis_router)  # OPTIMIZED: Redis management endpoints
+    app.include_router(
+        linear_optimized_router
+    )  # OPTIMIZED: Linear API (replaces basic linear router)
 
     # Back-compat alias: preserve body via 307 redirect
     @app.api_route("/api/v1/ocr-ai/scan", methods=["POST", "OPTIONS"], include_in_schema=False)

@@ -56,17 +56,15 @@ class FinanceAgentAdapter(Agent):
 
             # Convert insights to dict
             insights_data = [
-                    {
-                        "type": insight.type,
-                        "title": insight.title,
-                        "description": insight.description,
-                        "confidence": insight.confidence,
-                        "metadata": insight.metadata,
-                    }
-                    for insight in insights
-                ]
-            else:
-                insights_data = []
+                {
+                    "type": insight.type,
+                    "title": insight.title,
+                    "description": insight.description,
+                    "confidence": insight.confidence,
+                    "metadata": insight.metadata,
+                }
+                for insight in insights
+            ] if insights else []
 
             # Detect spending alerts
             alerts = self.service.detect_spending_alerts(db)
