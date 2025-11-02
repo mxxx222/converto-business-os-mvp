@@ -31,6 +31,9 @@
 !PRIORITIES_4-7_IMPLEMENTATION.md
 !docs/
 !docs/**
+!docker-compose.modular-core.yml
+!supabase/
+!supabase/**
 
 # allow code dirs
 !backend/

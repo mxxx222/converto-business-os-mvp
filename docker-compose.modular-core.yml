@@ -1,0 +1,175 @@
+version: '3.8'
+
+# Modular Business OS Core v1.0
+# Production-ready SaaS foundation with Docker Compose localization
+
+services:
+  # ===== Core Infrastructure =====
+
+  # PostgreSQL Database (Supabase compatible)
+  postgres:
+    image: supabase/postgres:15.3.0.125
+    environment:
+      POSTGRES_DB: business_os
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token-change-in-production}
+      JWT_EXP: ${JWT_EXP:-3600}
+    ports:
+      - "54322:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./supabase/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - modular-os
+
+  # Redis Cache (Session, Rate Limit, Pub/Sub)
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - modular-os
+
+  # Grafana for monitoring
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=redis-datasource,postgres
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - modular-os
+
+  # ===== Backend Services =====
+
+  # Backend API (FastAPI)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # Database
+      - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/business_os
+      - SUPABASE_URL=http://postgres:5432
+
+      # Redis
+      - REDIS_URL=redis://:redis123@redis:6379/0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redis123
+
+      # Stripe
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+
+      # JWT
+      - JWT_SECRET=${JWT_SECRET:-super-secret-jwt-token}
+      - JWT_ALGORITHM=HS256
+
+      # App Config
+      - ENVIRONMENT=production
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
+
+      # APIs
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+
+    volumes:
+      - ./backend:/app/backend:ro
+      - ./shared_core:/app/shared_core:ro
+      - ./config:/app/config:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - modular-os
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      # API
+      - NEXT_PUBLIC_API_BASE=http://localhost:8000
+      - NEXT_PUBLIC_SUPABASE_URL=http://localhost:54322
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+
+      # Stripe
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+
+      # Analytics
+      - NEXT_PUBLIC_PLAUSIBLE_DOMAIN=localhost
+      - PLAUSIBLE_API_KEY=${PLAUSIBLE_API_KEY}
+
+      # Monitoring
+      - NEXT_PUBLIC_SENTRY_DSN=${SENTRY_DSN}
+      - NEXT_PUBLIC_SENTRY_ENVIRONMENT=production
+
+    depends_on:
+      - api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - modular-os
+
+  # Stripe Webhook Proxy (secure billing relay)
+  stripe-proxy:
+    image: stripe/stripe-cli:latest
+    command: listen --forward-to api:8000/api/webhooks/stripe --skip-verify
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+    depends_on:
+      - api
+    networks:
+      - modular-os
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  modular-os:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
