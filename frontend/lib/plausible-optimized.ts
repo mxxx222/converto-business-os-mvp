@@ -299,9 +299,9 @@ export function usePlausible() {
   };
 }
 
-// Global window types
+// Global window types for Plausible
 declare global {
   interface Window {
-    plausible?: (event: string, options?: { props?: Record<string, any>; callback?: () => void }) => void;
+    plausible?: any;
   }
 }
