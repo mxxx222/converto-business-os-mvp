@@ -10,7 +10,7 @@ if (!stripeSecretKey) {
   console.warn('Stripe secret key not found. Webhooks will not work.');
 }
 
-const stripe = new Stripe(stripeSecretKey);
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null as unknown as Stripe;
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
