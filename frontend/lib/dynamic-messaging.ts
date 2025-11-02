@@ -50,9 +50,9 @@ class DynamicMessagingEngine {
       urgency: "Vain 25 paikkaa jäljellä tämän kuukauden ilmainen aloituskokeilu",
       cta: "Aloita maksuton kokeilu - näe tulokset heti",
       objectionHandlers: [
-        "💡 Suomenkielinen käyttöliittymä ja tuki mukana",
-        "🎯 Ei pitkäaikaisia sitoumuksia - peruutus milloin vain",
-        "📊 30 päivän riskitön kokeilu suomalaisille yrityksille"
+        "💡 Toimii heti - ei teknistä koulutusta tarvita",
+        "📞 Peruutus milloin vain - ei sitoutumista",
+        "🏆 30 päivän ilmainen kokeilu riskittä"
       ]
     })
 
@@ -106,13 +106,13 @@ class DynamicMessagingEngine {
   private initializeBehavioralTargeting() {
     // Role-based messaging for maximum conversion
     this.behavioralTargeting.set('CEO', {
-      headline: "CEO: Vapauta strateginen aika - automatisoi operatiivinen työ",
-      subheadline: "500+ toimitusjohtajan valinta - vapauta 20 tuntia viikossa strategiaan",
+      headline: "Toimitusjohtaja: Vapauta aikaasi liiketoiminnan kehittämiseen",
+      subheadline: "500+ toimitusjohtajan valinta - säästä 20 tuntia viikossa rutiinityöstä",
       benefits: [
-        "🎯 Strateginen dashboard johtamiseen",
-        "🤖 AI-pohjainen päätöksentuki",
-        "📊 Automatisoitu johtamisraportointi",
-        "⚡ 20h viikossa enemmän strategiaan"
+        "⏰ 20+ tuntia viikossa lisää aikaa liiketoiminnan kehittämiseen",
+        "📊 Yksinkertainen raportointi - näet tärkeimmät luvut yhdellä silmäyksellä",
+        "🤖 Automaattiset muistutukset ja seuranta",
+        "🎯 Keskity strategisiin päätöksiin, rutiinityöt hoituvat automaattisesti"
       ],
       socialProof: [
         "⭐⭐⭐⭐⭐ 'Sain elämäni takaisin' - CEO, Teknologia Oy",
@@ -129,13 +129,13 @@ class DynamicMessagingEngine {
     })
 
     this.behavioralTargeting.set('CFO', {
-      headline: "CFO: Optimoi kustannukset, maksimoi ROI - 40% säästöt todistettu",
-      subheadline: "Rahoitusjohtajien #1 valinta - automatisoi taloushallinto ja raportointi",
+      headline: "Talousjohtaja: Säästä rahaa ja aikaa taloushallinnossa",
+      subheadline: "Rahoitusjohtajien #1 valinta - automatisoi rutiinityöt ja vähennä kustannuksia",
       benefits: [
-        "💰 40% kustannussäästöt taloushallinnossa",
-        "📊 Real-time talousraportit",
-        "🤖 AI-pohjainen budjetointi",
-        "🔒 Enterprise-grade compliance"
+        "💰 40% vähemmän kustannuksia kirjanpidossa ja laskutuksessa",
+        "📊 Näet taloudellisen tilanteen yhdellä silmäyksellä",
+        "🤖 Automaattiset kustannusmuistutukset",
+        "🎯 Helppo käyttää - ei teknistä osaamista tarvita"
       ],
       socialProof: [
         "⭐⭐⭐⭐⭐ '40% säästöt ensimmäisenä vuonna' - CFO, Teollisuus Oy",
