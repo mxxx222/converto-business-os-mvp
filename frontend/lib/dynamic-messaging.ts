@@ -34,21 +34,21 @@ class DynamicMessagingEngine {
   private initializeDomainIntelligence() {
     // Domain-specific messaging for maximum relevance
     this.domainIntelligence.set('converto.fi', {
-      headline: "Suomalainen yritysautomaatio seuraavalle tasolle",
-      subheadline: "Liity 200+ suomalaisyrityksen joukkoon, jotka luottavat Convertoon päivittäisessä liiketoiminnassaan",
+      headline: "Vapauta aikaasi ja säästä rahaasi yritysautomaatiolla",
+      subheadline: "Liity 200+ suomalaisyrityksen joukkoon, jotka säästävät keskimäärin 15 tuntia viikossa",
       benefits: [
-        "🇫🇮 Suomi-pohjainen asiakastuki ja GDPR-compliance",
-        "💰 ALV-optimointi EU-markkinoille automaattisesti",
-        "📞 24/7 suomenkielinen tekninen tuki",
-        "🔒 EU:n tiukimmat tietosuojastandardit"
+        "⏰ 15+ tuntia viikossa takaisin päivittäisiin töihin",
+        "💰 40% vähemmän kustannuksia kirjanpidossa ja hallinnossa",
+        "📞 Suomenkielinen tuki - ei kielimuureja",
+        "🏆 Valmis käyttöön heti - ei teknistä osaamista vaadita"
       ],
       socialProof: [
         "⭐⭐⭐⭐⭐ 'Converto säästi meille 40 tuntia viikossa' - CEO, Rakennus Oy",
         "🏆 'Paras suomalainen SaaS-investointi' - CFO, Teollisuus Ltd",
         "📈 '300% tuottavuuden kasvu 3 kuukaudessa' - COO, Kauppa Oy"
       ],
-      urgency: "Vain 25 paikkaa jäljellä tämän kuukauden Suomen yrityksille suunnattuun erityistarjoukseen",
-      cta: "Aloita ilmainen suomalainen kokeilu",
+      urgency: "Vain 25 paikkaa jäljellä tämän kuukauden ilmainen aloituskokeilu",
+      cta: "Aloita maksuton kokeilu - näe tulokset heti",
       objectionHandlers: [
         "💡 Suomenkielinen käyttöliittymä ja tuki mukana",
         "🎯 Ei pitkäaikaisia sitoumuksia - peruutus milloin vain",

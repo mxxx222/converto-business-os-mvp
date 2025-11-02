@@ -63,6 +63,7 @@
 !frontend/next.config.js
 !frontend/Dockerfile
 !frontend/tsconfig.json
+!frontend/vercel.json
 !app/static/
 
 # inside allowed dirs, re-ignore heavy junk
