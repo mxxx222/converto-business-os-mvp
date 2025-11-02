@@ -249,7 +249,7 @@ class PlausibleOptimized {
       visitors: 0,
       pilot_signups: 0,
       payments: 0,
-      conversion_rate: 0,
+      conversion_rate: '0',
     };
 
     try {
