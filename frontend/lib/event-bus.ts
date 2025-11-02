@@ -77,9 +77,12 @@ class EventBus {
     const asyncCallbacks = this.asyncListeners.get(eventType) || [];
     for (const callback of asyncCallbacks) {
       // Run async, don't await
-      callback(payload).catch((error) => {
-        console.error(`Error in async listener for ${eventType}:`, error);
-      });
+      const result = callback(payload);
+      if (result instanceof Promise) {
+        result.catch((error) => {
+          console.error(`Error in async listener for ${eventType}:`, error);
+        });
+      }
     }
 
     // Log to backend for analytics
