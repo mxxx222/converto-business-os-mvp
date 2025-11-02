@@ -14,10 +14,7 @@ if (process.env.NEXT_RUNTIME === 'nodejs') {
 
     // OPTIMIZED: Server-side integrations
     integrations: [
-      Sentry.httpIntegration({
-        // OPTIMIZED: Trace all HTTP requests
-        tracing: true,
-      }),
+      Sentry.httpIntegration(),
       // Note: nodeProfilingIntegration may require @sentry/profiling-node package
     ],
 
