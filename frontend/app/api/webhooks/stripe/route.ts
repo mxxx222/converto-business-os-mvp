@@ -10,9 +10,7 @@ if (!stripeSecretKey) {
   console.warn('Stripe secret key not found. Webhooks will not work.');
 }
 
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2024-12-18.acacia',
-});
+const stripe = new Stripe(stripeSecretKey);
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -112,7 +110,7 @@ export async function POST(request: NextRequest) {
             type: 'invoice.payment_succeeded',
             data: {
               invoiceId: invoice.id,
-              subscriptionId: invoice.subscription,
+              subscriptionId: typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id,
               customerId: invoice.customer,
               amountPaid: invoice.amount_paid,
             },
@@ -132,7 +130,7 @@ export async function POST(request: NextRequest) {
             type: 'invoice.payment_failed',
             data: {
               invoiceId: invoice.id,
-              subscriptionId: invoice.subscription,
+              subscriptionId: typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id,
               customerId: invoice.customer,
             },
           }),

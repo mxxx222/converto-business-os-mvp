@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import Navbar from "../../../components/Navbar"
-import Footer from "../../../components/Footer"
-import ChatBot from "../../../components/ChatBot"
+import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
+import ChatBot from "@/components/ChatBot"
 
 export default function YhteysPage() {
   const [formData, setFormData] = useState({
@@ -30,10 +30,10 @@ export default function YhteysPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     setIsSubmitting(false)
     setIsSubmitted(true)
   }

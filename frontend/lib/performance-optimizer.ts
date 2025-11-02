@@ -1,5 +1,4 @@
-rontend/lib/performance-optimizer.ts</path>
-<content">/**
+/**
  * Performance Optimizer - Converto Business OS
  * Advanced performance optimizations for maximum ROI
  * Production-ready bundle optimization and caching strategies
@@ -103,13 +102,13 @@ class ConvertoPerformanceOptimizer {
     if (!this.config.enableAdvancedCaching) return;
 
     const cacheHeaders = this.getCacheHeaders();
-    
+
     // Service Worker caching strategy
     this.setupServiceWorkerCaching();
-    
+
     // HTTP cache optimization
     this.optimizeHTTPCaching(cacheHeaders);
-    
+
     // CDN cache optimization
     this.optimizeCDNCaching();
 
@@ -229,13 +228,13 @@ class ConvertoPerformanceOptimizer {
   monitorPerformance(): void {
     // Core Web Vitals monitoring
     this.monitorCoreWebVitals();
-    
+
     // Bundle size monitoring
     this.monitorBundleSize();
-    
+
     // Cache hit rate monitoring
     this.monitorCacheHitRate();
-    
+
     // Performance score tracking
     this.trackPerformanceScore();
   }
@@ -259,7 +258,7 @@ class ConvertoPerformanceOptimizer {
   // Private methods
   private getMinifiers() {
     const minifiers = [];
-    
+
     if (process.env.NODE_ENV === 'production') {
       // Terser for JavaScript
       minifiers.push(
@@ -411,7 +410,7 @@ class ConvertoPerformanceOptimizer {
   private trackPageLoadTime(): void {
     const loadTime = performance.now();
     this.updateMetrics('loadTime', loadTime);
-    
+
     // Track performance event
     if ((window as any).plausible) {
       (window as any).plausible('Performance Event', {

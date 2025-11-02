@@ -1,6 +1,6 @@
 'use client';
 
-import { MetricsDashboard } from '../../../components/workflows/MetricsDashboard';
+import { MetricsDashboard } from '@/components/workflows/MetricsDashboard';
 
 export default function WorkflowMetricsPage() {
   return (
@@ -20,4 +20,3 @@ export default function WorkflowMetricsPage() {
     </div>
   );
 }
-

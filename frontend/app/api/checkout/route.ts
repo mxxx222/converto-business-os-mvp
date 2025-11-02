@@ -8,9 +8,7 @@ if (!stripeSecretKey) {
   console.warn('Stripe secret key not found. Checkout will not work.');
 }
 
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2024-12-18.acacia',
-});
+const stripe = new Stripe(stripeSecretKey);
 
 // Price IDs - check both server-side and NEXT_PUBLIC
 const getEnvVar = (key: string, fallback: string) =>

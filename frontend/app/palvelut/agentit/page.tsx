@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import Navbar from "../../../components/Navbar"
-import Footer from "../../../components/Footer"
-import ChatBot from "../../../components/ChatBot"
+import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
+import ChatBot from "@/components/ChatBot"
 
 export default function AgentitPage() {
   const [isVideoOpen, setIsVideoOpen] = useState(false)

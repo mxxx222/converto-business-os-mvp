@@ -1,5 +1,4 @@
-rontend/lib/openai-optimized.ts</path>
-<content">/**
+/**
  * OpenAI Business Optimization - Converto Business OS
  * 300% Cost Reduction with Intelligent Caching & Batch Processing
  * Production-ready enterprise implementation
@@ -35,6 +34,7 @@ interface BatchRequest {
     priority?: 'high' | 'medium' | 'low';
   }>;
   strategy: 'batch' | 'parallel' | 'priority';
+  priority?: 'high' | 'medium' | 'low';
   callback: (responses: any[]) => void;
 }
 

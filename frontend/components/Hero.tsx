@@ -1,3 +1,5 @@
+'use client'
+
 import Link from "next/link"
 import { useEffect } from "react"
 import { useConversionTracking } from "@/lib/conversion-tracking"
@@ -23,17 +25,17 @@ export default function Hero({ title, subtitle, ctaPrimary, image }: HeroProps) 
         <div className="badge badge-primary mb-6">
           🚀 Ensimmäiset 50 yritystä - Ilmainen 30pv pilotti
         </div>
-        
+
         {/* Main Headline */}
         <h1 className="text-display-xl gradient-text max-w-4xl mx-auto">
           {title}
         </h1>
-        
+
         {/* Subtitle */}
         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
           {subtitle}
         </p>
-        
+
         {/* CTA Buttons */}
         <div className="flex gap-4 justify-center flex-wrap mt-8">
           <Link
@@ -55,7 +57,7 @@ export default function Hero({ title, subtitle, ctaPrimary, image }: HeroProps) 
             </svg>
           </Link>
         </div>
-        
+
         {/* Social Proof */}
         <div className="mt-12 flex items-center justify-center gap-8 opacity-70">
           <div className="text-sm text-gray-500">Luotettu kumppani:</div>
@@ -65,16 +67,16 @@ export default function Hero({ title, subtitle, ctaPrimary, image }: HeroProps) 
             <div className="logo">Y-Combinator</div>
           </div>
         </div>
-        
+
         {/* Hero Image/Video */}
         {image && (
           <div className="mt-16 relative">
             <div className="relative max-w-4xl mx-auto">
               <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl blur-3xl opacity-20 scale-105"></div>
-              <img 
-                src={image} 
-                alt="Converto Business OS Dashboard" 
-                className="relative w-full h-auto rounded-2xl shadow-2xl border border-gray-200" 
+              <img
+                src={image}
+                alt="Converto Business OS Dashboard"
+                className="relative w-full h-auto rounded-2xl shadow-2xl border border-gray-200"
               />
               {/* Play button overlay for demo video */}
               <div className="absolute inset-0 flex items-center justify-center">
@@ -87,7 +89,7 @@ export default function Hero({ title, subtitle, ctaPrimary, image }: HeroProps) 
             </div>
           </div>
         )}
-        
+
         {/* Key Stats */}
         <div className="stats-grid mt-16">
           <div className="stat-card">
@@ -108,7 +110,7 @@ export default function Hero({ title, subtitle, ctaPrimary, image }: HeroProps) 
           </div>
         </div>
       </div>
-      
+
       {/* Floating elements (Revolut-style) */}
       <div className="absolute top-20 left-10 w-32 h-32 bg-primary-100 rounded-full opacity-20 animate-pulse"></div>
       <div className="absolute bottom-20 right-10 w-24 h-24 bg-success-100 rounded-full opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>

@@ -1,5 +1,4 @@
-rontend/components/StorageManager.tsx</path>
-<content">/**
+/**
  * Advanced Storage Manager Component
  * Phase 2: Storage & AI Implementation
  * File upload, processing, and collaboration interface
@@ -35,7 +34,7 @@ export default function StorageManager() {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [results, setResults] = useState<ProcessingResult[]>([]);
   const [collaborations, setCollaborations] = useState<any[]>([]);
-  
+
   const supabase = createClientComponentClient();
 
   // File upload with AI processing
@@ -59,11 +58,11 @@ export default function StorageManager() {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         setFiles(prev => [data.data.metadata, ...prev]);
         setUploadProgress(100);
-        
+
         // Trigger AI processing
         await processFile(data.data.metadata.id, 'analysis');
       } else {
@@ -93,8 +92,8 @@ export default function StorageManager() {
       const data = await response.json();
       if (data.success) {
         // Update file status
-        setFiles(prev => prev.map(file => 
-          file.id === fileId 
+        setFiles(prev => prev.map(file =>
+          file.id === fileId
             ? { ...file, processed: false }
             : file
         ));
@@ -151,7 +150,7 @@ export default function StorageManager() {
   return (
     <div className="storage-manager">
       <h2>📁 Advanced File Storage & AI Processing</h2>
-      
+
       {/* Upload Section */}
       <div className="upload-section">
         <h3>📤 Upload Documents</h3>
@@ -164,8 +163,8 @@ export default function StorageManager() {
         />
         {uploading && (
           <div className="progress-bar">
-            <div 
-              className="progress-fill" 
+            <div
+              className="progress-fill"
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
@@ -181,7 +180,7 @@ export default function StorageManager() {
               <h4>{file.file_name}</h4>
               <p>Size: {formatFileSize(file.file_size)}</p>
               <p>Type: {file.mime_type}</p>
-              
+
               <div className="file-actions">
                 <button
                   onClick={() => setSelectedFile(file.id)}
@@ -189,7 +188,7 @@ export default function StorageManager() {
                 >
                   View Details
                 </button>
-                
+
                 <button
                   onClick={() => processFile(file.id, 'ocr')}
                   disabled={processing}
@@ -197,7 +196,7 @@ export default function StorageManager() {
                 >
                   🔍 Extract Text
                 </button>
-                
+
                 <button
                   onClick={() => processFile(file.id, 'analysis')}
                   disabled={processing}
@@ -205,7 +204,7 @@ export default function StorageManager() {
                 >
                   🤖 AI Analysis
                 </button>
-                
+
                 <button
                   onClick={() => createCollaboration(file.id)}
                   className="btn-secondary"
