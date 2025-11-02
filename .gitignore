@@ -50,6 +50,10 @@
 !frontend/types/
 !frontend/types/**
 !frontend/middleware.ts
+!frontend/sentry.client.config.ts
+!frontend/sentry.server.config.ts
+!sentry.client.config.ts
+!sentry.server.config.ts
 !shared_core/
 !shared_core/**
 !scripts/
