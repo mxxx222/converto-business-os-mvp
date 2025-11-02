@@ -75,7 +75,7 @@ jobs:
 
     - name: Comment PR with Security Results
       if: github.event_name == 'pull_request'
-      uses: actions/github-script@v6
+      uses: actions/github-script@v8
       with:
         script: |
           const fs = require('fs');
@@ -150,7 +150,7 @@ jobs:
 
     - name: Create Security Issue (if critical issues found)
       if: failure()
-      uses: actions/github-script@v6
+      uses: actions/github-script@v8
       with:
         script: |
           github.rest.issues.create({
