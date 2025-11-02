@@ -90,8 +90,8 @@ curl -I https://converto.fi
 
 ---
 
-**PÄIVITYS AJAN:** **5 min** ⏰  
-**DIFFICULTY:** **Helppo** (kirjautuminen + 2 tietueen muutos)  
+**PÄIVITYS AJAN:** **5 min** ⏰
+**DIFFICULTY:** **Helppo** (kirjautuminen + 2 tietueen muutos)
 **CRITICAL:** **KYLLÄ** (sivusto ei toimi muuten!)
 
 ---
@@ -104,4 +104,3 @@ Jos kirjautuminen ei toimi:
 3. Seuraa kohtia 2-3 edellä
 
 **Kun DNS on päivitetty:** Sivusto toimii automaattisesti! 🎉
-
