@@ -16,11 +16,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Validate blueprint file
         run: |
           FILE="render.${{ github.event.inputs.environment }}.yaml"
@@ -29,37 +29,37 @@ jobs:
             exit 1
           fi
           echo "✅ Found $FILE"
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
-      
+
       - name: Frontend - Type check & Build
         run: |
           cd frontend
           npm ci
           npm run build
           echo "✅ Frontend build successful"
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-      
+
       - name: Backend - Install & Validate
         run: |
           pip install -r requirements.txt
           python -c "import app.main; print('✅ Backend imports OK')"
-      
+
       - name: Run tests
         run: |
           pip install pytest
           pytest tests/ -v || echo "⚠️  Tests not found or failed"
-      
+
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
@@ -76,7 +76,7 @@ jobs:
           echo ""
           echo "Or use Render CLI:"
           echo "render blueprint deploy --file render.${{ github.event.inputs.environment }}.yaml"
-      
+
       - name: Deployment summary
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -100,4 +100,3 @@ jobs:
           fi
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-

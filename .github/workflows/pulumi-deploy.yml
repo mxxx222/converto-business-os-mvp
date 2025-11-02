@@ -35,4 +35,3 @@ jobs:
         run: |
           pulumi stack select converto-business-os/staging
           pulumi up --yes
-

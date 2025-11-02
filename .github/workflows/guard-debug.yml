@@ -16,5 +16,3 @@ jobs:
           node-version: 20
       - name: Guard DEBUG flags
         run: node scripts/check-env-file.mjs && node scripts/check-debug-env.mjs
-
-

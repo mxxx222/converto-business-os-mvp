@@ -28,4 +28,3 @@ jobs:
           vercel alias --token=$VERCEL_TOKEN apps/dashboard $domain || true
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-

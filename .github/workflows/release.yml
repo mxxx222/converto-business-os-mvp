@@ -51,4 +51,3 @@ jobs:
           body_path: docs/CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

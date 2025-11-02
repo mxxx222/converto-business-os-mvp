@@ -40,5 +40,3 @@ jobs:
         with:
           name: dashboard-analyze
           path: apps/dashboard/.next/analyze
-
-

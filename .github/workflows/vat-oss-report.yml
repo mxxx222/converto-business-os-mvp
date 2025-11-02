@@ -38,4 +38,3 @@ jobs:
                   print({'status':'no-data'})
           asyncio.run(main())
           PY
-

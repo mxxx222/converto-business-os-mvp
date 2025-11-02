@@ -37,4 +37,3 @@ Any other context about the problem.
 - [ ] High (major functionality affected)
 - [ ] Medium (minor functionality affected)
 - [ ] Low (cosmetic or enhancement)
-

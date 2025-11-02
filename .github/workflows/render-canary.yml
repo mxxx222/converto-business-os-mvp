@@ -57,4 +57,3 @@ jobs:
           curl -fsSL -X POST "$RENDER_PRIMARY_ROLLBACK_HOOK"
         env:
           RENDER_PRIMARY_ROLLBACK_HOOK: ${{ secrets.RENDER_PRIMARY_ROLLBACK_HOOK }}
-

@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '../lib/supabase/client';
 
 interface FileMetadata {
   id: string;
@@ -35,7 +35,7 @@ export default function StorageManager() {
   const [results, setResults] = useState<ProcessingResult[]>([]);
   const [collaborations, setCollaborations] = useState<any[]>([]);
 
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   // File upload with AI processing
   const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +136,7 @@ export default function StorageManager() {
         event: 'UPDATE',
         schema: 'public',
         table: 'ai_processing_queue'
-      }, (payload) => {
+      }, (payload: any) => {
         // Handle real-time processing updates
         console.log('Processing update:', payload);
       })
