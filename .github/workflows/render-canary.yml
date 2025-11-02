@@ -1,0 +1,60 @@
+name: Render Canary / Blue-Green Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target: canary or promote'
+        required: true
+        default: 'canary'
+
+jobs:
+  deploy-canary:
+    if: ${{ github.event.inputs.target == 'canary' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy GREEN (canary) via Render Deploy Hook
+        run: |
+          curl -fsSL -X POST "$RENDER_GREEN_DEPLOY_HOOK"
+        env:
+          RENDER_GREEN_DEPLOY_HOOK: ${{ secrets.RENDER_GREEN_DEPLOY_HOOK }}
+      - name: Wait for health
+        run: |
+          for i in {1..30}; do
+            if curl -fsS "${GREEN_HEALTH:-https://your-green.example.com/health}" | grep -q healthy; then
+              echo "Green healthy"; exit 0; fi; echo waiting; sleep 10; done; exit 1
+        env:
+          GREEN_HEALTH: ${{ secrets.GREEN_HEALTH_URL }}
+      - name: Run k6 smoke on canary
+        uses: grafana/setup-k6-action@v1
+      - name: k6 test
+        run: k6 run infrastructure/tests/k6/k6_smoke.js
+
+  promote-green:
+    if: ${{ github.event.inputs.target == 'promote' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Promote GREEN to primary using Render API (scale up) & scale down BLUE
+        run: |
+          curl -fsSL -X PATCH \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"numInstances": 2}' \
+            https://api.render.com/v1/services/$RENDER_GREEN_SERVICE_ID
+          curl -fsSL -X PATCH \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"numInstances": 0}' \
+            https://api.render.com/v1/services/$RENDER_BLUE_SERVICE_ID
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_GREEN_SERVICE_ID: ${{ secrets.RENDER_GREEN_SERVICE_ID }}
+          RENDER_BLUE_SERVICE_ID: ${{ secrets.RENDER_BLUE_SERVICE_ID }}
+      - name: Rollback to previous (on failure)
+        if: failure()
+        run: |
+          curl -fsSL -X POST "$RENDER_PRIMARY_ROLLBACK_HOOK"
+        env:
+          RENDER_PRIMARY_ROLLBACK_HOOK: ${{ secrets.RENDER_PRIMARY_ROLLBACK_HOOK }}
+

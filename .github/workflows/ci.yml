@@ -1,0 +1,92 @@
+name: CI Guard
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [dashboard, billing, receipts, legal]
+    defaults:
+      run:
+        working-directory: apps/${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Guard DEBUG flags (${{ matrix.app }})
+        run: node scripts/check-env-file.mjs && node scripts/check-debug-env.mjs
+        env:
+          DEBUG_CACHE: ${{ secrets.DEBUG_CACHE }}
+          DEBUG_REDIS: ${{ secrets.DEBUG_REDIS }}
+          DEBUG_REDIS_LOCKS: ${{ secrets.DEBUG_REDIS_LOCKS }}
+          DEBUG_SESSION: ${{ secrets.DEBUG_SESSION }}
+          DEBUG_METRICS: ${{ secrets.DEBUG_METRICS }}
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, mvp-clean]
+  pull_request:
+    branches: [main, mvp-clean]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Run tests
+        run: pytest tests/ -v
+
+      - name: Lint with ruff
+        run: |
+          pip install ruff
+          ruff check app/
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Lint
+        working-directory: ./frontend
+        run: npm run lint
+
+      - name: Build
+        working-directory: ./frontend
+        run: npm run build
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

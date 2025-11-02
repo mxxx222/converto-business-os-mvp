@@ -1,0 +1,85 @@
+name: Deploy Converto Business OS
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Backup Supabase
+        run: |
+          ssh user@your-server "cd /app && bash backup_scripts/backup_db.sh"
+
+      - name: Backup Grafana
+        run: |
+          ssh user@your-server "cd /app && bash backup_scripts/backup_grafana.sh"
+
+  deploy:
+    needs: backup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to production
+        run: |
+          ssh user@your-server "cd /app && git pull origin main"
+
+          # Stop services gracefully
+          ssh user@your-server "cd /app && docker compose down"
+
+          # Update environment if needed
+          ssh user@your-server "cd /app && cp .env.production .env"
+
+          # Deploy new version
+          ssh user@your-server "cd /app && docker compose up -d --build"
+
+          # Wait for services to be healthy
+          ssh user@your-server "cd /app && sleep 30"
+
+      - name: Health check
+        run: |
+          # Check backend health
+          ssh user@your-server "curl -f http://localhost:8000/health" || exit 1
+
+          # Check Grafana
+          ssh user@your-server "curl -f http://localhost:3000/api/health" || exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Deployment failed, rolling back..."
+          ssh user@your-server "cd /app && docker compose down"
+          ssh user@your-server "cd /app && bash backup_scripts/restore_latest.sh"
+          ssh user@your-server "cd /app && docker compose up -d"
+
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Send notification
+        run: |
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Deployment successful"
+            # Send success notification
+          else
+            echo "❌ Deployment failed, rollback completed"
+            # Send failure notification
+          fi

@@ -1,0 +1,53 @@
+name: Deploy Apps (Render + Vercel)
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "App to deploy (dashboard | billing | receipts | legal | all)"
+        required: true
+        default: "all"
+      domain_override:
+        description: "Optional domain override (e.g. staging.billing.converto.fi)"
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.app == 'all' || github.event.inputs.app == matrix.app }}
+    strategy:
+      matrix:
+        app: [dashboard, billing, receipts, legal]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install deps
+        run: npm ci
+
+      - name: Build (turbo filter)
+        run: npx turbo run build --filter=@converto/${{ matrix.app }}
+
+      - name: Deploy to Render (via deploy hook)
+        if: env.RENDER_DEPLOY_HOOK != ''
+        run: curl -fsSL -X POST "$RENDER_DEPLOY_HOOK"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets[format('RENDER_{0}_DEPLOY_HOOK', upper(matrix.app))] }}
+
+      - name: Deploy app to Vercel
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          npm i -g vercel
+          vercel deploy apps/${{ matrix.app }} --prod --regions fra1 --token $VERCEL_TOKEN --yes
+          domain="${{ github.event.inputs.domain_override }}"
+          if [ -z "$domain" ]; then
+            domain="${{ secrets[format('VERCEL_DOMAIN_{0}', upper(matrix.app))] }}"
+          fi
+          if [ -n "$domain" ]; then
+            vercel domains add $domain --project converto-${{ matrix.app }} --token=$VERCEL_TOKEN || true
+            vercel alias --token=$VERCEL_TOKEN apps/${{ matrix.app }} $domain || true
+          fi
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
