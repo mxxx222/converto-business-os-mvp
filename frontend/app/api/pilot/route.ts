@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null as unknown as Resend;
 
 // Track Plausible goal server-side
 async function trackPlausibleGoal(goal: string, props?: Record<string, any>) {
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     // OPTIMIZED: Schedule welcome sequence (Day 3, 7) via direct API
     const day3 = new Date()
     day3.setDate(day3.getDate() + 3)
-    
+
     const day7 = new Date()
     day7.setDate(day7.getDate() + 7)
 
@@ -105,8 +105,8 @@ export async function POST(req: Request) {
               source: 'pilot_signup_form',
             });
 
-            return NextResponse.json({ 
-              ok: true, 
+            return NextResponse.json({
+              ok: true,
               message: "Ilmoittautuminen lähetetty + sequence scheduled",
               team_email_id: teamEmail.data?.id,
               user_email_id: userEmail.data?.id,
