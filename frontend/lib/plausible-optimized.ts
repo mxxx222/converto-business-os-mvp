@@ -25,7 +25,7 @@ class PlausibleOptimized {
   constructor() {
     this.domain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN || 'converto.fi';
     this.apiKey = process.env.PLAUSIBLE_API_KEY || null;
-    
+
     // Initialize goals
     this.goals = new Set([
       'Pilot Signup',
@@ -42,7 +42,7 @@ class PlausibleOptimized {
    */
   trackPageView(path?: string): void {
     if (typeof window === 'undefined') return;
-    
+
     const url = path || window.location.pathname;
     if (window.plausible) {
       window.plausible('pageview', {
@@ -87,10 +87,11 @@ class PlausibleOptimized {
     if (typeof window === 'undefined') return;
 
     if (window.plausible) {
-      window.plausible(event.name, {
-        props: event.props,
-        callback: event.callback,
-      });
+      const options: any = { props: event.props };
+      if (event.callback) {
+        options.callback = event.callback;
+      }
+      window.plausible(event.name, options);
     }
   }
 
@@ -267,7 +268,7 @@ class PlausibleOptimized {
         }
       }
 
-      funnel.conversion_rate = funnel.visitors > 0 
+      funnel.conversion_rate = funnel.visitors > 0
         ? (funnel.payments / funnel.visitors * 100).toFixed(2)
         : '0';
 
@@ -304,4 +305,3 @@ declare global {
     plausible?: (event: string, options?: { props?: Record<string, any>; callback?: () => void }) => void;
   }
 }
-
