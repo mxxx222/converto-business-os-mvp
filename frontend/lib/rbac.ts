@@ -103,7 +103,7 @@ export function hasPermission(
   };
 
   const key = permissionMap[requiredPermission];
-  return key ? roleDef[key] : false;
+  return key ? (roleDef[key] as boolean) : false;
 }
 
 /**
