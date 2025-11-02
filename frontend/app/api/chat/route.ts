@@ -9,9 +9,9 @@ if (!openaiApiKey) {
   console.warn('OpenAI API key not found. Chat will not work.');
 }
 
-const openai = new OpenAI({
+const openai = openaiApiKey ? new OpenAI({
   apiKey: openaiApiKey,
-});
+}) : null as unknown as OpenAI;
 
 const SYSTEM_PROMPT = `Olet Converto Business OS:n asiakastukichatbot. Autat käyttäjiä Converto Business OS -alustan käytössä.
 
@@ -25,6 +25,13 @@ Vastaa lyhyesti, ystävällisesti ja suomeksi. Jos et tiedä vastausta, ohjaa k�
 
 export async function POST(request: NextRequest) {
   try {
+    if (!openai) {
+      return NextResponse.json(
+        { error: 'OpenAI API not configured' },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     const { message, conversationHistory = [] } = body;
 
