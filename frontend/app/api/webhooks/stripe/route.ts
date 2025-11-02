@@ -102,6 +102,9 @@ export async function POST(request: NextRequest) {
 
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
+        const subscriptionId = typeof invoice.subscription === 'string'
+          ? invoice.subscription
+          : (invoice.subscription as Stripe.Subscription | null)?.id || null;
 
         await fetch(`${API_URL}/api/v1/stripe/webhook`, {
           method: 'POST',
@@ -110,7 +113,7 @@ export async function POST(request: NextRequest) {
             type: 'invoice.payment_succeeded',
             data: {
               invoiceId: invoice.id,
-              subscriptionId: typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id,
+              subscriptionId,
               customerId: invoice.customer,
               amountPaid: invoice.amount_paid,
             },
@@ -122,6 +125,9 @@ export async function POST(request: NextRequest) {
 
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
+        const subscriptionId = typeof invoice.subscription === 'string'
+          ? invoice.subscription
+          : (invoice.subscription as Stripe.Subscription | null)?.id || null;
 
         await fetch(`${API_URL}/api/v1/stripe/webhook`, {
           method: 'POST',
@@ -130,7 +136,7 @@ export async function POST(request: NextRequest) {
             type: 'invoice.payment_failed',
             data: {
               invoiceId: invoice.id,
-              subscriptionId: typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id,
+              subscriptionId,
               customerId: invoice.customer,
             },
           }),
