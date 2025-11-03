@@ -95,7 +95,7 @@ export function useAuth(): AuthContextValue {
     // Subscribe to auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event: string, session) => {
       if (session?.user) {
         setUser(session.user);
         // Re-fetch team data when auth changes
