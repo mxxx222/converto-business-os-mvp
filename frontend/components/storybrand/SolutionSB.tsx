@@ -43,7 +43,7 @@ export default function SolutionSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
             {t.solution.empathy?.title || 'Ymmärrämme'}
           </h2>
           <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            {t.solution.empathy?.description || t.solution.empathy}
+            {typeof t.solution.empathy === 'string' ? t.solution.empathy : t.solution.empathy?.description || 'Ymmärrämme, miten turhauttavaa manuaalinen työ on.'}
           </p>
         </div>
 
