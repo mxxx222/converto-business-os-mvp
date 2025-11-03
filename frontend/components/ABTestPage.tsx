@@ -1,5 +1,6 @@
 'use client'
 
+import 'client-only'
 import { useEffect, useState, useRef } from 'react'
 import { useABTesting } from '@/lib/ab-testing'
 
