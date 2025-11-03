@@ -48,10 +48,13 @@ class ABTestingManager {
 
   /**
    * Assign visitor to variant based on traffic split
+   * SAFE: Only called from client-side useEffect, never during SSR
    */
   assignVariant(): 'A' | 'B' {
-    // This function only assigns a new variant based on hash
-    // No localStorage reads, no side effects - all checking done in useEffect
+    // Safety check - should never be called during SSR
+    if (typeof window === 'undefined') {
+      return 'A'; // Default fallback
+    }
 
     // Generate consistent variant assignment based on user ID/session
     const userHash = this.generateUserHash();
@@ -260,9 +263,15 @@ class ABTestingManager {
 
   // Private helper methods
   private generateUserHash(): string {
+    // Safety check - should never be called during SSR
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      // Fallback hash for SSR (should never happen)
+      return btoa('fallback_' + Date.now()).slice(-16);
+    }
+
     // Generate consistent hash based on session/user data
     const sessionId = this.getSessionId();
-    const userAgent = navigator.userAgent;
+    const userAgent = navigator.userAgent || 'unknown';
     const timestamp = Date.now().toString().slice(-8); // Last 8 digits of timestamp
 
     return btoa(sessionId + userAgent + timestamp).slice(-16);
@@ -277,10 +286,21 @@ class ABTestingManager {
   }
 
   private getSessionId(): string {
+    // Safety check - should never be called during SSR
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
+      // Fallback for SSR (should never happen)
+      return 'session_ssr_' + Date.now();
+    }
+
     let sessionId = sessionStorage.getItem('converto_session_id');
     if (!sessionId) {
       sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      sessionStorage.setItem('converto_session_id', sessionId);
+      try {
+        sessionStorage.setItem('converto_session_id', sessionId);
+      } catch (error) {
+        // Handle storage quota exceeded or other errors
+        console.warn('Failed to store session ID:', error);
+      }
     }
     return sessionId;
   }
@@ -467,64 +487,79 @@ export function useABTesting() {
   // Initialize variant in useEffect, not during render, to prevent React #310
   // Always set default to 'A' for SSR - will be updated in useEffect on client
   // This must be unconditional to prevent hydration mismatch
+  // Use lazy initialization to ensure ref is only set once
   if (variantRef.current === undefined || variantRef.current === null) {
     variantRef.current = 'A';
   }
 
   // Use useEffect to assign variant only on client side
+  // This ensures no side effects during render
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout | undefined;
-
-    // Only initialize once on client
-    if (typeof window !== 'undefined' && !variantInitializedRef.current) {
-      // All localStorage reads happen here, not in assignVariant
-      let assignedVariant: 'A' | 'B';
-      try {
-        // Check stored variant first
-        const stored = localStorage.getItem('converto_ab_variant');
-        if (stored === 'A' || stored === 'B') {
-          assignedVariant = stored;
-        } else {
-          // Check if test is active (read localStorage here)
-          const testDisabled = localStorage.getItem('converto_ab_test_disabled');
-          if (testDisabled === 'true') {
-            assignedVariant = 'A';
-          } else {
-            // Check test schedule
-            const testStart = new Date('2025-11-03');
-            const testEnd = new Date('2025-12-03');
-            const now = new Date();
-            if (now >= testStart && now <= testEnd) {
-              // Test is active - assign new variant
-              assignedVariant = abTesting.assignVariant();
-              // Store variant immediately in useEffect
-              try {
-                localStorage.setItem('converto_ab_variant', assignedVariant);
-                localStorage.setItem('converto_ab_variant_assigned', new Date().toISOString());
-              } catch (error) {
-                console.warn('Failed to store A/B test variant:', error);
-              }
-            } else {
-              assignedVariant = 'A';
-            }
-          }
-        }
-      } catch {
-        // If localStorage fails, default to 'A'
-        assignedVariant = 'A';
-      }
-
-      variantRef.current = assignedVariant;
-      variantInitializedRef.current = true;
-
-      // Track assignment after a short delay to avoid side effects during render
-      // Use setTimeout with 0 delay to defer to next tick
-      timeoutId = setTimeout(() => {
-        abTesting.trackEvent('variant_assignment', { variant: assignedVariant });
-      }, 0);
+    // Early return if not on client
+    if (typeof window === 'undefined') {
+      return;
     }
 
-    // Always return cleanup function to prevent React #310 (even if timeoutId is undefined)
+    // Only initialize once
+    if (variantInitializedRef.current) {
+      return;
+    }
+
+    let timeoutId: NodeJS.Timeout | undefined;
+
+    // All localStorage reads happen here, not in assignVariant
+    let assignedVariant: 'A' | 'B' = 'A'; // Default fallback
+    try {
+      // Check stored variant first
+      const stored = localStorage.getItem('converto_ab_variant');
+      if (stored === 'A' || stored === 'B') {
+        assignedVariant = stored;
+      } else {
+        // Check if test is active (read localStorage here)
+        const testDisabled = localStorage.getItem('converto_ab_test_disabled');
+        if (testDisabled === 'true') {
+          assignedVariant = 'A';
+        } else {
+          // Check test schedule
+          const testStart = new Date('2025-11-03');
+          const testEnd = new Date('2025-12-03');
+          const now = new Date();
+          if (now >= testStart && now <= testEnd) {
+            // Test is active - assign new variant (safe, only called client-side)
+            assignedVariant = abTesting.assignVariant();
+            // Store variant immediately in useEffect
+            try {
+              localStorage.setItem('converto_ab_variant', assignedVariant);
+              localStorage.setItem('converto_ab_variant_assigned', new Date().toISOString());
+            } catch (error) {
+              console.warn('Failed to store A/B test variant:', error);
+            }
+          } else {
+            assignedVariant = 'A';
+          }
+        }
+      }
+    } catch (error) {
+      // If localStorage fails, default to 'A'
+      console.warn('Failed to read A/B test variant:', error);
+      assignedVariant = 'A';
+    }
+
+    // Update refs
+    variantRef.current = assignedVariant;
+    variantInitializedRef.current = true;
+
+    // Track assignment after a short delay to avoid side effects during render
+    // Use setTimeout with 0 delay to defer to next tick
+    timeoutId = setTimeout(() => {
+      try {
+        abTesting.trackEvent('variant_assignment', { variant: assignedVariant });
+      } catch (error) {
+        console.warn('Failed to track variant assignment:', error);
+      }
+    }, 0);
+
+    // Cleanup function
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
