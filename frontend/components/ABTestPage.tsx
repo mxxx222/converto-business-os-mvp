@@ -28,22 +28,26 @@ export default function ABTestPage() {
   const abTesting = useABTesting()
 
   // Store everything in refs to prevent render-triggered updates
-  const variantRef = useRef<'A' | 'B'>(abTesting.getVariant())
+  const variantRef = useRef<'A' | 'B'>('A')
   const trackPageViewRef = useRef(abTesting.trackPageView)
   const trackBounceRef = useRef(abTesting.trackBounce)
 
-  // Initialize client flag
+  // Initialize client flag and update variant only in useEffect
   useEffect(() => {
     setIsClient(true)
+    // Update variant only once in useEffect to prevent render-time updates
+    if (typeof window !== 'undefined') {
+      variantRef.current = abTesting.getVariant()
+    }
     // Only run once on mount
   }, [])
 
-  // Keep refs in sync with stable hook API
-  trackPageViewRef.current = abTesting.trackPageView
-  trackBounceRef.current = abTesting.trackBounce
-  if (isClient) {
-    variantRef.current = abTesting.getVariant()
-  }
+  // Keep function refs in sync - but only assign once, not on every render
+  // These should be stable from the hook, but update refs once if needed
+  useEffect(() => {
+    trackPageViewRef.current = abTesting.trackPageView
+    trackBounceRef.current = abTesting.trackBounce
+  }, [abTesting.trackPageView, abTesting.trackBounce])
 
   // Use variant from ref - no direct access to prevent loops
   const variant = variantRef.current
