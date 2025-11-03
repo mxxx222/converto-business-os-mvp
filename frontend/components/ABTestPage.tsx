@@ -32,15 +32,17 @@ export default function ABTestPage() {
   const trackPageViewRef = useRef(abTesting.trackPageView)
   const trackBounceRef = useRef(abTesting.trackBounce)
 
-  // Initialize client flag and update variant only in useEffect
+  // Initialize client flag on mount
   useEffect(() => {
     setIsClient(true)
-    // Update variant only once in useEffect to prevent render-time updates
-    if (typeof window !== 'undefined') {
-      variantRef.current = abTesting.getVariant()
-    }
     // Only run once on mount
   }, [])
+
+  // Update variant once we're safely on the client
+  useEffect(() => {
+    if (!isClient || typeof window === 'undefined') return
+    variantRef.current = abTesting.getVariant()
+  }, [isClient, abTesting])
 
   // Keep function refs in sync - but only assign once, not on every render
   // These should be stable from the hook, so just update refs once on mount
