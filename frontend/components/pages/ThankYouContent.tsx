@@ -7,7 +7,7 @@ import { useTracking } from '@/lib/analytics/useTracking';
 import { TRACKING_EVENTS } from '@/lib/analytics/events';
 import { trackEvent } from '@/lib/analytics';
 
-export function ThankYouContent() {
+function ThankYouContentInner() {
   const searchParams = useSearchParams();
   const requestId = searchParams.get('id') || '';
   const source = searchParams.get('source') || 'website';
@@ -173,5 +173,13 @@ export function ThankYouContent() {
         </div>
       </div>
     </div>
+  );
+}
+
+export function ThankYouContent() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ThankYouContentInner />
+    </Suspense>
   );
 }
