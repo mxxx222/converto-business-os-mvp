@@ -68,6 +68,8 @@
 !frontend/tsconfig.json
 !frontend/vercel.json
 !frontend/package.json
+!frontend/public/
+!frontend/public/**
 !app/static/
 
 # inside allowed dirs, re-ignore heavy junk
