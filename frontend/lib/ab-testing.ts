@@ -515,15 +515,17 @@ export function useABTesting() {
       variantInitializedRef.current = true;
 
       // Track assignment after a short delay to avoid side effects during render
+      // Use setTimeout with 0 delay to defer to next tick
       const timeoutId = setTimeout(() => {
         abTesting.trackEvent('variant_assignment', { variant: assignedVariant });
       }, 0);
 
-      // Cleanup timeout if component unmounts
+      // Always return cleanup function to prevent React #310
       return () => {
         clearTimeout(timeoutId);
       };
     }
+    // Return undefined if condition not met - no cleanup needed
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
