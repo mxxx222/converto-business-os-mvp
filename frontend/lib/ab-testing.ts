@@ -73,8 +73,8 @@ class ABTestingManager {
     // Store in localStorage for consistency
     this.storeVariant(this.currentVariant);
 
-    // Track assignment
-    this.trackEvent('variant_assignment', { variant: this.currentVariant });
+    // Don't track here - tracking should be done separately to avoid side effects
+    // this.trackEvent('variant_assignment', { variant: this.currentVariant });
 
     return this.currentVariant;
   }
@@ -493,20 +493,14 @@ export function useABTesting() {
     if (typeof window !== 'undefined') {
       // Only assign if not already initialized in this effect
       if (!variantInitializedRef.current) {
-        // Get stored variant first to avoid unnecessary assignment
-        const stored = abTesting.getStoredVariant();
-        if (stored) {
-          variantRef.current = stored;
-          variantInitializedRef.current = true;
-          // Track assignment after initial render
-          setTimeout(() => {
-            abTesting.trackEvent('variant_assignment', { variant: stored });
-          }, 0);
-        } else {
-          // Assign new variant
-          variantRef.current = abTesting.assignVariant();
-          variantInitializedRef.current = true;
-        }
+        // Assign variant (assignVariant checks storage internally)
+        variantRef.current = abTesting.assignVariant();
+        variantInitializedRef.current = true;
+
+        // Track assignment after render cycle completes
+        setTimeout(() => {
+          abTesting.trackEvent('variant_assignment', { variant: variantRef.current });
+        }, 100);
       }
     }
   }, []);
