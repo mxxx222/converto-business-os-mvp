@@ -62,6 +62,8 @@
 !scripts/
 !scripts/**
 !QUICK_SETUP_GUIDE.md
+!DEPLOY.md
+!VERCEL_DEPLOY_GUIDE.md
 !frontend/.nvmrc
 !frontend/next.config.js
 !frontend/Dockerfile

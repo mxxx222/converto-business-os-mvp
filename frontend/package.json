@@ -8,7 +8,10 @@
     "export": "next build && next export",
     "start": "next start",
     "lint": "eslint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "deploy": "vercel --prod --yes",
+    "deploy:check": "npm run build && vercel --prod --yes",
+    "deploy:help": "echo 'Deploy commands:\\n  npm run deploy - Quick deploy\\n  npm run deploy:check - Build + deploy\\n  ./scripts/vercel-fix-and-deploy.sh - Full auto-fix + deploy'"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",
