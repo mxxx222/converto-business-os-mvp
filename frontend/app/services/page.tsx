@@ -5,6 +5,8 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Link from "next/link"
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: "Automaatio- ja koodauspalvelut - 3 kk ROI",
   description: "Räätälöity automaatio ja koodauspalvelut yrityksellesi. 5 ROI-pakettia, jotka maksavat itsensä takaisin 3 kuukaudessa.",

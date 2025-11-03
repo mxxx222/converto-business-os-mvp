@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import SBPage from '@/components/storybrand/SBPage';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Vapauta aikaa kasvulle: Automatisoi yrityksesi rutiinit | Converto',
   description:
