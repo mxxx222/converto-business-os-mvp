@@ -79,6 +79,7 @@ export default function ProblemsSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
           ))}
         </div>
       </div>
+      </div>
     </TrackProblemsSection>
   );
 }

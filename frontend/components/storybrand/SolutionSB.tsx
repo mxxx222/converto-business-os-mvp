@@ -78,6 +78,7 @@ export default function SolutionSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
           </p>
         </div>
       </div>
+      </div>
     </TrackSolutionSection>
   );
 }
