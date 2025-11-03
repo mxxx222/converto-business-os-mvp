@@ -88,6 +88,7 @@ export default function PlanSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
           ))}
         </div>
       </div>
+      </div>
     </TrackPlanSection>
   );
 }
