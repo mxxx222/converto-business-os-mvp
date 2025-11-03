@@ -488,12 +488,25 @@ export function useABTesting() {
   }
 
   // Use useEffect to assign variant only on client side
+  // Defer tracking to avoid side effects during render
   useEffect(() => {
     if (typeof window !== 'undefined') {
       // Only assign if not already initialized in this effect
       if (!variantInitializedRef.current) {
-        variantRef.current = abTesting.assignVariant();
-        variantInitializedRef.current = true;
+        // Get stored variant first to avoid unnecessary assignment
+        const stored = abTesting.getStoredVariant();
+        if (stored) {
+          variantRef.current = stored;
+          variantInitializedRef.current = true;
+          // Track assignment after initial render
+          setTimeout(() => {
+            abTesting.trackEvent('variant_assignment', { variant: stored });
+          }, 0);
+        } else {
+          // Assign new variant
+          variantRef.current = abTesting.assignVariant();
+          variantInitializedRef.current = true;
+        }
       }
     }
   }, []);
