@@ -27,6 +27,15 @@ const nextConfig = {
     output: 'export',
     distDir: 'out',
   }),
+  // Rewrites for subdomain routing (pilot.converto.fi)
+  async rewrites() {
+    return [
+      {
+        source: '/pilot',
+        destination: '/pilot',
+      },
+    ];
+  },
   images: {
     // OPTIMIZED: Use Cloudflare Image Optimization if enabled
     ...(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_ENABLED === 'true' && {

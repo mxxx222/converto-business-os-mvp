@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import Script from 'next/script';
+import StickyPilotCTA from '@/components/StickyPilotCTA';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -80,6 +81,7 @@ export default function RootLayout({
     <html lang="fi">
       <body>
         {children}
+        <StickyPilotCTA />
         <Analytics />
         <Script strategy="afterInteractive">
           {`

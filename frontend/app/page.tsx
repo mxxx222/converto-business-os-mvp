@@ -1,21 +1,23 @@
 import Hero from "@/components/Hero"
 import Problem from "@/components/Problem"
-import Plan from "@/components/Plan"
 import CTA from "@/components/CTA"
-import PilotForm from "@/components/PilotForm"
+import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
 
 export const metadata = {
   title: "Converto Business OS™ - Automatisoi yrityksesi",
-  description: "Liity pilottiin ja saa 30 päivää maksutonta käyttöä. Automatisoi yrityksesi ilman riskiä.",
+  description: "Automatisoi yrityksesi Converto Business OS™ -palveluilla. OCR-kuittien käsittely, ALV-laskelmat, ChatService™ ja enemmän.",
 }
 
 export default function Page() {
   return (
     <>
+      <Navbar />
+      
       <Hero
-        title="Liity Converto Business OS™ pilottiin."
-        subtitle="Automatisoi yrityksesi ilman riskiä. Ensimmäiset 50 yritystä saavat käyttöönsä koko Business OS-järjestelmän ilmaiseksi 30 päiväksi."
-        ctaPrimary={{ label: "Ilmoittaudu pilottiin", href: "#pilot" }}
+        title="Converto Business OS™ - Automatisoi yrityksesi"
+        subtitle="Automaattinen kuittien käsittely, ALV-laskelmat ja asiakaspalvelu. Yksi alusta kaikkeen. Valmis yrityksesi kasvuun."
+        ctaPrimary={{ label: "Katso palvelut", href: "/business-os" }}
         image="/images/converto-hero.png"
       />
 
@@ -28,28 +30,70 @@ export default function Page() {
         ]}
       />
 
-      <Plan
-        title="Näin pilotointi toimii"
-        steps={[
-          { number: "1", text: "Täytä ilmoittautumislomake" },
-          { number: "2", text: "Saat pääsyn demo-ympäristöön" },
-          { number: "3", text: "30 päivää maksutonta käyttöä ja ROI-analyysi" },
-        ]}
-      />
-
-      <section id="pilot" className="bg-gray-50 py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center space-y-10">
-          <h2 className="text-3xl font-bold">Pilottiohjelma – ilmoittaudu nyt</h2>
-          <PilotForm />
+      {/* Services Overview Section */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-4">Omat palvelumme</h2>
+          <p className="text-xl text-gray-600 text-center mb-12">
+            Automatisoi yrityksesi yhdellä ratkaisulla
+          </p>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="text-4xl mb-4">🧾</div>
+              <h3 className="font-semibold text-lg mb-2">OCR + Kuitit</h3>
+              <p className="text-gray-600 text-sm">
+                Automaattinen kuittien tunnistus ja ALV-erittely
+              </p>
+              <a href="/palvelut/ocr" className="text-blue-600 hover:underline text-sm mt-2 inline-block">
+                Lue lisää →
+              </a>
+            </div>
+            
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="text-4xl mb-4">🧮</div>
+              <h3 className="font-semibold text-lg mb-2">VAT Calculator</h3>
+              <p className="text-gray-600 text-sm">
+                Automaattinen ALV-laskenta ja verotariffit
+              </p>
+              <a href="/palvelut/vat" className="text-blue-600 hover:underline text-sm mt-2 inline-block">
+                Lue lisää →
+              </a>
+            </div>
+            
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="text-4xl mb-4">🤖</div>
+              <h3 className="font-semibold text-lg mb-2">ChatService™</h3>
+              <p className="text-gray-600 text-sm">
+                GPT-5 asiakaspalvelu ja myyntibotit
+              </p>
+              <a href="/palvelut/chatservice" className="text-blue-600 hover:underline text-sm mt-2 inline-block">
+                Lue lisää →
+              </a>
+            </div>
+            
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="font-semibold text-lg mb-2">Automation</h3>
+              <p className="text-gray-600 text-sm">
+                Prosessien automaatio ja workflowt
+              </p>
+              <a href="/palvelut/automaatio" className="text-blue-600 hover:underline text-sm mt-2 inline-block">
+                Lue lisää →
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
       <CTA
-        title="Automatisoi yrityksesi tänään"
-        subtitle="Converto Business OS™ säästää keskimäärin 40 % työajasta."
-        ctaLabel="Aloita demo"
-        href="https://app.converto.fi/demo"
+        title="Liity pilottiin ja aloita ilmaiseksi"
+        subtitle="Ensimmäiset 50 yritystä saavat 30 päivää maksutonta käyttöä."
+        ctaLabel="Aloita pilotti →"
+        href="https://pilot.converto.fi"
       />
+      
+      <Footer />
     </>
   )
 }

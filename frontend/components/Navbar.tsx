@@ -71,7 +71,7 @@ export default function Navbar() {
             <Link href="https://app.converto.fi/login" className="btn-secondary text-sm">
               Kirjaudu
             </Link>
-            <Link href="/#pilot" className="btn-primary text-sm">
+            <Link href="https://pilot.converto.fi" className="btn-primary text-sm">
               Aloita pilotti
             </Link>
           </div>
@@ -123,7 +123,7 @@ export default function Navbar() {
                 <Link href="https://app.converto.fi/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
                   Kirjaudu
                 </Link>
-                <Link href="/#pilot" className="block px-4 py-2 bg-primary-600 text-white rounded-lg text-center font-medium">
+                <Link href="https://pilot.converto.fi" className="block px-4 py-2 bg-primary-600 text-white rounded-lg text-center font-medium">
                   Aloita pilotti
                 </Link>
               </div>
