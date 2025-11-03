@@ -34,11 +34,12 @@ export default function ABTestPage() {
 
   // Initialize client flag and variant on mount
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+
     setIsClient(true)
     // Set variant only once when client initializes - getVariant() should be stable
-    if (typeof window !== 'undefined') {
-      setVariant(abTesting.getVariant())
-    }
+    setVariant(abTesting.getVariant())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

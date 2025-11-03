@@ -465,10 +465,10 @@ export function useABTesting() {
   } | null>(null);
 
   // Initialize variant in useEffect, not during render, to prevent React #310
-  // Set default to 'A' for SSR, will be updated in useEffect on client
-  if (!variantInitializedRef.current) {
+  // Always set default to 'A' for SSR - will be updated in useEffect on client
+  // This must be unconditional to prevent hydration mismatch
+  if (variantRef.current === undefined || variantRef.current === null) {
     variantRef.current = 'A';
-    // Don't set variantInitializedRef here - let useEffect handle initialization
   }
 
   // Use useEffect to assign variant only on client side
