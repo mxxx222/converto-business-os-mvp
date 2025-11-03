@@ -50,18 +50,8 @@ class ABTestingManager {
    * Assign visitor to variant based on traffic split
    */
   assignVariant(): 'A' | 'B' {
-    // Check if user already has a variant assigned
-    const storedVariant = this.getStoredVariant();
-    if (storedVariant) {
-      this.currentVariant = storedVariant;
-      return storedVariant;
-    }
-
-    // Check test status
-    if (!this.isTestActive()) {
-      this.currentVariant = 'A'; // Default to control if test not active
-      return 'A';
-    }
+    // This function only assigns a new variant based on hash
+    // No localStorage reads, no side effects - all checking done in useEffect
 
     // Generate consistent variant assignment based on user ID/session
     const userHash = this.generateUserHash();
@@ -69,12 +59,6 @@ class ABTestingManager {
 
     // 50/50 split for this test
     this.currentVariant = random < 0.5 ? 'A' : 'B';
-
-    // Store in localStorage for consistency
-    this.storeVariant(this.currentVariant);
-
-    // Track assignment
-    this.trackEvent('variant_assignment', { variant: this.currentVariant });
 
     return this.currentVariant;
   }
@@ -489,13 +473,58 @@ export function useABTesting() {
 
   // Use useEffect to assign variant only on client side
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Only assign if not already initialized in this effect
-      if (!variantInitializedRef.current) {
-        variantRef.current = abTesting.assignVariant();
-        variantInitializedRef.current = true;
+    if (typeof window !== 'undefined' && !variantInitializedRef.current) {
+      // All localStorage reads happen here, not in assignVariant
+      let assignedVariant: 'A' | 'B';
+      try {
+        // Check stored variant first
+        const stored = localStorage.getItem('converto_ab_variant');
+        if (stored === 'A' || stored === 'B') {
+          assignedVariant = stored;
+        } else {
+          // Check if test is active (read localStorage here)
+          const testDisabled = localStorage.getItem('converto_ab_test_disabled');
+          if (testDisabled === 'true') {
+            assignedVariant = 'A';
+          } else {
+            // Check test schedule
+            const testStart = new Date('2025-11-03');
+            const testEnd = new Date('2025-12-03');
+            const now = new Date();
+            if (now >= testStart && now <= testEnd) {
+              // Test is active - assign new variant
+              assignedVariant = abTesting.assignVariant();
+              // Store variant immediately in useEffect
+              try {
+                localStorage.setItem('converto_ab_variant', assignedVariant);
+                localStorage.setItem('converto_ab_variant_assigned', new Date().toISOString());
+              } catch (error) {
+                console.warn('Failed to store A/B test variant:', error);
+              }
+            } else {
+              assignedVariant = 'A';
+            }
+          }
+        }
+      } catch {
+        // If localStorage fails, default to 'A'
+        assignedVariant = 'A';
       }
+
+      variantRef.current = assignedVariant;
+      variantInitializedRef.current = true;
+
+      // Track assignment after a short delay to avoid side effects during render
+      const timeoutId = setTimeout(() => {
+        abTesting.trackEvent('variant_assignment', { variant: assignedVariant });
+      }, 0);
+
+      // Cleanup timeout if component unmounts
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Store bound functions in ref to prevent re-renders

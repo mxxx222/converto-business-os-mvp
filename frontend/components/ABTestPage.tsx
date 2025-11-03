@@ -22,13 +22,12 @@ import { ABTestDashboardToggle } from "@/components/ABTestDashboard"
 export default function ABTestPage() {
   // Only initialize A/B testing on client side
   const [isClient, setIsClient] = useState(false)
-  const [variant, setVariant] = useState<'A' | 'B'>('A')
   const [timeOnPage, setTimeOnPage] = useState(0)
   const [hasTrackedBounce, setHasTrackedBounce] = useState(false)
 
   const abTesting = useABTesting()
 
-  // Store everything in refs to prevent render-triggered updates
+  // Store tracking functions in refs to prevent render-triggered updates
   const trackPageViewRef = useRef(abTesting.trackPageView)
   const trackBounceRef = useRef(abTesting.trackBounce)
 
@@ -38,9 +37,6 @@ export default function ABTestPage() {
     // Only run once on mount
   }, [])
 
-  // Don't update variant here - useABTesting hook handles it in useEffect
-  // Just read the variant from the hook when client is ready
-
   // Keep function refs in sync - but only assign once, not on every render
   // These should be stable from the hook, so just update refs once on mount
   useEffect(() => {
@@ -49,22 +45,34 @@ export default function ABTestPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty deps - functions should be stable from hook
 
+  // Use variant directly from hook - it's already stable from ref
+  const variant = abTesting.getVariant()
+
+  // Don't render A/B content during SSR
+  if (!isClient) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+        </div>
+        <Footer />
+      </>
+    )
+  }
+
   // Track page view on mount - only once
   useEffect(() => {
-    if (!isClient || typeof window === 'undefined') {
-      return
+    if (isClient && typeof window !== 'undefined') {
+      trackPageViewRef.current('/', window.document.referrer)
     }
-
-    trackPageViewRef.current('/', window.document.referrer)
     // Only run once when client initializes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient])
 
   // Track time on page for bounce rate calculation
   useEffect(() => {
-    if (!isClient || typeof window === 'undefined') {
-      return
-    }
+    if (!isClient || typeof window === 'undefined') return
 
     const startTime = Date.now()
     let interval: NodeJS.Timeout | null = null
@@ -99,39 +107,6 @@ export default function ABTestPage() {
     // Only run once when client initializes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient])
-
-  // Keep variant in sync once client is ready
-  useEffect(() => {
-    if (!isClient) {
-      return
-    }
-
-    const resolveVariant = () => {
-      if (typeof abTesting?.getVariant === 'function') {
-        return abTesting.getVariant()
-      }
-      if (typeof (abTesting as any)?.variant === 'string') {
-        return (abTesting as any).variant as 'A' | 'B'
-      }
-      return 'A'
-    }
-
-    const currentVariant = resolveVariant()
-    setVariant(currentVariant)
-  }, [abTesting, isClient])
-
-  // Don't render A/B content during SSR
-  if (!isClient) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full"></div>
-        </div>
-        <Footer />
-      </>
-    )
-  }
 
   // Helper to render appropriate component based on variant
   const renderComponent = (ComponentA: any, ComponentB: any, props: any) => {
