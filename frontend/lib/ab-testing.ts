@@ -453,10 +453,21 @@ class ABTestingManager {
 export const abTesting = ABTestingManager.getInstance();
 
 // React hook for A/B testing
-export function useABTesting() {
-  const variant = abTesting.assignVariant();
+import { useMemo, useRef } from 'react';
 
-  return {
+export function useABTesting() {
+  // Store variant in ref to prevent re-renders
+  const variantRef = useRef<'A' | 'B' | null>(null);
+
+  // Only assign variant once
+  if (variantRef.current === null && typeof window !== 'undefined') {
+    variantRef.current = abTesting.assignVariant();
+  }
+
+  const variant = variantRef.current || 'A';
+
+  // Memoize return object to prevent re-renders
+  return useMemo(() => ({
     variant,
     isOptimized: variant === 'B',
     trackEvent: abTesting.trackEvent.bind(abTesting),
@@ -465,5 +476,5 @@ export function useABTesting() {
     trackClick: abTesting.trackClick.bind(abTesting),
     trackBounce: abTesting.trackBounce.bind(abTesting),
     getTestResults: abTesting.getTestResults.bind(abTesting),
-  };
+  }), [variant]);
 }
