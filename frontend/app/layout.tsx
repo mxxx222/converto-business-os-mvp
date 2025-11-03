@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import Script from 'next/script';
 import StickyPilotCTA from '@/components/StickyPilotCTA';
+import { PostHogProvider } from '@/components/PostHogProvider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -80,9 +81,10 @@ export default function RootLayout({
   return (
     <html lang="fi">
       <body>
-        {children}
-        <StickyPilotCTA />
-        <Analytics />
+        <PostHogProvider>
+          {children}
+          <StickyPilotCTA />
+          <Analytics />
         <Script strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
@@ -154,6 +156,7 @@ export default function RootLayout({
             };
           `}
         </Script>
+        </PostHogProvider>
       </body>
     </html>
   );
