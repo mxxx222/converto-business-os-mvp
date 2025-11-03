@@ -70,10 +70,8 @@ class ABTestingManager {
     // 50/50 split for this test
     this.currentVariant = random < 0.5 ? 'A' : 'B';
 
-    // Store in localStorage for consistency
-    this.storeVariant(this.currentVariant);
-
-    // Don't track here - tracking should be done separately to avoid side effects
+    // Don't store or track here - both should be done in useEffect to avoid side effects
+    // this.storeVariant(this.currentVariant);
     // this.trackEvent('variant_assignment', { variant: this.currentVariant });
 
     return this.currentVariant;
@@ -490,14 +488,22 @@ export function useABTesting() {
   // Use useEffect to assign variant only on client side
   useEffect(() => {
     if (typeof window !== 'undefined' && !variantInitializedRef.current) {
-      // Assign variant (assignVariant checks storage internally)
+      // Assign variant (assignVariant checks storage internally but doesn't store/track)
       const assignedVariant = abTesting.assignVariant();
       variantRef.current = assignedVariant;
       variantInitializedRef.current = true;
 
-      // Use queueMicrotask to defer tracking to next microtask
-      // This avoids side effects during the render cycle
+      // Store and track in microtask to avoid side effects during render
       queueMicrotask(() => {
+        // Store variant for consistency
+        try {
+          localStorage.setItem('converto_ab_variant', assignedVariant);
+          localStorage.setItem('converto_ab_variant_assigned', new Date().toISOString());
+        } catch (error) {
+          console.warn('Failed to store A/B test variant:', error);
+        }
+
+        // Track assignment
         abTesting.trackEvent('variant_assignment', { variant: assignedVariant });
       });
     }
