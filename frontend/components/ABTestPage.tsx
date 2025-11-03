@@ -28,6 +28,14 @@ export default function ABTestPage() {
   // Call hook unconditionally (React rules) but use it conditionally
   const abTesting = useABTesting()
 
+  // Store functions in ref to prevent re-renders
+  const trackPageViewRef = useRef(abTesting.trackPageView)
+  const trackBounceRef = useRef(abTesting.trackBounce)
+
+  // Update refs if they change (shouldn't happen, but just in case)
+  trackPageViewRef.current = abTesting.trackPageView
+  trackBounceRef.current = abTesting.trackBounce
+
   // Use variant directly from hook - no separate state to prevent loops
   const variant = abTesting.variant
 
@@ -53,7 +61,7 @@ export default function ABTestPage() {
   // Track page view on mount - only once
   useEffect(() => {
     if (isClient && typeof window !== 'undefined') {
-      abTesting.trackPageView('/', window.document.referrer)
+      trackPageViewRef.current('/', window.document.referrer)
     }
     // Only run once when client initializes
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,7 +83,7 @@ export default function ABTestPage() {
 
       // Track bounce if user leaves after 30 seconds without interaction
       if (currentTimeSpent >= 30 && !hasTrackedBounceLocal) {
-        abTesting.trackBounce('/', currentTimeSpent * 1000)
+        trackBounceRef.current('/', currentTimeSpent * 1000)
         hasTrackedBounceLocal = true
         setHasTrackedBounce(true)
       }
@@ -90,7 +98,7 @@ export default function ABTestPage() {
       }
       // Use closure value instead of state
       if (currentTimeSpent > 0 && !hasTrackedBounceLocal) {
-        abTesting.trackBounce('/', currentTimeSpent * 1000)
+        trackBounceRef.current('/', currentTimeSpent * 1000)
       }
     }
     // Only run once when client initializes
