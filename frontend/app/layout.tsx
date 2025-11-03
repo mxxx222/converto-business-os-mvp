@@ -70,7 +70,8 @@ export const metadata: Metadata = {
     title: 'Converto',
   },
   icons: {
-    apple: '/icon-192.png',
+    icon: '/og.png',
+    apple: '/og.png',
   },
 };
 

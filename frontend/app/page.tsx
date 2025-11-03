@@ -1,5 +1,16 @@
 // A/B Testing Enabled Page
-import ABTestPage from "@/components/ABTestPage"
+import dynamic from 'next/dynamic'
+
+const ABTestPage = dynamic(() => import("@/components/ABTestPage"), {
+  ssr: false,
+  loading: () => (
+    <>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+      </div>
+    </>
+  )
+})
 
 export const metadata = {
   title: "Converto Solutions – Automate your entire business stack",

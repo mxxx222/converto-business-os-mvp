@@ -9,7 +9,7 @@ export default function Error({ error }: { error: Error & { digest?: string } })
       {error?.digest && (
         <p className="text-xs text-zinc-400">Diagnoosi: {error.digest}</p>
       )}
-      <a href="/premium" className="rounded-md bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">Palaa etusivulle</a>
+      <a href="/" className="rounded-md bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">Palaa etusivulle</a>
     </main>
   );
 }
