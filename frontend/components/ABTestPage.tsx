@@ -22,6 +22,7 @@ import { ABTestDashboardToggle } from "@/components/ABTestDashboard"
 export default function ABTestPage() {
   // Only initialize A/B testing on client side
   const [isClient, setIsClient] = useState(false)
+  const [variant, setVariant] = useState<'A' | 'B'>('A')
   const [timeOnPage, setTimeOnPage] = useState(0)
   const [hasTrackedBounce, setHasTrackedBounce] = useState(false)
 
@@ -31,10 +32,14 @@ export default function ABTestPage() {
   const trackPageViewRef = useRef(abTesting.trackPageView)
   const trackBounceRef = useRef(abTesting.trackBounce)
 
-  // Initialize client flag on mount
+  // Initialize client flag and variant on mount
   useEffect(() => {
     setIsClient(true)
-    // Only run once on mount
+    // Set variant only once when client initializes - getVariant() should be stable
+    if (typeof window !== 'undefined') {
+      setVariant(abTesting.getVariant())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Keep function refs in sync - but only assign once, not on every render
@@ -44,9 +49,6 @@ export default function ABTestPage() {
     trackBounceRef.current = abTesting.trackBounce
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty deps - functions should be stable from hook
-
-  // Use variant directly from hook - it's already stable from ref
-  const variant = abTesting.getVariant()
 
   // Don't render A/B content during SSR
   if (!isClient) {
