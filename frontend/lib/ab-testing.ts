@@ -473,59 +473,61 @@ export function useABTesting() {
 
   // Use useEffect to assign variant only on client side
   useEffect(() => {
-    if (typeof window !== 'undefined' && !variantInitializedRef.current) {
-      // All localStorage reads happen here, not in assignVariant
-      let assignedVariant: 'A' | 'B';
-      try {
-        // Check stored variant first
-        const stored = localStorage.getItem('converto_ab_variant');
-        if (stored === 'A' || stored === 'B') {
-          assignedVariant = stored;
+    // Only initialize once on client
+    if (typeof window === 'undefined' || variantInitializedRef.current) {
+      return; // No cleanup needed
+    }
+
+    // All localStorage reads happen here, not in assignVariant
+    let assignedVariant: 'A' | 'B';
+    try {
+      // Check stored variant first
+      const stored = localStorage.getItem('converto_ab_variant');
+      if (stored === 'A' || stored === 'B') {
+        assignedVariant = stored;
+      } else {
+        // Check if test is active (read localStorage here)
+        const testDisabled = localStorage.getItem('converto_ab_test_disabled');
+        if (testDisabled === 'true') {
+          assignedVariant = 'A';
         } else {
-          // Check if test is active (read localStorage here)
-          const testDisabled = localStorage.getItem('converto_ab_test_disabled');
-          if (testDisabled === 'true') {
-            assignedVariant = 'A';
-          } else {
-            // Check test schedule
-            const testStart = new Date('2025-11-03');
-            const testEnd = new Date('2025-12-03');
-            const now = new Date();
-            if (now >= testStart && now <= testEnd) {
-              // Test is active - assign new variant
-              assignedVariant = abTesting.assignVariant();
-              // Store variant immediately in useEffect
-              try {
-                localStorage.setItem('converto_ab_variant', assignedVariant);
-                localStorage.setItem('converto_ab_variant_assigned', new Date().toISOString());
-              } catch (error) {
-                console.warn('Failed to store A/B test variant:', error);
-              }
-            } else {
-              assignedVariant = 'A';
+          // Check test schedule
+          const testStart = new Date('2025-11-03');
+          const testEnd = new Date('2025-12-03');
+          const now = new Date();
+          if (now >= testStart && now <= testEnd) {
+            // Test is active - assign new variant
+            assignedVariant = abTesting.assignVariant();
+            // Store variant immediately in useEffect
+            try {
+              localStorage.setItem('converto_ab_variant', assignedVariant);
+              localStorage.setItem('converto_ab_variant_assigned', new Date().toISOString());
+            } catch (error) {
+              console.warn('Failed to store A/B test variant:', error);
             }
+          } else {
+            assignedVariant = 'A';
           }
         }
-      } catch {
-        // If localStorage fails, default to 'A'
-        assignedVariant = 'A';
       }
-
-      variantRef.current = assignedVariant;
-      variantInitializedRef.current = true;
-
-      // Track assignment after a short delay to avoid side effects during render
-      // Use setTimeout with 0 delay to defer to next tick
-      const timeoutId = setTimeout(() => {
-        abTesting.trackEvent('variant_assignment', { variant: assignedVariant });
-      }, 0);
-
-      // Always return cleanup function to prevent React #310
-      return () => {
-        clearTimeout(timeoutId);
-      };
+    } catch {
+      // If localStorage fails, default to 'A'
+      assignedVariant = 'A';
     }
-    // Return undefined if condition not met - no cleanup needed
+
+    variantRef.current = assignedVariant;
+    variantInitializedRef.current = true;
+
+    // Track assignment after a short delay to avoid side effects during render
+    // Use setTimeout with 0 delay to defer to next tick
+    const timeoutId = setTimeout(() => {
+      abTesting.trackEvent('variant_assignment', { variant: assignedVariant });
+    }, 0);
+
+    // Always return cleanup function to prevent React #310
+    return () => {
+      clearTimeout(timeoutId);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
