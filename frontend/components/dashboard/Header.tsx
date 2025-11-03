@@ -20,7 +20,7 @@ export function Header({ onCommandOpen, darkMode, onDarkModeToggle }: HeaderProp
 
   useEffect(() => {
     // Get user email
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(({ data: { user } }: any) => {
       if (user?.email) {
         setUserEmail(user.email);
       }
