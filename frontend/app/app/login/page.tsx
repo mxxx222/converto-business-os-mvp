@@ -32,7 +32,9 @@ export default function LoginPage() {
 
       if (data.user) {
         // Redirect to dashboard after successful login
-        router.push('/dashboard');
+        // Check for redirect parameter from middleware
+        const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+        router.push(redirectUrl || '/app/dashboard');
       }
     } catch (err) {
       setError('Kirjautumisessa tapahtui virhe');
@@ -125,4 +127,3 @@ export default function LoginPage() {
     </main>
   );
 }
-

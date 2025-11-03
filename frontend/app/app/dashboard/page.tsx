@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/auth/useAuth';
 import type { Receipt } from '@/types/receipt';
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { OSLayout } from '@/components/dashboard/OSLayout';
@@ -15,7 +16,7 @@ import Link from 'next/link';
 const SUPABASE_CONFIGURED = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
+  const { user, team, role } = useAuth();
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [loading, setLoading] = useState(true);
   const [supabaseError, setSupabaseError] = useState<string | null>(null);
@@ -35,29 +36,19 @@ export default function DashboardPage() {
       return;
     }
 
-    // Get current user
-    supabase.auth.getUser().then(({ data: { user }, error }: any) => {
-      if (error) {
-        console.error('Error fetching user:', error);
-        setSupabaseError(error.message || 'Virhe käyttäjän haussa');
-        setLoading(false);
-        return;
-      }
-      setUser(user);
-      if (user) {
-        loadReceipts();
-        setupRealtimeSubscription();
-      } else {
-        setLoading(false);
-      }
-    });
+    if (user) {
+      loadReceipts();
+      setupRealtimeSubscription();
+    } else {
+      setLoading(false);
+    }
 
     return () => {
       if (typeof supabase.removeAllChannels === 'function') {
         supabase.removeAllChannels();
       }
     };
-  }, []);
+  }, [user, team]);
 
   useEffect(() => {
     // Calculate KPIs from receipts
@@ -99,11 +90,18 @@ export default function DashboardPage() {
     }
 
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('receipts')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
+
+      // Filter by team if available
+      if (team?.teamId) {
+        query = query.eq('team_id', team.teamId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setReceipts(data || []);
@@ -264,15 +262,22 @@ export default function DashboardPage() {
   }
 
   return (
-    <OSLayout currentPath="/dashboard">
+    <OSLayout currentPath="/app/dashboard">
       <div className="space-y-6">
         {/* Welcome Section */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Tervetuloa takaisin{user.email ? `, ${user.email.split('@')[0]}` : ''}! 👋
+            Tervetuloa takaisin{user?.email ? `, ${user.email.split('@')[0]}` : ''}! 👋
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Tässä on yhteenveto yrityksestäsi tänään.
+            {team?.teamName
+              ? `Tässä on yhteenveto ${team.teamName} -tiimistä tänään.`
+              : 'Tässä on yhteenveto yrityksestäsi tänään.'}
+            {team && (
+              <span className="ml-2 text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded">
+                {role}
+              </span>
+            )}
           </p>
         </div>
 

@@ -109,6 +109,25 @@ CREATE TABLE IF NOT EXISTS audit_log (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Receipts (OCR + VAT processing)
+CREATE TABLE IF NOT EXISTS receipts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL,
+    vendor VARCHAR(255),
+    total_amount DECIMAL(10, 2),
+    vat_amount DECIMAL(10, 2),
+    net_amount DECIMAL(10, 2),
+    category VARCHAR(100),
+    date DATE,
+    image_url TEXT,
+    ocr_confidence DECIMAL(5, 2),
+    ocr_raw_data JSONB,
+    status VARCHAR(50) DEFAULT 'pending', -- pending, processed, error
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- ===== INDEXES =====
 
 CREATE INDEX IF NOT EXISTS idx_team_members_team_id ON team_members(team_id);
@@ -118,6 +137,10 @@ CREATE INDEX IF NOT EXISTS idx_events_team_id ON events(team_id);
 CREATE INDEX IF NOT EXISTS idx_events_created_at ON events(created_at);
 CREATE INDEX IF NOT EXISTS idx_analytics_team_module ON analytics(team_id, module_id);
 CREATE INDEX IF NOT EXISTS idx_audit_team_id ON audit_log(team_id);
+CREATE INDEX IF NOT EXISTS idx_receipts_team_id ON receipts(team_id);
+CREATE INDEX IF NOT EXISTS idx_receipts_user_id ON receipts(user_id);
+CREATE INDEX IF NOT EXISTS idx_receipts_created_at ON receipts(created_at);
+CREATE INDEX IF NOT EXISTS idx_receipts_category ON receipts(category);
 
 -- ===== TRIGGERS =====
 
@@ -134,6 +157,9 @@ CREATE TRIGGER update_teams_updated_at BEFORE UPDATE ON teams
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_modules_updated_at BEFORE UPDATE ON modules
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_receipts_updated_at BEFORE UPDATE ON receipts
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ===== SAMPLE DATA =====
@@ -155,13 +181,111 @@ ALTER TABLE team_modules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE billing_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE analytics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE receipts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 
--- Basic policies (can be enhanced for production)
+-- ===== RLS POLICIES =====
+
+-- Modules: Public read (marketplace)
 CREATE POLICY "Public read" ON modules FOR SELECT USING (true);
+
+-- Teams: Only team members can read
 CREATE POLICY "Team members can read team data" ON teams FOR SELECT USING (
     EXISTS (
         SELECT 1 FROM team_members
         WHERE team_members.team_id = teams.id
+        AND team_members.user_id = auth.uid()::uuid
+    )
+);
+
+-- Team members: Can read own team memberships
+CREATE POLICY "Users can read own memberships" ON team_members FOR SELECT USING (
+    user_id = auth.uid()::uuid
+);
+
+-- Team members: Admins can insert/update members
+CREATE POLICY "Admins can manage members" ON team_members FOR ALL USING (
+    EXISTS (
+        SELECT 1 FROM team_members tm
+        WHERE tm.team_id = team_members.team_id
+        AND tm.user_id = auth.uid()::uuid
+        AND tm.role IN ('admin', 'owner')
+    )
+);
+
+-- Team modules: Team members can read
+CREATE POLICY "Team members can read modules" ON team_modules FOR SELECT USING (
+    EXISTS (
+        SELECT 1 FROM team_members
+        WHERE team_members.team_id = team_modules.team_id
+        AND team_members.user_id = auth.uid()::uuid
+    )
+);
+
+-- Receipts: Users can read receipts from their teams
+CREATE POLICY "Users can read team receipts" ON receipts FOR SELECT USING (
+    EXISTS (
+        SELECT 1 FROM team_members
+        WHERE team_members.team_id = receipts.team_id
+        AND team_members.user_id = auth.uid()::uuid
+    )
+);
+
+-- Receipts: Users can insert receipts to their teams
+CREATE POLICY "Users can create receipts" ON receipts FOR INSERT WITH CHECK (
+    user_id = auth.uid()::uuid
+    AND EXISTS (
+        SELECT 1 FROM team_members
+        WHERE team_members.team_id = receipts.team_id
+        AND team_members.user_id = auth.uid()::uuid
+        AND team_members.role IN ('viewer', 'editor', 'admin', 'owner')
+    )
+);
+
+-- Receipts: Editors+ can update receipts
+CREATE POLICY "Editors can update receipts" ON receipts FOR UPDATE USING (
+    EXISTS (
+        SELECT 1 FROM team_members
+        WHERE team_members.team_id = receipts.team_id
+        AND team_members.user_id = auth.uid()::uuid
+        AND team_members.role IN ('editor', 'admin', 'owner')
+    )
+);
+
+-- Receipts: Admins can delete receipts
+CREATE POLICY "Admins can delete receipts" ON receipts FOR DELETE USING (
+    EXISTS (
+        SELECT 1 FROM team_members
+        WHERE team_members.team_id = receipts.team_id
+        AND team_members.user_id = auth.uid()::uuid
+        AND team_members.role IN ('admin', 'owner')
+    )
+);
+
+-- Events: Team members can read events
+CREATE POLICY "Team members can read events" ON events FOR SELECT USING (
+    team_id IS NULL OR EXISTS (
+        SELECT 1 FROM team_members
+        WHERE team_members.team_id = events.team_id
+        AND team_members.user_id = auth.uid()::uuid
+    )
+);
+
+-- Billing records: Only team owners/admins can read
+CREATE POLICY "Team admins can read billing" ON billing_records FOR SELECT USING (
+    EXISTS (
+        SELECT 1 FROM team_members
+        WHERE team_members.team_id = billing_records.team_id
+        AND team_members.user_id = auth.uid()::uuid
+        AND team_members.role IN ('admin', 'owner')
+    )
+);
+
+-- Analytics: Team members can read
+CREATE POLICY "Team members can read analytics" ON analytics FOR SELECT USING (
+    EXISTS (
+        SELECT 1 FROM team_members
+        WHERE team_members.team_id = analytics.team_id
         AND team_members.user_id = auth.uid()::uuid
     )
 );
