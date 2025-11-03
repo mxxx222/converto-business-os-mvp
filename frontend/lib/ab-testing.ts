@@ -488,21 +488,20 @@ export function useABTesting() {
   }
 
   // Use useEffect to assign variant only on client side
-  // Defer tracking to avoid side effects during render
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Only assign if not already initialized in this effect
-      if (!variantInitializedRef.current) {
-        // Assign variant (assignVariant checks storage internally)
-        variantRef.current = abTesting.assignVariant();
-        variantInitializedRef.current = true;
+    if (typeof window !== 'undefined' && !variantInitializedRef.current) {
+      // Assign variant (assignVariant checks storage internally)
+      const assignedVariant = abTesting.assignVariant();
+      variantRef.current = assignedVariant;
+      variantInitializedRef.current = true;
 
-        // Track assignment after render cycle completes
-        setTimeout(() => {
-          abTesting.trackEvent('variant_assignment', { variant: variantRef.current });
-        }, 100);
-      }
+      // Use queueMicrotask to defer tracking to next microtask
+      // This avoids side effects during the render cycle
+      queueMicrotask(() => {
+        abTesting.trackEvent('variant_assignment', { variant: assignedVariant });
+      });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Store bound functions in ref to prevent re-renders
