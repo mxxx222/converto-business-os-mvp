@@ -51,16 +51,22 @@ export default function ABTestPage() {
     )
   }
 
-  // Track page view on mount
+  // Track page view on mount - only once
   useEffect(() => {
-    trackPageView('/', window.document.referrer)
-  }, [trackPageView])
+    if (isClient) {
+      trackPageView('/', window.document.referrer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClient]) // Only run when isClient changes
 
   // Track time on page for bounce rate calculation
   useEffect(() => {
+    if (!isClient) return
+
     const startTime = Date.now()
     let interval: NodeJS.Timeout | null = null
     let currentTimeSpent = 0
+    let hasTrackedBounceLocal = false
 
     const updateTime = () => {
       const currentTime = Date.now()
@@ -68,8 +74,9 @@ export default function ABTestPage() {
       setTimeOnPage(currentTimeSpent)
 
       // Track bounce if user leaves after 30 seconds without interaction
-      if (currentTimeSpent >= 30 && !hasTrackedBounce) {
+      if (currentTimeSpent >= 30 && !hasTrackedBounceLocal) {
         trackBounce('/', currentTimeSpent * 1000)
+        hasTrackedBounceLocal = true
         setHasTrackedBounce(true)
       }
     }
@@ -82,11 +89,12 @@ export default function ABTestPage() {
         clearInterval(interval)
       }
       // Use closure value instead of state
-      if (currentTimeSpent > 0 && !hasTrackedBounce) {
+      if (currentTimeSpent > 0 && !hasTrackedBounceLocal) {
         trackBounce('/', currentTimeSpent * 1000)
       }
     }
-  }, [trackBounce, hasTrackedBounce])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClient]) // Only run when isClient changes, trackBounce/trackPageView are stable
 
   // Helper to render appropriate component based on variant
   const renderComponent = (ComponentA: any, ComponentB: any, props: any) => {
