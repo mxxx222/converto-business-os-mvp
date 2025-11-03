@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { trackPilotSignup } from '@/lib/analytics/posthog';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 /**
  * Send launch announcement email
@@ -19,6 +19,11 @@ export async function POST(request: Request) {
     trackPilotSignup(email, 'launch_announcement');
 
     // Send welcome email
+    if (!resend) {
+      console.warn('Resend API key not configured, skipping email send');
+      return NextResponse.json({ success: true, message: 'Launch announcement queued (email not configured)' });
+    }
+
     await resend.emails.send({
       from: 'info@converto.fi',
       to: email,
@@ -59,7 +64,7 @@ export async function POST(request: Request) {
             </div>
 
             <div style="text-align: center; margin: 40px 0;">
-              <a href="https://converto.fi/business-os/pilot" 
+              <a href="https://converto.fi/business-os/pilot"
                  style="display: inline-block; background: linear-gradient(135deg, #276BEE 0%, #A855F7 100%); color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px;">
                 Aloita Ilmainen Pilotti →
               </a>
@@ -90,8 +95,8 @@ export async function POST(request: Request) {
             <div style="border-top: 1px solid #ddd; padding-top: 20px; margin-top: 40px; text-align: center; color: #666; font-size: 14px;">
               <p>Kiitos kiinnostuksestasi! Jos sinulla on kysymyksiä, vastaa tähän viestiin.</p>
               <p style="margin-top: 20px;">
-                <a href="https://converto.fi" style="color: #276BEE; text-decoration: none;">converto.fi</a> | 
-                <a href="https://converto.fi/launch" style="color: #276BEE; text-decoration: none;">Launch Page</a> | 
+                <a href="https://converto.fi" style="color: #276BEE; text-decoration: none;">converto.fi</a> |
+                <a href="https://converto.fi/launch" style="color: #276BEE; text-decoration: none;">Launch Page</a> |
                 <a href="mailto:info@converto.fi" style="color: #276BEE; text-decoration: none;">info@converto.fi</a>
               </p>
             </div>
@@ -106,4 +111,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
   }
 }
-
