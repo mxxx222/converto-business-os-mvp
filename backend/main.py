@@ -33,6 +33,7 @@ from shared_core.modules.ocr.router import router as ocr_router
 from shared_core.modules.receipts.router import router as receipts_router
 from shared_core.modules.reports.router import router as reports_router
 from shared_core.modules.supabase.router import router as supabase_router
+from shared_core.modules.audit.router import router as audit_router
 from shared_core.utils.db import Base, engine
 
 settings = get_settings()
@@ -169,6 +170,7 @@ def create_app() -> FastAPI:
     app.include_router(reports_router)
     app.include_router(supabase_router)
     app.include_router(notion_router)
+    app.include_router(audit_router)  # Audit logs
     # app.include_router(linear_router)  # Replaced by linear_optimized_router
     app.include_router(csp_router)
     app.include_router(clients_router)
