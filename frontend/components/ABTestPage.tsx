@@ -59,16 +59,17 @@ export default function ABTestPage() {
   // Track time on page for bounce rate calculation
   useEffect(() => {
     const startTime = Date.now()
-    let interval: NodeJS.Timeout
+    let interval: NodeJS.Timeout | null = null
+    let currentTimeSpent = 0
 
     const updateTime = () => {
       const currentTime = Date.now()
-      const timeSpent = Math.floor((currentTime - startTime) / 1000)
-      setTimeOnPage(timeSpent)
+      currentTimeSpent = Math.floor((currentTime - startTime) / 1000)
+      setTimeOnPage(currentTimeSpent)
 
       // Track bounce if user leaves after 30 seconds without interaction
-      if (timeSpent >= 30 && !hasTrackedBounce) {
-        trackBounce('/', timeSpent * 1000)
+      if (currentTimeSpent >= 30 && !hasTrackedBounce) {
+        trackBounce('/', currentTimeSpent * 1000)
         setHasTrackedBounce(true)
       }
     }
@@ -77,12 +78,15 @@ export default function ABTestPage() {
 
     // Cleanup
     return () => {
-      clearInterval(interval)
-      if (!hasTrackedBounce) {
-        trackBounce('/', timeOnPage * 1000)
+      if (interval) {
+        clearInterval(interval)
+      }
+      // Use closure value instead of state
+      if (currentTimeSpent > 0 && !hasTrackedBounce) {
+        trackBounce('/', currentTimeSpent * 1000)
       }
     }
-  }, [trackBounce, hasTrackedBounce, timeOnPage])
+  }, [trackBounce, hasTrackedBounce])
 
   // Helper to render appropriate component based on variant
   const renderComponent = (ComponentA: any, ComponentB: any, props: any) => {

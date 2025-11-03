@@ -1,8 +1,12 @@
 import * as Sentry from '@sentry/nextjs';
 
 // OPTIMIZED: Maximum ROI Sentry Configuration
-Sentry.init({
-  dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN,
+const dsn = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
+
+// Only initialize Sentry if DSN is provided
+if (dsn && dsn.startsWith('https://')) {
+  Sentry.init({
+    dsn,
 
   // OPTIMIZED: Performance Monitoring (APM) - 100% transactions
   tracesSampleRate: 1.0,
@@ -74,4 +78,5 @@ Sentry.init({
     // Bot traffic
     'bot',
   ],
-});
+  });
+}
