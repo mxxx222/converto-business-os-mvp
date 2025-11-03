@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { trackLogin } from '@/lib/analytics/posthog';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,6 +32,8 @@ export default function LoginPage() {
       }
 
       if (data.user) {
+        // Track login event
+        trackLogin(data.user.id, 'email');
         // Redirect to dashboard after successful login
         // Check for redirect parameter from middleware
         const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
