@@ -1,12 +1,38 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 import TrackCTA from '@/components/analytics/TrackCTA';
 import { useSBTranslation } from '@/lib/i18n/useSBTranslation';
+import { DemoForm } from './DemoForm';
 
 export default function CTASB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
   const t = useSBTranslation(lang);
+  const [showDemoForm, setShowDemoForm] = useState(false);
+
+  const handleDemoClick = () => {
+    setShowDemoForm(true);
+    // Track demo form open
+    if (typeof window !== 'undefined' && window.posthog) {
+      window.posthog.capture('demo_form_opened', {
+        variant: 'storybrand',
+        source: 'cta_section',
+      });
+    }
+  };
+
+  const handlePilotClick = () => {
+    // Track pilot CTA click
+    if (typeof window !== 'undefined' && window.posthog) {
+      window.posthog.capture('pilot_cta_clicked', {
+        variant: 'storybrand',
+        source: 'cta_section',
+      });
+    }
+    // Redirect to pilot page
+    window.location.href = '/business-os/pilot';
+  };
 
   return (
     <section className="bg-gradient-to-r from-gray-900 to-black py-12 md:py-20" id="cta" aria-labelledby="cta-title">
@@ -26,26 +52,41 @@ export default function CTASB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
           </p>
         </motion.div>
 
-        {/* Mobile-stack CTA:t */}
-        <motion.div
-          className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mb-8 md:mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <TrackCTA label="CTA Primary" variant="StoryBrand">
-            <button className="neon-button w-full sm:w-auto px-8 md:px-12 py-4 text-lg md:text-xl font-bold">
-              {t.cta.primary}
-            </button>
-          </TrackCTA>
+        {showDemoForm ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 md:mb-12"
+          >
+            <DemoForm source="storybrand" variant="storybrand" />
+          </motion.div>
+        ) : (
+          <motion.div
+            className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mb-8 md:mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <TrackCTA label="CTA Primary" variant="StoryBrand">
+              <button
+                onClick={handlePilotClick}
+                className="neon-button w-full sm:w-auto px-8 md:px-12 py-4 text-lg md:text-xl font-bold"
+              >
+                {t.cta.primary}
+              </button>
+            </TrackCTA>
 
-          <TrackCTA label="CTA Secondary" variant="StoryBrand">
-            <button className="w-full sm:w-auto border-2 border-gray-500 px-8 md:px-12 py-4 text-lg md:text-xl text-white rounded-lg hover:border-[var(--neon-green)] hover:opacity-80 transition-all">
-              {t.cta.secondary}
-            </button>
-          </TrackCTA>
-        </motion.div>
+            <TrackCTA label="CTA Secondary" variant="StoryBrand">
+              <button
+                onClick={handleDemoClick}
+                className="w-full sm:w-auto border-2 border-gray-500 px-8 md:px-12 py-4 text-lg md:text-xl text-white rounded-lg hover:border-[var(--neon-green)] hover:opacity-80 transition-all"
+              >
+                {t.cta.secondary}
+              </button>
+            </TrackCTA>
+          </motion.div>
+        )}
 
         {/* Mobile-optimoitu success scenario */}
         <motion.div
