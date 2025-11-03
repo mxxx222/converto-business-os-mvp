@@ -59,8 +59,6 @@ export default function CTASB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
       sectionName="final_cta"
       eventName={TRACKING_EVENTS.FINAL_CTA_PRIMARY}
       className="bg-gradient-to-r from-gray-900 to-black py-12 md:py-20"
-      id="cta"
-      aria-labelledby="cta-title"
       additionalProperties={{
         has_failure_scenario: true,
         has_success_metrics: true,
@@ -68,6 +66,7 @@ export default function CTASB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
         cta_count: 2,
       }}
     >
+      <div id="cta" aria-labelledby="cta-title">
       <div className="container mx-auto px-4 md:px-6 text-center">
         {/* Mobile-optimoitu failure scenario */}
         <motion.div
