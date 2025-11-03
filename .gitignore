@@ -41,6 +41,8 @@
 !frontend/
 !frontend/app/
 !frontend/app/**
+!frontend/data/
+!frontend/data/**
 !frontend/lib/
 !frontend/lib/**
 !frontend/components/
