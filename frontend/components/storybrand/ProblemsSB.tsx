@@ -11,21 +11,21 @@ export default function ProblemsSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
   const problems = [
     {
       type: t.problems.external?.type || 'Ulkoinen ongelma',
-      description: t.problems.external?.description || t.problems.external,
+      description: typeof t.problems.external === 'string' ? t.problems.external : t.problems.external?.description || 'Ulkoinen ongelma',
       icon: '⏰',
       color: 'from-red-500/20 to-red-600/20',
       severity: 'high',
     },
     {
       type: t.problems.internal?.type || 'Sisäinen ongelma',
-      description: t.problems.internal?.description || t.problems.internal,
+      description: typeof t.problems.internal === 'string' ? t.problems.internal : t.problems.internal?.description || 'Sisäinen ongelma',
       icon: '😤',
       color: 'from-orange-500/20 to-orange-600/20',
       severity: 'medium',
     },
     {
       type: t.problems.philosophical?.type || 'Filosofinen ongelma',
-      description: t.problems.philosophical?.description || t.problems.philosophical,
+      description: typeof t.problems.philosophical === 'string' ? t.problems.philosophical : t.problems.philosophical?.description || 'Filosofinen ongelma',
       icon: '⚡',
       color: 'from-purple-500/20 to-purple-600/20',
       severity: 'critical',
