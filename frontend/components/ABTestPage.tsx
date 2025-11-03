@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState, useRef, useCallback } from 'react'
-import { useABTesting } from '@/lib/ab-testing'
+import { useEffect, useState, useRef } from 'react'
+import { abTesting } from '@/lib/ab-testing'
 
 // Import both versions
 import Hero from "@/components/Hero"
@@ -25,21 +25,18 @@ export default function ABTestPage() {
   const [timeOnPage, setTimeOnPage] = useState(0)
   const [hasTrackedBounce, setHasTrackedBounce] = useState(false)
 
-  // Call hook unconditionally (React rules) but use it conditionally
-  const abTesting = useABTesting()
+  // Use singleton instance directly - no hook to prevent re-renders
+  const variantRef = useRef<'A' | 'B' | null>(null)
+  const trackPageViewRef = useRef(abTesting.trackPageView.bind(abTesting))
+  const trackBounceRef = useRef(abTesting.trackBounce.bind(abTesting))
 
-  // Store everything in refs to prevent re-renders
-  const trackPageViewRef = useRef(abTesting.trackPageView)
-  const trackBounceRef = useRef(abTesting.trackBounce)
-  const variantRef = useRef(abTesting.variant)
-
-  // Update refs if they change (shouldn't happen, but just in case)
-  trackPageViewRef.current = abTesting.trackPageView
-  trackBounceRef.current = abTesting.trackBounce
-  variantRef.current = abTesting.variant
+  // Assign variant only once
+  if (variantRef.current === null && typeof window !== 'undefined') {
+    variantRef.current = abTesting.assignVariant()
+  }
 
   // Use variant from ref - no direct access to prevent loops
-  const variant = variantRef.current
+  const variant = variantRef.current || 'A'
 
   // Initialize client-side only
   useEffect(() => {
