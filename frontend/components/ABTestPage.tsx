@@ -43,11 +43,12 @@ export default function ABTestPage() {
   }, [])
 
   // Keep function refs in sync - but only assign once, not on every render
-  // These should be stable from the hook, but update refs once if needed
+  // These should be stable from the hook, so just update refs once on mount
   useEffect(() => {
     trackPageViewRef.current = abTesting.trackPageView
     trackBounceRef.current = abTesting.trackBounce
-  }, [abTesting.trackPageView, abTesting.trackBounce])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Empty deps - functions should be stable from hook
 
   // Use variant from ref - no direct access to prevent loops
   const variant = variantRef.current
