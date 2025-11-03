@@ -2,15 +2,15 @@
 
 import { useEffect } from 'react';
 import { useAuth } from '@/lib/auth/useAuth';
-import { trackEvent, setUserProperties, trackPageView as trackPostHogPageView } from '@/lib/analytics/posthog';
+import { trackEvent, identifyUser, trackPageView as trackPostHogPageView } from '@/lib/analytics/posthog';
 
 export function useAnalytics() {
   const { user, role } = useAuth();
 
   useEffect(() => {
     if (user) {
-      // Set user properties
-      setUserProperties(user.id, {
+      // Set user properties via identify
+      identifyUser(user.id, {
         email: user.email,
         role: role,
         created_at: new Date().toISOString(),
@@ -39,4 +39,3 @@ export function useFeatureTracking() {
     trackDashboardView: (dashboardType: string) => trackEvent('dashboard_view', { dashboard_type: dashboardType }),
   };
 }
-
