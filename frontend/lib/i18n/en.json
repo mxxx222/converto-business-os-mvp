@@ -1,20 +1,71 @@
 {
   "hero": {
-    "headline": "Automate your business – gain 10 hours a week",
+    "title": {
+      "part1": "Automate your business –",
+      "part2": "gain",
+      "part3": "10 hours",
+      "part4": "per week"
+    },
+    "headline": "Automate your business – gain 10 hours per week",
+    "subtitle": "You are the hero. We are your guide.",
     "sub": "You are the hero. We are your guide.",
-    "cta": "Try 30 days for free"
+    "cta": {
+      "primary": "Try 30 days for free",
+      "secondary": "Request demo"
+    },
+    "trust": {
+      "uptime": "99.9% uptime",
+      "setup": "7 day onboarding",
+      "customers": "50+ satisfied customers"
+    }
   },
   "problems": {
-    "external": "Repetitive tasks steal 8–15 hours weekly.",
-    "internal": "You feel stuck — no time left for growth.",
-    "philosophical": "Your business deserves to run smart, not manual."
+    "title": "We understand your problems",
+    "external": {
+      "type": "External problem",
+      "description": "Repetitive tasks steal 8–15 hours weekly."
+    },
+    "internal": {
+      "type": "Internal problem",
+      "description": "You feel stuck — no time left for growth."
+    },
+    "philosophical": {
+      "type": "Philosophical problem",
+      "description": "Your business deserves to run smart, not manual."
+    }
   },
   "solution": {
-    "empathy": "We know how frustrating manual work can be.",
-    "authority": "We've helped 50+ companies automate operations.",
+    "empathy": {
+      "title": "We understand",
+      "description": "We know how frustrating manual work can be."
+    },
+    "authority": {
+      "title": "We've helped 50+ companies",
+      "uptime": "Uptime",
+      "customers": "Customers",
+      "setup": "Day onboarding"
+    },
+    "statement": {
+      "title": "Solution",
+      "description": "Converto™ handles billing, reporting, and VAT automatically."
+    },
     "result": "Converto™ handles billing, reporting, and VAT automatically."
   },
   "plan": {
+    "title": "3-step plan",
+    "subtitle": "Start your journey towards automated business",
+    "step1": {
+      "title": "Start pilot",
+      "description": "Free 30-day pilot, no card required"
+    },
+    "step2": {
+      "title": "Automate",
+      "description": "Automate processes in 7 days"
+    },
+    "step3": {
+      "title": "Grow",
+      "description": "Grow stress-free – save 10h/week"
+    },
     "steps": [
       "Start your free pilot (30 days)",
       "Automate workflows in 7 days",
@@ -22,8 +73,23 @@
     ]
   },
   "cta": {
-    "primary": "Get started",
-    "secondary": "Request demo"
+    "primary": {
+      "text": "Get started"
+    },
+    "secondary": {
+      "text": "Request demo"
+    },
+    "failure": {
+      "title": "Don't let routine overshadow your potential",
+      "description": "Start your free 30-day pilot and experience how much time opens up for growth."
+    },
+    "success": {
+      "title": "When you choose Converto:",
+      "metric1": "More time for strategy",
+      "metric2": "Zero core errors in accounting",
+      "metric3": "Customer support responds"
+    },
+    "testimonial": "Converto changed how we manage our finances."
   },
   "success": {
     "metric1": "10h/week saved",
