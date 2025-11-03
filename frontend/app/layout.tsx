@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/react';
 import Script from 'next/script';
 import StickyPilotCTA from '@/components/StickyPilotCTA';
 import { PostHogProvider } from '@/components/PostHogProvider';
+import { PostHogInit } from '@/components/PostHogInit';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -82,6 +83,7 @@ export default function RootLayout({
     <html lang="fi">
       <body>
         <PostHogProvider>
+          <PostHogInit />
           {children}
           <StickyPilotCTA />
           <Analytics />

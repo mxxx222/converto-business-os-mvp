@@ -1,0 +1,36 @@
+{
+  "hero": {
+    "headline": "Automate your business – gain 10 hours a week",
+    "sub": "You are the hero. We are your guide.",
+    "cta": "Try 30 days for free"
+  },
+  "problems": {
+    "external": "Repetitive tasks steal 8–15 hours weekly.",
+    "internal": "You feel stuck — no time left for growth.",
+    "philosophical": "Your business deserves to run smart, not manual."
+  },
+  "solution": {
+    "empathy": "We know how frustrating manual work can be.",
+    "authority": "We've helped 50+ companies automate operations.",
+    "result": "Converto™ handles billing, reporting, and VAT automatically."
+  },
+  "plan": {
+    "steps": [
+      "Start your free pilot (30 days)",
+      "Automate workflows in 7 days",
+      "Grow stress-free – save 10h/week"
+    ]
+  },
+  "cta": {
+    "primary": "Get started",
+    "secondary": "Request demo"
+  },
+  "success": {
+    "metric1": "10h/week saved",
+    "metric2": "€5000 less error risk",
+    "metric3": "Customer satisfaction +98%"
+  },
+  "customer": {
+    "aspiration": "I want to focus on growth, not routine."
+  }
+}

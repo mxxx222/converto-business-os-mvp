@@ -1,0 +1,36 @@
+{
+  "hero": {
+    "headline": "Automatisoi yrityksesi – vapauta 10 tuntia viikossa",
+    "sub": "Sinä olet sankari. Me olemme opas.",
+    "cta": "Kokeile 30 päivää ilmaiseksi"
+  },
+  "problems": {
+    "external": "Rutiinityöt sitovat 8–15 tuntia viikossa.",
+    "internal": "Tunnet olosi jumissa – aikaa ei jää kasvulle.",
+    "philosophical": "Yrityksesi ansaitsee toimia älykkäästi, ei manuaalisesti."
+  },
+  "solution": {
+    "empathy": "Ymmärrämme, miten turhauttavaa manuaalinen työ on.",
+    "authority": "Olemme auttaneet 50+ yritystä automatisoimaan prosessinsa.",
+    "result": "Converto™ hoitaa laskutuksen, raportoinnin ja ALV:n puolestasi."
+  },
+  "plan": {
+    "steps": [
+      "Aloita ilmainen pilotti (30 päivää)",
+      "Automatisoi prosessit 7 päivässä",
+      "Kasva ilman kiirettä – säästä 10h/viikko"
+    ]
+  },
+  "cta": {
+    "primary": "Aloita nyt",
+    "secondary": "Pyydä demo"
+  },
+  "success": {
+    "metric1": "10h/viikko säästetty aikaa",
+    "metric2": "€5000 vähemmän virheriskejä",
+    "metric3": "Tyytyväisyys +98%"
+  },
+  "customer": {
+    "aspiration": "Haluan käyttää aikani kasvuun, en rutiineihin."
+  }
+}
