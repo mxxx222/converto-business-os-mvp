@@ -1,8 +1,7 @@
-// A/B Testing Enabled Page
-// Use client-only component to prevent SSR hydration issues
+// Landing Page - Simple version without A/B testing to avoid hydration issues
 import dynamic from 'next/dynamic'
 
-const ABTestPage = dynamic(() => import("@/components/ABTestPage"), {
+const SimpleLandingPage = dynamic(() => import("@/components/SimpleLandingPage"), {
   ssr: false,
   loading: () => (
     <div className="min-h-screen flex items-center justify-center">
@@ -17,5 +16,5 @@ export const metadata = {
 }
 
 export default function Page() {
-  return <ABTestPage />
+  return <SimpleLandingPage />
 }
