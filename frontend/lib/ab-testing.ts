@@ -494,6 +494,13 @@ export function useABTesting() {
             if (now >= testStart && now <= testEnd) {
               // Test is active - assign new variant
               assignedVariant = abTesting.assignVariant();
+              // Store variant immediately in useEffect
+              try {
+                localStorage.setItem('converto_ab_variant', assignedVariant);
+                localStorage.setItem('converto_ab_variant_assigned', new Date().toISOString());
+              } catch (error) {
+                console.warn('Failed to store A/B test variant:', error);
+              }
             } else {
               assignedVariant = 'A';
             }
@@ -507,19 +514,15 @@ export function useABTesting() {
       variantRef.current = assignedVariant;
       variantInitializedRef.current = true;
 
-      // Store and track in microtask to avoid side effects during render
-      queueMicrotask(() => {
-        // Store variant for consistency
-        try {
-          localStorage.setItem('converto_ab_variant', assignedVariant);
-          localStorage.setItem('converto_ab_variant_assigned', new Date().toISOString());
-        } catch (error) {
-          console.warn('Failed to store A/B test variant:', error);
-        }
-
-        // Track assignment
+      // Track assignment after a short delay to avoid side effects during render
+      const timeoutId = setTimeout(() => {
         abTesting.trackEvent('variant_assignment', { variant: assignedVariant });
-      });
+      }, 0);
+
+      // Cleanup timeout if component unmounts
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
