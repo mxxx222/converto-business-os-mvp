@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useABTesting } from '@/lib/ab-testing'
 
 // Import both versions
@@ -22,20 +22,22 @@ import { ABTestDashboardToggle } from "@/components/ABTestDashboard"
 export default function ABTestPage() {
   // Only initialize A/B testing on client side
   const [isClient, setIsClient] = useState(false)
-  const abTesting = useABTesting()
   const [timeOnPage, setTimeOnPage] = useState(0)
   const [hasTrackedBounce, setHasTrackedBounce] = useState(false)
+  const [variant, setVariant] = useState<'A' | 'B'>('A')
 
-  // Get A/B testing functions only when on client
-  const { variant, trackPageView, trackBounce } = isClient ? abTesting : {
-    variant: 'A' as const,
-    trackPageView: () => {},
-    trackBounce: () => {}
-  }
+  // Call hook unconditionally (React rules) but use it conditionally
+  const abTesting = useABTesting()
 
   // Initialize client-side only
   useEffect(() => {
     setIsClient(true)
+    // Set variant only once - use ref to prevent loop
+    if (typeof window !== 'undefined' && variant === 'A') {
+      setVariant(abTesting.variant)
+    }
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Don't render A/B content during SSR
@@ -53,15 +55,16 @@ export default function ABTestPage() {
 
   // Track page view on mount - only once
   useEffect(() => {
-    if (isClient) {
-      trackPageView('/', window.document.referrer)
+    if (isClient && typeof window !== 'undefined') {
+      abTesting.trackPageView('/', window.document.referrer)
     }
+    // Only run once when client initializes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isClient]) // Only run when isClient changes
+  }, [isClient])
 
   // Track time on page for bounce rate calculation
   useEffect(() => {
-    if (!isClient) return
+    if (!isClient || typeof window === 'undefined') return
 
     const startTime = Date.now()
     let interval: NodeJS.Timeout | null = null
@@ -75,7 +78,7 @@ export default function ABTestPage() {
 
       // Track bounce if user leaves after 30 seconds without interaction
       if (currentTimeSpent >= 30 && !hasTrackedBounceLocal) {
-        trackBounce('/', currentTimeSpent * 1000)
+        abTesting.trackBounce('/', currentTimeSpent * 1000)
         hasTrackedBounceLocal = true
         setHasTrackedBounce(true)
       }
@@ -90,11 +93,12 @@ export default function ABTestPage() {
       }
       // Use closure value instead of state
       if (currentTimeSpent > 0 && !hasTrackedBounceLocal) {
-        trackBounce('/', currentTimeSpent * 1000)
+        abTesting.trackBounce('/', currentTimeSpent * 1000)
       }
     }
+    // Only run once when client initializes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isClient]) // Only run when isClient changes, trackBounce/trackPageView are stable
+  }, [isClient])
 
   // Helper to render appropriate component based on variant
   const renderComponent = (ComponentA: any, ComponentB: any, props: any) => {
