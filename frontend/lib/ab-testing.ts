@@ -490,7 +490,6 @@ export function useABTesting() {
         const stored = localStorage.getItem('converto_ab_variant');
         if (stored === 'A' || stored === 'B') {
           assignedVariant = stored;
-          abTesting.currentVariant = stored;
         } else {
           // Assign new variant (without reading localStorage)
           assignedVariant = abTesting.assignVariant();
