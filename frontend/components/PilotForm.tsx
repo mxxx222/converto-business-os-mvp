@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useConversionTracking } from "@/lib/conversion-tracking"
 import { crmIntegration } from "@/lib/crm-integration"
+import { trackPilotSignup } from "@/lib/analytics/posthog"
 
 export default function PilotForm() {
   const [form, setForm] = useState({ name: "", email: "", company: "" })
@@ -28,6 +29,9 @@ export default function PilotForm() {
       }
 
       setSent(true)
+      
+      // Track PostHog event
+      trackPilotSignup(form.email, 'pilot_form')
       
       // Create CRM lead
       await crmIntegration.createLead({
