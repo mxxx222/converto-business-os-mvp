@@ -26,6 +26,7 @@ from shared_core.middleware.auth import dev_auth
 from shared_core.middleware.supabase_auth import supabase_auth
 from shared_core.modules.agent_orchestrator.router import router as agent_orchestrator_router
 from shared_core.modules.ai.router import router as ai_router
+from shared_core.modules.auth.sso import router as sso_router
 from shared_core.modules.clients.router import router as clients_router
 from shared_core.modules.finance_agent.router import router as finance_agent_router
 from shared_core.modules.notion.router import router as notion_router
