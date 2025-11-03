@@ -8,10 +8,11 @@ interface HeroProps {
   title: string
   subtitle: string
   ctaPrimary: { label: string; href: string }
+  ctaSecondary?: { label: string; href: string }
   image?: string
 }
 
-export default function Hero({ title, subtitle, ctaPrimary, image }: HeroProps) {
+export default function Hero({ title, subtitle, ctaPrimary, ctaSecondary, image }: HeroProps) {
   const { trackView } = useConversionTracking()
 
   useEffect(() => {
@@ -47,15 +48,17 @@ export default function Hero({ title, subtitle, ctaPrimary, image }: HeroProps) 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </Link>
-          <Link
-            href="https://app.converto.fi/demo"
-            className="btn-secondary hover-lift"
-          >
-            Katso demo
-            <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </Link>
+          {ctaSecondary && (
+            <Link
+              href={ctaSecondary.href}
+              className="btn-secondary hover-lift"
+            >
+              {ctaSecondary.label}
+              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          )}
         </div>
 
         {/* Social Proof */}

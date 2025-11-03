@@ -1,101 +1,185 @@
+import Hero from "@/components/Hero"
+import Problem from "@/components/Problem"
+import Solution from "@/components/Solution"
 import CTA from "@/components/CTA"
+import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
+import Link from "next/link"
 
 export const metadata = {
-  title: "Converto Business OS™ – Automaatio ja analytiikka",
+  title: "Converto Business OS™ – Automatisoi koko yrityksesi",
   description:
-    "Converto Business OS™ automatisoi kuittien käsittelyn, ALV-laskennan, raportoinnin ja asiakaspalvelun. Next.js + Stripe + Resend + ChatBot -integraatiot.",
+    "Converto Business OS™ automatisoi kuittien käsittelyn, ALV-laskennan, raportoinnin ja asiakaspalvelun. Powered by Converto Solutions.",
 }
 
 export default function BusinessOSPage() {
   return (
-    <main className="px-6 py-14">
-      <section className="max-w-6xl mx-auto space-y-6 text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-          Converto Business OS™ – Automatisoi yrityksesi
-        </h1>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Yksi alusta prosessien automatisointiin, talousnäkymään ja asiakaspalvelun tehostamiseen. 
-          Valmis integroimaan Stripe-ostot, Resend-sähköpostit, ChatBotin ja Supabasen.
-        </p>
-        <div className="grid gap-6 md:grid-cols-3 text-left">
-          <div className="p-6 border rounded-xl bg-white shadow-sm">
-            <h3 className="font-semibold text-lg">OCR + Kuitit</h3>
-            <p className="text-gray-600 mt-2">Automaattinen kuittien tunnistus, kategorisointi ja ALV-erittely.</p>
-          </div>
-          <div className="p-6 border rounded-xl bg-white shadow-sm">
-            <h3 className="font-semibold text-lg">Raportointi</h3>
-            <p className="text-gray-600 mt-2">Reaaliaikainen näkymä kuluihin, kassavirtaan ja KPI-mittareihin.</p>
-          </div>
-          <div className="p-6 border rounded-xl bg-white shadow-sm">
-            <h3 className="font-semibold text-lg">ChatService™</h3>
-            <p className="text-gray-600 mt-2">GPT-5-botti vastaa liideille ja ohjaa CTA:lla demoihin ja tilauksiin.</p>
-          </div>
-        </div>
-      </section>
+    <>
+      <Navbar />
 
-      <section className="max-w-6xl mx-auto mt-14 grid gap-6 md:grid-cols-2">
-        <div className="p-6 border rounded-xl bg-white shadow-sm">
-          <h2 className="text-2xl font-bold">Keskeiset ominaisuudet</h2>
-          <ul className="mt-4 space-y-2 text-gray-700 list-disc pl-5">
-            <li>Kuittien skannaus ja ALV-erittely (OCR)</li>
-            <li>Talouden KPI-näkymä (Revenue, MRR, CAC, LTV)</li>
-            <li>Workflowt ja muistutukset (sähköposti + ChatBot)</li>
-            <li>Stripe Checkout ja laskutus</li>
-            <li>Notion / Supabase -integraatiot</li>
-            <li>PWA + analytiikka (Plausible/GA4)</li>
-          </ul>
-        </div>
-        <div className="p-6 border rounded-xl bg-white shadow-sm">
-          <h2 className="text-2xl font-bold">Nopea käyttöönotto</h2>
-          <ol className="mt-3 list-decimal pl-5 text-gray-700 space-y-2">
-            <li>Ilmoittaudu pilottiin tai aloita demo</li>
-            <li>Aktivoidaan integraatiot (Stripe, Resend, Supabase)</li>
-            <li>Käynnistetään dashboard ja ChatService™</li>
-          </ol>
-          <div className="mt-4 grid grid-cols-2 gap-4 text-center">
-            <div className="p-4 rounded-lg bg-gray-50">
-              <p className="text-sm text-gray-600">Käyttöönotto</p>
-              <p className="text-2xl font-extrabold">&lt; 7 pv</p>
-            </div>
-            <div className="p-4 rounded-lg bg-gray-50">
-              <p className="text-sm text-gray-600">Ajan säästö</p>
-              <p className="text-2xl font-extrabold">40%</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero
+        title="Converto Business OS™ - Automatisoi koko yrityksesi"
+        subtitle="Powered by Converto Solutions. Automaattinen kuittien käsittely, ALV-laskelmat ja asiakaspalvelu. Yksi alusta kaikkeen."
+        ctaPrimary={{ label: "Kokeile ilmaiseksi 30pv", href: "/business-os/pilot" }}
+        ctaSecondary={{ label: "Katso palvelupaketit", href: "/services" }}
+        image="/images/converto-hero.png"
+      />
 
-      <section className="max-w-6xl mx-auto mt-14">
-        <div className="p-6 border rounded-xl bg-white shadow-sm">
-          <h2 className="text-2xl font-bold">Hinnoittelu</h2>
-          <div className="grid md:grid-cols-3 gap-6 mt-4">
-            <div className="p-6 border rounded-xl bg-white shadow-sm">
-              <h3 className="font-semibold text-lg">Starter</h3>
-              <p className="text-gray-600 mt-2">Pienelle tiimille, ydinominaisuudet.</p>
-              <p className="mt-4 font-bold">49 €/kk</p>
+      <Problem
+        title="Hajallaan oleva tieto, manuaaliset prosessit."
+        bullets={[
+          "Tieto on hajallaan Excelissä ja sähköposteissa",
+          "Raportointi vie tunteja viikossa",
+          "Asiakaspalvelu toistaa samoja vastauksia",
+        ]}
+      />
+
+      <Solution
+        title="Ratkaisu: Business OS automatisoi kaiken"
+        items={[
+          {
+            feature: "OCR + ALV",
+            benefit: "Vero.fi -integroitu automaattinen kuittien tunnistus ja ALV-erittely",
+            savings: "Säästö: 8h/viikko",
+            icon: "🧾"
+          },
+          {
+            feature: "ChatService™",
+            benefit: "GPT-5 -pohjainen asiakaspalvelu ja myyntibotit",
+            savings: "Säästö: 2000€/kk",
+            icon: "🤖"
+          },
+          {
+            feature: "Automation",
+            benefit: "Prosessien automaatio ja workflowt",
+            savings: "ROI: 3-5x",
+            icon: "⚡"
+          }
+        ]}
+      />
+      {/* Benefits Section */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-12">Miksi valita Business OS?</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="p-6 bg-white rounded-xl shadow-sm text-center">
+              <div className="text-5xl mb-4">⏱️</div>
+              <h3 className="text-xl font-bold mb-2">Säästö: 8h/viikko</h3>
+              <p className="text-gray-600">Automatisoi manuaaliset prosessit</p>
             </div>
-            <div className="p-6 border rounded-xl bg-white shadow-sm">
-              <h3 className="font-semibold text-lg">Growth</h3>
-              <p className="text-gray-600 mt-2">Kasvavat tiimit + lisäintegraatiot.</p>
-              <p className="mt-4 font-bold">89 €/kk</p>
+            <div className="p-6 bg-white rounded-xl shadow-sm text-center">
+              <div className="text-5xl mb-4">✅</div>
+              <h3 className="text-xl font-bold mb-2">Riski: 0 verovirhettä</h3>
+              <p className="text-gray-600">Vero.fi -integroitu tarkkuus</p>
             </div>
-            <div className="p-6 border rounded-xl bg-white shadow-sm">
-              <h3 className="font-semibold text-lg">Scale</h3>
-              <p className="text-gray-600 mt-2">Laajennettu automaatio ja tuki.</p>
-              <p className="mt-4 font-bold">129 €/kk</p>
+            <div className="p-6 bg-white rounded-xl shadow-sm text-center">
+              <div className="text-5xl mb-4">📈</div>
+              <h3 className="text-xl font-bold mb-2">ROI: 3-5x</h3>
+              <p className="text-gray-600">Takaisinmaksuaika 3-6 kk</p>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="mt-14">
-        <CTA
-          title="Automatisoi yrityksesi tänään"
-          subtitle="Käynnistämme Converto Business OS™ -ympäristön teille 7 päivässä."
-          ctaLabel="Aloita demo"
-          href="https://app.converto.fi/demo"
-        />
-      </div>
-    </main>
+      {/* Pricing Section */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-12">Hinnoittelu</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="p-8 border-2 border-gray-200 rounded-2xl">
+              <h3 className="text-2xl font-bold mb-2">Starter</h3>
+              <div className="text-4xl font-bold mb-4">99€<span className="text-lg text-gray-600">/kk</span></div>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>OCR + ALV</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>Perus-automaatio</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>Email-tuki</span>
+                </li>
+              </ul>
+              <Link
+                href="/business-os/pilot"
+                className="block w-full text-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                Aloita ilmaiseksi
+              </Link>
+            </div>
+            <div className="p-8 border-2 border-blue-500 rounded-2xl bg-blue-50">
+              <div className="text-sm font-semibold text-blue-600 mb-2">SUOSITUS</div>
+              <h3 className="text-2xl font-bold mb-2">Pro</h3>
+              <div className="text-4xl font-bold mb-4">299€<span className="text-lg text-gray-600">/kk</span></div>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>Kaikki Starter-ominaisuudet</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>ChatService™ Pro</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>Edistynyt automaatio</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>Prioritoidut tuki</span>
+                </li>
+              </ul>
+              <Link
+                href="/business-os/pilot"
+                className="block w-full text-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                Aloita ilmaiseksi
+              </Link>
+            </div>
+            <div className="p-8 border-2 border-gray-200 rounded-2xl">
+              <h3 className="text-2xl font-bold mb-2">Enterprise</h3>
+              <div className="text-4xl font-bold mb-4">Custom</div>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>Kaikki Pro-ominaisuudet</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>Räätälöity integraatiot</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>Dedikoidut resurssit</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>SLA + 24/7 tuki</span>
+                </li>
+              </ul>
+              <Link
+                href="/services/consulting"
+                className="block w-full text-center px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+              >
+                Pyydä tarjous
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <CTA
+        title="Aloita ilmainen 30pv pilotti"
+        subtitle="Ei korttitietoja - Peruuta milloin tahansa - Ensimmäiset 50 yritystä saavat 30 päivää ilmaiseksi"
+        ctaLabel="Aloita pilotti →"
+        href="/business-os/pilot"
+      />
+
+      <Footer />
+    </>
   )
 }

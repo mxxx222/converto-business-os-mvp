@@ -1,98 +1,117 @@
 import Hero from "@/components/Hero"
-import Problem from "@/components/Problem"
+import ProductServiceGrid from "@/components/ProductServiceGrid"
+import SocialProof from "@/components/SocialProof"
+import ProblemDepth from "@/components/ProblemDepth"
+import Solution from "@/components/Solution"
+import Plan from "@/components/Plan"
+import ROICalculator from "@/components/ROICalculator"
+import PricingPreview from "@/components/PricingPreview"
 import CTA from "@/components/CTA"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 
 export const metadata = {
-  title: "Converto Business OS™ - Automatisoi yrityksesi",
-  description: "Automatisoi yrityksesi Converto Business OS™ -palveluilla. OCR-kuittien käsittely, ALV-laskelmat, ChatService™ ja enemmän.",
+  title: "Converto Solutions – Automate your entire business stack",
+  description: "Converto Solutions – Yksi brändi, kaikki ratkaisut. Business OS SaaS ja automaatio- ja koodauspalvelut. Automatisoi yrityksesi.",
 }
 
 export default function Page() {
   return (
     <>
       <Navbar />
-      
+
+      {/* 1. Hero (5 sekunnin arvo) */}
       <Hero
-        title="Converto Business OS™ - Automatisoi yrityksesi"
-        subtitle="Automaattinen kuittien käsittely, ALV-laskelmat ja asiakaspalvelu. Yksi alusta kaikkeen. Valmis yrityksesi kasvuun."
-        ctaPrimary={{ label: "Katso palvelut", href: "/business-os" }}
+        title="Manuaalinen kirjanpito tuhlaa 10h/viikko"
+        subtitle="Converto Solutions – Automate your entire business stack. Automatisoi 90% kirjanpitoprosesseista."
+        ctaPrimary={{ label: "Kokeile Business OS:ta ilmaiseksi", href: "/business-os/pilot" }}
+        ctaSecondary={{ label: "Katso palvelupaketit", href: "/services" }}
         image="/images/converto-hero.png"
       />
 
-      <Problem
+      {/* 2. Converto-branding - Tuote- ja palveluesittely */}
+      <ProductServiceGrid />
+
+      {/* 3. Social Proof */}
+      <SocialProof
+        companyCount={50}
+        testimonials={[]}
+      />
+
+      {/* 4. Ongelma-syvyys (3-5 painopistettä) */}
+      <ProblemDepth
         title="Manuaaliset prosessit maksavat enemmän kuin arvaat."
-        bullets={[
-          "Tieto on hajallaan Excelissä ja sähköposteissa",
-          "Raportointi vie tunteja viikossa",
-          "Asiakaspalvelu toistaa samoja vastauksia",
+        items={[
+          {
+            category: "Kustannukset",
+            title: "40% tuottavuudesta hukkaan",
+            description: "Yritys menettää 40% tuottavuudesta manuaalisiin prosesseihin, jotka voisi automatisoida.",
+            icon: "💰"
+          },
+          {
+            category: "Riski",
+            title: "Verovirheet maksavat tuhansia",
+            description: "Virheet veroilmoituksissa maksavat 5000€+ ja voivat aiheuttaa veroviraston tarkastuksia.",
+            icon: "⚠️"
+          },
+          {
+            category: "Aika",
+            title: "Kirjanpito vie päiviä",
+            description: "Kirjanpito vie 2-3 päivää kuukaudessa, joka olisi paremmin käytetty kasvutoimintaan.",
+            icon: "⏱️"
+          }
         ]}
       />
 
-      {/* Services Overview Section */}
-      <section className="py-20 px-6 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-4">Omat palvelumme</h2>
-          <p className="text-xl text-gray-600 text-center mb-12">
-            Automatisoi yrityksesi yhdellä ratkaisulla
-          </p>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-              <div className="text-4xl mb-4">🧾</div>
-              <h3 className="font-semibold text-lg mb-2">OCR + Kuitit</h3>
-              <p className="text-gray-600 text-sm">
-                Automaattinen kuittien tunnistus ja ALV-erittely
-              </p>
-              <a href="/palvelut/ocr" className="text-blue-600 hover:underline text-sm mt-2 inline-block">
-                Lue lisää →
-              </a>
-            </div>
-            
-            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-              <div className="text-4xl mb-4">🧮</div>
-              <h3 className="font-semibold text-lg mb-2">VAT Calculator</h3>
-              <p className="text-gray-600 text-sm">
-                Automaattinen ALV-laskenta ja verotariffit
-              </p>
-              <a href="/palvelut/vat" className="text-blue-600 hover:underline text-sm mt-2 inline-block">
-                Lue lisää →
-              </a>
-            </div>
-            
-            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-              <div className="text-4xl mb-4">🤖</div>
-              <h3 className="font-semibold text-lg mb-2">ChatService™</h3>
-              <p className="text-gray-600 text-sm">
-                GPT-5 asiakaspalvelu ja myyntibotit
-              </p>
-              <a href="/palvelut/chatservice" className="text-blue-600 hover:underline text-sm mt-2 inline-block">
-                Lue lisää →
-              </a>
-            </div>
-            
-            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-              <div className="text-4xl mb-4">⚡</div>
-              <h3 className="font-semibold text-lg mb-2">Automation</h3>
-              <p className="text-gray-600 text-sm">
-                Prosessien automaatio ja workflowt
-              </p>
-              <a href="/palvelut/automaatio" className="text-blue-600 hover:underline text-sm mt-2 inline-block">
-                Lue lisää →
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <CTA
-        title="Liity pilottiin ja aloita ilmaiseksi"
-        subtitle="Ensimmäiset 50 yritystä saavat 30 päivää maksutonta käyttöä."
-        ctaLabel="Aloita pilotti →"
-        href="https://pilot.converto.fi"
+      {/* 5. Ratkaisu-esittely (Feature → Benefit) */}
+      <Solution
+        title="Ratkaisu: Automatisoi koko stack"
+        items={[
+          {
+            feature: "OCR + ALV",
+            benefit: "Kuittien skannaus → Automaattinen ALV-erittely → Vero.fi -integroitu",
+            savings: "Säästä 8h/viikko",
+            icon: "🧾"
+          },
+          {
+            feature: "VAT Calculator",
+            benefit: "Tarkka ALV-laskenta → Ei verovirheitä → Ajan tasalla automaattisesti",
+            savings: "Säästä 5000€/vuosi",
+            icon: "🧮"
+          },
+          {
+            feature: "ChatService™",
+            benefit: "AI vastaa kysymyksiin → Ei yötöitä → GPT-5 -pohjainen",
+            savings: "Säästä 2000€/kk",
+            icon: "🤖"
+          }
+        ]}
       />
-      
+
+      {/* 6. Process (3 askelta) */}
+      <Plan
+        title="Näin aloitat"
+        steps={[
+          { number: "1", text: "Valitse ratkaisu (Business OS tai Services)" },
+          { number: "2", text: "Saat pääsyn demo-ympäristöön heti" },
+          { number: "3", text: "Aloita ilmainen pilotti tai projekti" }
+        ]}
+      />
+
+      {/* 7. ROI-Laskuri (interaktiivinen) */}
+      <ROICalculator />
+
+      {/* 8. Pricing Preview */}
+      <PricingPreview />
+
+      {/* 9. Final CTA + Risk-Free */}
+      <CTA
+        title="Aloita ilmaiseksi 30pv tai pyydä tarjous palveluista"
+        subtitle="30 päivää ilmaiseksi - Ei korttitietoja - Peruuta milloin tahansa"
+        ctaLabel="Aloita nyt →"
+        href="/business-os/pilot"
+      />
+
       <Footer />
     </>
   )

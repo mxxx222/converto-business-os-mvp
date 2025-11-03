@@ -28,7 +28,7 @@ export default function Navbar() {
             <Link href="/business-os" className="nav-link">
               Business OS
             </Link>
-            
+
             {/* Services Dropdown */}
             <div className="relative group">
               <button className="nav-link flex items-center gap-1">
@@ -39,30 +39,38 @@ export default function Navbar() {
               </button>
               <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="p-2">
-                  <Link href="/palvelut/automaatio" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
-                    <div className="font-medium">Automation Consulting™</div>
-                    <div className="text-xs text-gray-500">Prosessien automaatio</div>
+                  <Link href="/services" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg border-b border-gray-100">
+                    <div className="font-medium">Kaikki palvelut</div>
                   </Link>
-                  <Link href="/palvelut/chatservice" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
-                    <div className="font-medium">ChatService™</div>
-                    <div className="text-xs text-gray-500">GPT-5 asiakaspalvelu</div>
+                  <Link href="/services/ai-agents" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <div className="font-medium">AI Agentit</div>
+                    <div className="text-xs text-gray-500">+200% ROI</div>
                   </Link>
-                  <Link href="/palvelut/verkkosivut" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
-                    <div className="font-medium">NextSite™</div>
-                    <div className="text-xs text-gray-500">Next.js verkkosivut</div>
+                  <Link href="/services/automation" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <div className="font-medium">Automaatio</div>
+                    <div className="text-xs text-gray-500">+150% ROI</div>
+                  </Link>
+                  <Link href="/services/web-dev" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <div className="font-medium">Next.js Web</div>
+                    <div className="text-xs text-gray-500">+100% ROI</div>
+                  </Link>
+                  <Link href="/services/crm-integration" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <div className="font-medium">CRM Integration</div>
+                    <div className="text-xs text-gray-500">+80% ROI</div>
+                  </Link>
+                  <Link href="/services/consulting" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <div className="font-medium">Consulting</div>
+                    <div className="text-xs text-gray-500">+250% ROI</div>
                   </Link>
                 </div>
               </div>
             </div>
 
-            <Link href="/kasvu" className="nav-link">
-              Kasvu
+            <Link href="/case-studies" className="nav-link">
+              Case Studies
             </Link>
-            <Link href="/pricing" className="nav-link">
-              Hinnasto
-            </Link>
-            <Link href="/yhteys" className="nav-link">
-              Yhteys
+            <Link href="/compare" className="nav-link">
+              Vertaa
             </Link>
           </div>
 
@@ -71,8 +79,8 @@ export default function Navbar() {
             <Link href="https://app.converto.fi/login" className="btn-secondary text-sm">
               Kirjaudu
             </Link>
-            <Link href="https://pilot.converto.fi" className="btn-primary text-sm">
-              Aloita pilotti
+            <Link href="/business-os/pilot" className="btn-primary text-sm">
+              Aloita ilmaiseksi
             </Link>
           </div>
 
@@ -101,30 +109,37 @@ export default function Navbar() {
               <Link href="/business-os" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
                 Business OS
               </Link>
-              <Link href="/palvelut/automaatio" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                Automation Consulting™
+              <div className="px-4 py-2 text-gray-700 font-semibold">Palvelut</div>
+              <Link href="/services" className="block px-8 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
+                Kaikki palvelut
               </Link>
-              <Link href="/palvelut/chatservice" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                ChatService™
+              <Link href="/services/ai-agents" className="block px-8 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
+                AI Agentit
               </Link>
-              <Link href="/palvelut/verkkosivut" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                NextSite™
+              <Link href="/services/automation" className="block px-8 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
+                Automaatio
               </Link>
-              <Link href="/kasvu" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                Kasvu
+              <Link href="/services/web-dev" className="block px-8 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
+                Next.js Web
               </Link>
-              <Link href="/pricing" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                Hinnasto
+              <Link href="/services/crm-integration" className="block px-8 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
+                CRM Integration
               </Link>
-              <Link href="/yhteys" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                Yhteys
+              <Link href="/services/consulting" className="block px-8 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
+                Consulting
+              </Link>
+              <Link href="/case-studies" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
+                Case Studies
+              </Link>
+              <Link href="/compare" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
+                Vertaa
               </Link>
               <div className="pt-4 border-t border-gray-200 space-y-2">
                 <Link href="https://app.converto.fi/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
                   Kirjaudu
                 </Link>
-                <Link href="https://pilot.converto.fi" className="block px-4 py-2 bg-primary-600 text-white rounded-lg text-center font-medium">
-                  Aloita pilotti
+                <Link href="/business-os/pilot" className="block px-4 py-2 bg-primary-600 text-white rounded-lg text-center font-medium">
+                  Aloita ilmaiseksi
                 </Link>
               </div>
             </div>
