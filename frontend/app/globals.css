@@ -1136,3 +1136,36 @@ a {
   box-shadow: 0 0 30px var(--neon-green);
   transform: translateY(-2px);
 }
+
+/* Touch-optimointi */
+.neon-button, .neon-border {
+  min-height: 44px; /* iOS suositus */
+  touch-action: manipulation; /* Estää zoom double-tapilla */
+}
+
+/* Mobile-optimoidut hover-efektit */
+@media (hover: none) and (pointer: coarse) {
+  .neon-button:hover,
+  .neon-border:hover {
+    transform: none; /* Ei hover-animaatioita mobile-laitteilla */
+  }
+
+  .neon-button:active,
+  .neon-border:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Scroll-optimointi */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile-safe viewport */
+@supports (height: 100dvh) {
+  .min-h-screen {
+    min-height: 100dvh;
+  }
+}
