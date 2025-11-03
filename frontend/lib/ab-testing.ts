@@ -486,7 +486,7 @@ export function useABTesting() {
     };
   }
 
-  // Memoize return object to prevent re-renders
+  // Memoize return object to prevent re-renders - variant is from ref so it doesn't change
   return useMemo(() => ({
     variant,
     isOptimized: variant === 'B',
@@ -496,5 +496,5 @@ export function useABTesting() {
     trackClick: functionsRef.current!.trackClick,
     trackBounce: functionsRef.current!.trackBounce,
     getTestResults: functionsRef.current!.getTestResults,
-  }), [variant]);
+  }), []); // Empty dependency array - variant comes from ref and functions are stable
 }
