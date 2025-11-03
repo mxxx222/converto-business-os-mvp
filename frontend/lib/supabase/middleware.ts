@@ -26,6 +26,7 @@ export async function updateSession(request: NextRequest) {
         request.cookies.set({
           name,
           value,
+          domain: '.converto.fi', // Shared cookie domain for all subdomains
           ...options,
         });
         supabaseResponse = NextResponse.next({
@@ -36,6 +37,7 @@ export async function updateSession(request: NextRequest) {
         supabaseResponse.cookies.set({
           name,
           value,
+          domain: '.converto.fi',
           ...options,
         });
       },
@@ -43,6 +45,7 @@ export async function updateSession(request: NextRequest) {
         request.cookies.set({
           name,
           value: '',
+          domain: '.converto.fi',
           ...options,
         });
         supabaseResponse = NextResponse.next({
@@ -53,6 +56,7 @@ export async function updateSession(request: NextRequest) {
         supabaseResponse.cookies.set({
           name,
           value: '',
+          domain: '.converto.fi',
           ...options,
         });
       },

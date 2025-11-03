@@ -51,6 +51,12 @@ export async function POST(req: Request) {
           <p>Hei ${name},</p>
           <p>Olemme vastaanottaneet ilmoittautumisesi Converto Business OS pilottiohjelmaan.</p>
           <p>Tiimimme ottaa sinuun yhteyttä pian ja auttaa sinua pääsemään alkuun.</p>
+          <p style="margin: 30px 0;">
+            <a href="https://app.converto.fi/login?ref=pilot" 
+               style="background: linear-gradient(to right, #276BEE, #A855F7); color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Kirjaudu Business OS:ään →
+            </a>
+          </p>
           <p>Odota kuulla meiltä!</p>
           <p>Ystävällisin terveisin,<br>Converto-tiimi</p>
         `,
