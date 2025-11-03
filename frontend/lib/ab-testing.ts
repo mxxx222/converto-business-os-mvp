@@ -3,6 +3,8 @@
  * Test A (Current) vs B (Optimized) with 50/50 traffic split
  */
 
+import { useMemo, useRef } from 'react';
+
 export interface ABTestVariant {
   id: 'A' | 'B';
   name: string;
@@ -453,8 +455,6 @@ class ABTestingManager {
 export const abTesting = ABTestingManager.getInstance();
 
 // React hook for A/B testing
-import { useMemo, useRef } from 'react';
-
 export function useABTesting() {
   // Store variant in ref to prevent re-renders
   const variantRef = useRef<'A' | 'B' | null>(null);
