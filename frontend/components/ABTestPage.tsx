@@ -28,7 +28,8 @@ export default function ABTestPage() {
   const abTesting = useABTesting()
 
   // Store everything in refs to prevent render-triggered updates
-  const variantRef = useRef<'A' | 'B'>('A')
+  // Use hook's variant getter instead of separate ref
+  const variantRef = useRef<'A' | 'B'>(abTesting.getVariant())
   const trackPageViewRef = useRef(abTesting.trackPageView)
   const trackBounceRef = useRef(abTesting.trackBounce)
 

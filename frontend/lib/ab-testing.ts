@@ -50,12 +50,8 @@ class ABTestingManager {
    * Assign visitor to variant based on traffic split
    */
   assignVariant(): 'A' | 'B' {
-    // Check if user already has a variant assigned
-    const storedVariant = this.getStoredVariant();
-    if (storedVariant) {
-      this.currentVariant = storedVariant;
-      return storedVariant;
-    }
+    // Don't check stored variant here - that should be done in useEffect
+    // This function only assigns a new variant based on hash
 
     // Check test status
     if (!this.isTestActive()) {
@@ -488,8 +484,22 @@ export function useABTesting() {
   // Use useEffect to assign variant only on client side
   useEffect(() => {
     if (typeof window !== 'undefined' && !variantInitializedRef.current) {
-      // Assign variant (assignVariant checks storage internally but doesn't store/track)
-      const assignedVariant = abTesting.assignVariant();
+      // Check stored variant first (read localStorage in useEffect, not in assignVariant)
+      let assignedVariant: 'A' | 'B';
+      try {
+        const stored = localStorage.getItem('converto_ab_variant');
+        if (stored === 'A' || stored === 'B') {
+          assignedVariant = stored;
+          abTesting.currentVariant = stored;
+        } else {
+          // Assign new variant (without reading localStorage)
+          assignedVariant = abTesting.assignVariant();
+        }
+      } catch {
+        // If localStorage fails, assign new variant
+        assignedVariant = abTesting.assignVariant();
+      }
+
       variantRef.current = assignedVariant;
       variantInitializedRef.current = true;
 
