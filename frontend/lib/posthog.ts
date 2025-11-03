@@ -1,10 +1,6 @@
 import posthog from 'posthog-js';
 
-declare global {
-  interface Window {
-    posthog?: typeof posthog;
-  }
-}
+// Window interface for posthog is declared in lib/analytics/posthog.ts
 
 export function initPostHog() {
   if (
