@@ -581,16 +581,27 @@ export function useABTesting() {
   }
 
   // Store result object in ref to prevent re-renders
+  // Use useMemo to ensure stable reference and prevent hydration issues
   if (resultRef.current === null) {
+    // Create stable getter functions that don't cause side effects
     resultRef.current = {
       get variant() {
+        // Always return 'A' during SSR, will be updated in useEffect
+        if (typeof window === 'undefined') return 'A';
         return variantRef.current;
       },
       get isOptimized() {
+        if (typeof window === 'undefined') return false;
         return variantRef.current === 'B';
       },
-      getVariant: () => variantRef.current,
-      isOptimizedVariant: () => variantRef.current === 'B',
+      getVariant: () => {
+        if (typeof window === 'undefined') return 'A';
+        return variantRef.current;
+      },
+      isOptimizedVariant: () => {
+        if (typeof window === 'undefined') return false;
+        return variantRef.current === 'B';
+      },
       trackEvent: functionsRef.current.trackEvent,
       trackPageView: functionsRef.current.trackPageView,
       trackConversion: functionsRef.current.trackConversion,
