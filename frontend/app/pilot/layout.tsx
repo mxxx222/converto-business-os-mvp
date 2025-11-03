@@ -72,29 +72,25 @@ export default function PilotLayout({
   };
 
   return (
-    <html lang="fi">
-      <head>
-        {/* Canonical link - redirect SEO value to main domain */}
-        <link rel="canonical" href="https://converto.fi" />
-        {/* Backup noindex meta tag */}
-        <meta name="robots" content="noindex, nofollow" />
-        {/* Schema.org structured data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-        />
-      </head>
-      <body>
-        {children}
-        {/* Plausible tracking for pilot subdomain */}
-        <Script
-          async
-          defer
-          data-domain="pilot.converto.fi"
-          src="https://plausible.io/js/pa-LIVALOWbQ1Cpkjh1mkLq1.js"
-        />
-      </body>
-    </html>
+    <>
+      {/* Canonical link - redirect SEO value to main domain */}
+      <link rel="canonical" href="https://converto.fi" />
+      {/* Backup noindex meta tag */}
+      <meta name="robots" content="noindex, nofollow" />
+      {/* Schema.org structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      {children}
+      {/* Plausible tracking for pilot subdomain */}
+      <Script
+        async
+        defer
+        data-domain="pilot.converto.fi"
+        src="https://plausible.io/js/pa-LIVALOWbQ1Cpkjh1mkLq1.js"
+      />
+    </>
   );
 }
 

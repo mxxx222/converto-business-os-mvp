@@ -73,27 +73,23 @@ export default function AppLayout({
   };
 
   return (
-    <html lang="fi">
-      <head>
-        {/* Backup noindex meta tag */}
-        <meta name="robots" content="noindex,nofollow" />
-        {/* Schema.org structured data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-        />
-      </head>
-      <body>
-        {children}
-        {/* Plausible tracking for app subdomain */}
-        <Script
-          async
-          defer
-          data-domain="app.converto.fi"
-          src="https://plausible.io/js/pa-LIVALOWbQ1Cpkjh1mkLq1.js"
-        />
-      </body>
-    </html>
+    <>
+      {/* Backup noindex meta tag */}
+      <meta name="robots" content="noindex,nofollow" />
+      {/* Schema.org structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      {children}
+      {/* Plausible tracking for app subdomain */}
+      <Script
+        async
+        defer
+        data-domain="app.converto.fi"
+        src="https://plausible.io/js/pa-LIVALOWbQ1Cpkjh1mkLq1.js"
+      />
+    </>
   );
 }
 
