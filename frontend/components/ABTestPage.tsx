@@ -26,23 +26,22 @@ export default function ABTestPage() {
   const [hasTrackedBounce, setHasTrackedBounce] = useState(false)
 
   // Use singleton instance directly - no hook to prevent re-renders
-  const variantRef = useRef<'A' | 'B' | null>(null)
+  const variantRef = useRef<'A' | 'B'>('A')
   const trackPageViewRef = useRef(abTesting.trackPageView.bind(abTesting))
   const trackBounceRef = useRef(abTesting.trackBounce.bind(abTesting))
 
-  // Assign variant only once
-  if (variantRef.current === null && typeof window !== 'undefined') {
-    variantRef.current = abTesting.assignVariant()
-  }
-
-  // Use variant from ref - no direct access to prevent loops
-  const variant = variantRef.current || 'A'
-
-  // Initialize client-side only
+  // Initialize client-side only and assign variant
   useEffect(() => {
     setIsClient(true)
+    // Assign variant only once in useEffect to prevent render-time side effects
+    if (typeof window !== 'undefined') {
+      variantRef.current = abTesting.assignVariant()
+    }
     // Only run once on mount
   }, [])
+
+  // Use variant from ref - no direct access to prevent loops
+  const variant = variantRef.current
 
   // Don't render A/B content during SSR
   if (!isClient) {
