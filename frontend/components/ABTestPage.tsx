@@ -52,15 +52,16 @@ export default function ABTestPage() {
   }, []) // Empty deps - functions should be stable from hook
 
   // Don't render A/B content during SSR
+  // Use suppressHydrationWarning to prevent React #310 error
   if (!isClient) {
     return (
-      <>
+      <div suppressHydrationWarning>
         <Navbar />
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full"></div>
         </div>
         <Footer />
-      </>
+      </div>
     )
   }
 
@@ -128,7 +129,7 @@ export default function ABTestPage() {
   }
 
   return (
-    <>
+    <div suppressHydrationWarning>
       {/* A/B Test Variant Indicator (Development/Debug only) */}
       {process.env.NODE_ENV === 'development' && (
         <div className="fixed top-0 left-0 z-50 bg-black text-white px-4 py-2 text-sm font-bold">
@@ -233,6 +234,6 @@ export default function ABTestPage() {
       />
 
       <Footer />
-    </>
+    </div>
   )
 }
