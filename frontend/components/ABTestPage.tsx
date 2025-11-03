@@ -24,20 +24,17 @@ export default function ABTestPage() {
   const [isClient, setIsClient] = useState(false)
   const [timeOnPage, setTimeOnPage] = useState(0)
   const [hasTrackedBounce, setHasTrackedBounce] = useState(false)
-  const [variant, setVariant] = useState<'A' | 'B'>('A')
 
   // Call hook unconditionally (React rules) but use it conditionally
   const abTesting = useABTesting()
 
+  // Use variant directly from hook - no separate state to prevent loops
+  const variant = abTesting.variant
+
   // Initialize client-side only
   useEffect(() => {
     setIsClient(true)
-    // Set variant only once - use ref to prevent loop
-    if (typeof window !== 'undefined' && variant === 'A') {
-      setVariant(abTesting.variant)
-    }
     // Only run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Don't render A/B content during SSR
