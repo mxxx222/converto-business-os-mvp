@@ -28,16 +28,18 @@ export default function ABTestPage() {
   // Call hook unconditionally (React rules) but use it conditionally
   const abTesting = useABTesting()
 
-  // Store functions in ref to prevent re-renders
+  // Store everything in refs to prevent re-renders
   const trackPageViewRef = useRef(abTesting.trackPageView)
   const trackBounceRef = useRef(abTesting.trackBounce)
+  const variantRef = useRef(abTesting.variant)
 
   // Update refs if they change (shouldn't happen, but just in case)
   trackPageViewRef.current = abTesting.trackPageView
   trackBounceRef.current = abTesting.trackBounce
+  variantRef.current = abTesting.variant
 
-  // Use variant directly from hook - no separate state to prevent loops
-  const variant = abTesting.variant
+  // Use variant from ref - no direct access to prevent loops
+  const variant = variantRef.current
 
   // Initialize client-side only
   useEffect(() => {
