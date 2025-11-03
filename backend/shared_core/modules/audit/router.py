@@ -5,8 +5,17 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from shared_core.utils.db import get_db
+from shared_core.utils.db import SessionLocal
 from shared_core.models.audit import AuditLog
+
+
+def get_db() -> Session:
+    """Get database session."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 router = APIRouter(prefix='/api/audit', tags=['audit'])
 
