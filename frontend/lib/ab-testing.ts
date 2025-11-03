@@ -458,6 +458,14 @@ export const abTesting = ABTestingManager.getInstance();
 export function useABTesting() {
   // Store variant in ref to prevent re-renders
   const variantRef = useRef<'A' | 'B' | null>(null);
+  const functionsRef = useRef<{
+    trackEvent: typeof abTesting.trackEvent;
+    trackPageView: typeof abTesting.trackPageView;
+    trackConversion: typeof abTesting.trackConversion;
+    trackClick: typeof abTesting.trackClick;
+    trackBounce: typeof abTesting.trackBounce;
+    getTestResults: typeof abTesting.getTestResults;
+  } | null>(null);
 
   // Only assign variant once
   if (variantRef.current === null && typeof window !== 'undefined') {
@@ -466,15 +474,27 @@ export function useABTesting() {
 
   const variant = variantRef.current || 'A';
 
+  // Store bound functions in ref to prevent re-renders
+  if (functionsRef.current === null) {
+    functionsRef.current = {
+      trackEvent: abTesting.trackEvent.bind(abTesting),
+      trackPageView: abTesting.trackPageView.bind(abTesting),
+      trackConversion: abTesting.trackConversion.bind(abTesting),
+      trackClick: abTesting.trackClick.bind(abTesting),
+      trackBounce: abTesting.trackBounce.bind(abTesting),
+      getTestResults: abTesting.getTestResults.bind(abTesting),
+    };
+  }
+
   // Memoize return object to prevent re-renders
   return useMemo(() => ({
     variant,
     isOptimized: variant === 'B',
-    trackEvent: abTesting.trackEvent.bind(abTesting),
-    trackPageView: abTesting.trackPageView.bind(abTesting),
-    trackConversion: abTesting.trackConversion.bind(abTesting),
-    trackClick: abTesting.trackClick.bind(abTesting),
-    trackBounce: abTesting.trackBounce.bind(abTesting),
-    getTestResults: abTesting.getTestResults.bind(abTesting),
+    trackEvent: functionsRef.current!.trackEvent,
+    trackPageView: functionsRef.current!.trackPageView,
+    trackConversion: functionsRef.current!.trackConversion,
+    trackClick: functionsRef.current!.trackClick,
+    trackBounce: functionsRef.current!.trackBounce,
+    getTestResults: functionsRef.current!.getTestResults,
   }), [variant]);
 }
