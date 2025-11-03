@@ -1,10 +1,10 @@
-import Hero from '@/components/Hero';
+import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { CheckCircle, Zap, TrendingUp, Users, BarChart3, Rocket } from 'lucide-react';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: '🎉 Converto Business OS on Nyt Live! - Automatisoi Yrityksesi',
   description:
     'Converto Business OS on nyt tuotannossa! Aloita ilmainen 30 päivän pilotti ja automatisoi kirjanpito, ALV-laskelmat ja asiakaspalvelu. ROI: +800%.',
@@ -12,9 +12,9 @@ export const metadata = {
 
 export default function LaunchPage() {
   return (
-    <>
+    <div>
       <Navbar />
-      
+
       {/* Hero Section - Launch Announcement */}
       <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white py-20 px-6">
         <div className="max-w-6xl mx-auto text-center">
@@ -59,7 +59,7 @@ export default function LaunchPage() {
             </div>
             <div className="bg-white rounded-xl shadow-lg p-8 text-center border-t-4 border-blue-500">
               <div className="text-5xl mb-4">⚡</div>
-              <h3 className="text-2xl font-bold mb-2">Nopeus: <100ms</h3>
+              <h3 className="text-2xl font-bold mb-2">Nopeus: &lt;100ms</h3>
               <p className="text-gray-600 mb-4">Reaaliaikainen käsittely</p>
               <div className="text-3xl font-bold text-blue-600">ROI: +100%</div>
             </div>
@@ -218,7 +218,6 @@ export default function LaunchPage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }
-

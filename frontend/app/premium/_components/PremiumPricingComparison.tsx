@@ -1,6 +1,6 @@
 "use client"
 
-import { analytics } from '../../../lib/analytics'
+import { trackEvent } from '../../../lib/analytics'
 
 const pricingPlans = [
   {
@@ -60,7 +60,7 @@ const pricingPlans = [
 
 export default function PremiumPricingComparison() {
   const handlePlanSelect = (plan: typeof pricingPlans[0]) => {
-    analytics.trackPricingSelect(plan.name, parseInt(plan.price))
+    trackEvent('pricing_select', { plan: plan.name, price: parseInt(plan.price) })
   }
 
   return (
@@ -77,7 +77,7 @@ export default function PremiumPricingComparison() {
 
         <div className="pricing-grid">
           {pricingPlans.map((plan, index) => (
-            <div 
+            <div
               key={plan.name}
               className={`pricing-card ${plan.popular ? 'popular' : ''} ${plan.color}`}
             >
@@ -86,7 +86,7 @@ export default function PremiumPricingComparison() {
                   Suosituin
                 </div>
               )}
-              
+
               <div className="plan-header">
                 <h3 className="plan-name">{plan.name}</h3>
                 <div className="plan-price">

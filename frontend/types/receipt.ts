@@ -14,5 +14,5 @@ export interface Receipt {
   user_id?: string | null;
   image_url?: string | null;
   ocr_confidence?: number | null;
+  status?: string | null;
 }
-

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from 'react'
-import { analytics } from '../../lib/analytics'
+import { trackEvent } from '../../lib/analytics'
 import PremiumNavbar from './_components/PremiumNavbar'
 import WowNavbar from './_components/WowNavbar'
 import PremiumHero from './_components/PremiumHero'
@@ -25,10 +25,10 @@ import ChatBot from '../../components/ChatBot'
 export default function PremiumPage(): JSX.Element {
   useEffect(() => {
     // Track premium page view
-    analytics.trackPremiumView()
+    trackEvent('premium_page_view', { page: '/premium' })
 
     const onUnload = () => {
-      analytics.track('page_exit', { page: '/premium' })
+      trackEvent('page_exit', { page: '/premium' })
     }
     window.addEventListener('pagehide', onUnload)
     return () => window.removeEventListener('pagehide', onUnload)
@@ -63,7 +63,7 @@ export default function PremiumPage(): JSX.Element {
         <a
           href="#pilot"
           className="btn btn-primary btn-lg"
-          onClick={() => analytics.trackCTAClick('sticky', 'bottom')}
+          onClick={() => trackEvent('cta_click', { position: 'sticky', location: 'bottom' })}
         >
           Aloita ilmaiseksi
         </a>

@@ -200,7 +200,7 @@ export default function ReceiptsPage() {
           <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
             <p className="text-sm text-gray-600 dark:text-gray-400">Käsitelty</p>
             <p className="text-2xl font-bold text-green-600">
-              {receipts.filter((r) => r.status === 'processed').length}
+              {receipts.filter((r) => r.ocr_confidence && r.ocr_confidence > 0.8).length}
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-800">

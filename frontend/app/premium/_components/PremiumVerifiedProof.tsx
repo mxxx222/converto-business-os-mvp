@@ -1,6 +1,6 @@
 "use client"
 
-import { analytics } from '../../../lib/analytics'
+import { trackEvent } from '../../../lib/analytics'
 
 const verifiedStats = [
   {
@@ -70,7 +70,7 @@ const verifiedLogos = [
 
 export default function PremiumVerifiedProof() {
   const handleTestimonialClick = (testimonial: typeof verifiedTestimonials[0]) => {
-    analytics.track('testimonial_click', {
+    trackEvent('testimonial_click', {
       name: testimonial.name,
       company: testimonial.company,
       verified: testimonial.verified
@@ -110,8 +110,8 @@ export default function PremiumVerifiedProof() {
           </h2>
           <div className="testimonials-grid">
             {verifiedTestimonials.map((testimonial, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="testimonial-card"
                 onClick={() => handleTestimonialClick(testimonial)}
               >
