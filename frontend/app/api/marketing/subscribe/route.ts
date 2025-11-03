@@ -1,7 +1,4 @@
 import { NextResponse } from 'next/server';
-import { trackEvent } from '@/lib/analytics/posthog';
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 /**
  * Subscribe email for marketing
