@@ -27,9 +27,7 @@ export default function ABTestPage() {
 
   const abTesting = useABTesting()
 
-  // Store everything in refs to prevent render-triggered updates
-  // Use hook's variant getter instead of separate ref
-  const variantRef = useRef<'A' | 'B'>(abTesting.getVariant())
+  // Store tracking functions in refs to prevent render-triggered updates
   const trackPageViewRef = useRef(abTesting.trackPageView)
   const trackBounceRef = useRef(abTesting.trackBounce)
 
@@ -39,9 +37,6 @@ export default function ABTestPage() {
     // Only run once on mount
   }, [])
 
-  // Don't update variant here - useABTesting hook handles it in useEffect
-  // Just read the variant from the hook when client is ready
-
   // Keep function refs in sync - but only assign once, not on every render
   // These should be stable from the hook, so just update refs once on mount
   useEffect(() => {
@@ -50,8 +45,8 @@ export default function ABTestPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty deps - functions should be stable from hook
 
-  // Use variant from ref - no direct access to prevent loops
-  const variant = variantRef.current
+  // Use variant directly from hook - it's already stable from ref
+  const variant = abTesting.getVariant()
 
   // Don't render A/B content during SSR
   if (!isClient) {
