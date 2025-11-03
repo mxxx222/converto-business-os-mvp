@@ -35,14 +35,13 @@ export default function ProblemsSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
   return (
     <TrackProblemsSection
       className="bg-black text-white py-12 md:py-20"
-      id="problems"
-      aria-labelledby="problems-title"
       additionalProperties={{
         problem_count: problems.length,
         problem_types: problems.map((p) => p.severity),
         section_style: 'three_column_grid',
       }}
     >
+      <div id="problems" aria-labelledby="problems-title">
       <div className="container mx-auto px-4 md:px-6">
         <h2
           id="problems-title"

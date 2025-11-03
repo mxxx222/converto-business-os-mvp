@@ -29,14 +29,13 @@ export default function SolutionSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
   return (
     <TrackSolutionSection
       className="py-12 md:py-20 bg-gray-900"
-      id="solution"
-      aria-labelledby="solution-title"
       additionalProperties={{
         has_authority_section: true,
         authority_points_count: authorityPoints.length,
         section_layout: 'empathy_authority_solution',
       }}
     >
+      <div id="solution" aria-labelledby="solution-title">
       <div className="container mx-auto px-4 md:px-6">
         {/* Empathy Statement */}
         <div className="text-center mb-12 md:mb-16">
