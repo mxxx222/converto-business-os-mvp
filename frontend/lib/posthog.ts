@@ -15,7 +15,7 @@ export function initPostHog() {
       disable_session_recording: true, // ei nauhoituksia
       persistence: 'localStorage', // ei cookieita
     });
-    window.posthog = posthog;
+    window.posthog = posthog as any;
   }
 }
 

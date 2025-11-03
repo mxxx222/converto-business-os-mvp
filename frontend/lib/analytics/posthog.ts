@@ -127,8 +127,7 @@ export function resetPostHog() {
  */
 export function isFeatureEnabled(flagName: string): boolean {
   if (typeof window !== 'undefined' && window.posthog) {
-    return window.posthog.isFeatureEnabled(flagName) || false;
+    return Boolean(window.posthog.isFeatureEnabled(flagName));
   }
   return false;
 }
-

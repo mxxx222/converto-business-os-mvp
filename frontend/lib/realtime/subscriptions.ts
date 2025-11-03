@@ -73,7 +73,7 @@ export class RealtimeManager {
           table: 'receipts',
           filter: `team_id=eq.${userId}`,
         },
-        (payload) => {
+        (payload: any) => {
           const receipt: ReceiptUpdate = {
             id: payload.new?.id || payload.old?.id || '',
             filename: payload.new?.filename || payload.old?.filename,
@@ -156,7 +156,7 @@ export class RealtimeManager {
           table: 'insights',
           filter: `team_id=eq.${userId}`,
         },
-        (payload) => {
+        (payload: any) => {
           const insight: InsightUpdate = {
             id: payload.new.id,
             type: payload.new.type as InsightType,
@@ -233,7 +233,7 @@ export class RealtimeManager {
           table: 'team_members',
           filter: `team_id=eq.${teamId}`,
         },
-        (payload) => {
+        (payload: any) => {
           const listeners = this.listeners.get(channelName) || new Set();
           listeners.forEach((listener) => {
             try {
