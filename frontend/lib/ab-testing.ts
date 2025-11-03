@@ -456,9 +456,19 @@ export const abTesting = ABTestingManager.getInstance();
 
 // React hook for A/B testing
 export function useABTesting() {
-  // Store variant in ref to prevent re-renders
+  // Store variant and functions in refs to prevent re-renders
   const variantRef = useRef<'A' | 'B' | null>(null);
   const functionsRef = useRef<{
+    trackEvent: typeof abTesting.trackEvent;
+    trackPageView: typeof abTesting.trackPageView;
+    trackConversion: typeof abTesting.trackConversion;
+    trackClick: typeof abTesting.trackClick;
+    trackBounce: typeof abTesting.trackBounce;
+    getTestResults: typeof abTesting.getTestResults;
+  } | null>(null);
+  const resultRef = useRef<{
+    variant: 'A' | 'B';
+    isOptimized: boolean;
     trackEvent: typeof abTesting.trackEvent;
     trackPageView: typeof abTesting.trackPageView;
     trackConversion: typeof abTesting.trackConversion;
@@ -486,15 +496,20 @@ export function useABTesting() {
     };
   }
 
-  // Memoize return object to prevent re-renders - variant is from ref so it doesn't change
-  return useMemo(() => ({
-    variant,
-    isOptimized: variant === 'B',
-    trackEvent: functionsRef.current!.trackEvent,
-    trackPageView: functionsRef.current!.trackPageView,
-    trackConversion: functionsRef.current!.trackConversion,
-    trackClick: functionsRef.current!.trackClick,
-    trackBounce: functionsRef.current!.trackBounce,
-    getTestResults: functionsRef.current!.getTestResults,
-  }), []); // Empty dependency array - variant comes from ref and functions are stable
+  // Store result object in ref to prevent re-renders
+  if (resultRef.current === null) {
+    resultRef.current = {
+      variant,
+      isOptimized: variant === 'B',
+      trackEvent: functionsRef.current.trackEvent,
+      trackPageView: functionsRef.current.trackPageView,
+      trackConversion: functionsRef.current.trackConversion,
+      trackClick: functionsRef.current.trackClick,
+      trackBounce: functionsRef.current.trackBounce,
+      getTestResults: functionsRef.current.getTestResults,
+    };
+  }
+
+  // Always return the same object from ref
+  return resultRef.current;
 }
