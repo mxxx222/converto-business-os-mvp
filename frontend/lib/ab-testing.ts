@@ -3,7 +3,7 @@
  * Test A (Current) vs B (Optimized) with 50/50 traffic split
  */
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 export interface ABTestVariant {
   id: 'A' | 'B';
@@ -480,15 +480,20 @@ export function useABTesting() {
     getTestResults: typeof abTesting.getTestResults;
   } | null>(null);
 
-  // Only assign variant once per component instance
+  // Initialize variant in useEffect, not during render, to prevent React #310
+  // Set default to 'A' for SSR, will be updated in useEffect on client
   if (!variantInitializedRef.current) {
-    if (typeof window !== 'undefined') {
-      variantRef.current = abTesting.assignVariant();
-    } else {
-      variantRef.current = 'A';
-    }
+    variantRef.current = 'A';
     variantInitializedRef.current = true;
   }
+
+  // Use useEffect to assign variant only on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !variantInitializedRef.current) {
+      variantRef.current = abTesting.assignVariant();
+      variantInitializedRef.current = true;
+    }
+  }, []);
 
   // Store bound functions in ref to prevent re-renders
   if (functionsRef.current === null) {
