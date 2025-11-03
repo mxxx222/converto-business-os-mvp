@@ -67,7 +67,7 @@ export default function CTASB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
       }}
     >
       <div id="cta" aria-labelledby="cta-title">
-      <div className="container mx-auto px-4 md:px-6 text-center">
+        <div className="container mx-auto px-4 md:px-6 text-center">
         {/* Mobile-optimoitu failure scenario */}
         <motion.div
           className="mb-8 md:mb-12"
@@ -102,7 +102,7 @@ export default function CTASB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
             <TrackCTA
               ctaPosition="bottom"
               ctaType="primary"
-              ctaText={t.cta.primary?.text || t.cta.primary}
+              ctaText={typeof t.cta.primary === 'string' ? t.cta.primary : t.cta.primary?.text || 'Aloita nyt'}
               sectionName="final_cta"
               trackHover={true}
               trackFocus={true}
@@ -116,14 +116,14 @@ export default function CTASB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
                 onClick={handlePilotClick}
                 className="neon-button w-full sm:w-auto px-8 md:px-12 py-4 text-lg md:text-xl font-bold"
               >
-                {t.cta.primary?.text || t.cta.primary}
+                {typeof t.cta.primary === 'string' ? t.cta.primary : t.cta.primary?.text || 'Aloita nyt'}
               </button>
             </TrackCTA>
 
             <TrackCTA
               ctaPosition="bottom"
               ctaType="secondary"
-              ctaText={t.cta.secondary?.text || t.cta.secondary}
+              ctaText={typeof t.cta.secondary === 'string' ? t.cta.secondary : t.cta.secondary?.text || 'Pyydä demo'}
               sectionName="final_cta"
               trackHover={true}
               additionalProperties={{
@@ -136,7 +136,7 @@ export default function CTASB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
                 onClick={handleDemoClick}
                 className="w-full sm:w-auto border-2 border-gray-500 px-8 md:px-12 py-4 text-lg md:text-xl text-white rounded-lg hover:border-[var(--neon-green)] hover:opacity-80 transition-all"
               >
-                {t.cta.secondary?.text || t.cta.secondary}
+                {typeof t.cta.secondary === 'string' ? t.cta.secondary : t.cta.secondary?.text || 'Pyydä demo'}
               </button>
             </TrackCTA>
           </motion.div>
@@ -172,6 +172,7 @@ export default function CTASB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
             </blockquote>
           )}
         </motion.div>
+        </div>
       </div>
     </TrackSection>
   );

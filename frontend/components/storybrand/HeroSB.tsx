@@ -66,40 +66,40 @@ export default function HeroSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <TrackCTA
-              ctaPosition="hero"
-              ctaType="primary"
-              ctaText={t.hero.cta?.primary || t.hero.cta}
-              sectionName="hero"
-              trackHover={true}
-              trackFocus={true}
-              additionalProperties={{
-                cta_style: 'neon_button',
-                cta_color: 'green',
-                expected_conversion: 'demo_request',
-              }}
-            >
-              <button className="neon-button w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-bold">
-                {t.hero.cta?.primary || t.hero.cta}
-              </button>
-            </TrackCTA>
+                  <TrackCTA
+                    ctaPosition="hero"
+                    ctaType="primary"
+                    ctaText={typeof t.hero.cta === 'string' ? t.hero.cta : t.hero.cta?.primary || 'Kokeile 30 päivää ilmaiseksi'}
+                    sectionName="hero"
+                    trackHover={true}
+                    trackFocus={true}
+                    additionalProperties={{
+                      cta_style: 'neon_button',
+                      cta_color: 'green',
+                      expected_conversion: 'demo_request',
+                    }}
+                  >
+                    <button className="neon-button w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-bold">
+                      {typeof t.hero.cta === 'string' ? t.hero.cta : t.hero.cta?.primary || 'Kokeile 30 päivää ilmaiseksi'}
+                    </button>
+                  </TrackCTA>
 
-            <TrackCTA
-              ctaPosition="hero"
-              ctaType="secondary"
-              ctaText={t.hero.cta?.secondary || 'Pyydä demo'}
-              sectionName="hero"
-              trackHover={true}
-              additionalProperties={{
-                cta_style: 'neon_border',
-                cta_color: 'green_outline',
-                expected_conversion: 'demo_request',
-              }}
-            >
-              <button className="neon-border w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg border-2 border-[var(--neon-green)] text-white rounded-lg hover:opacity-80 transition-all">
-                {t.hero.cta?.secondary || 'Pyydä demo'}
-              </button>
-            </TrackCTA>
+                  <TrackCTA
+                    ctaPosition="hero"
+                    ctaType="secondary"
+                    ctaText={typeof t.hero.cta === 'string' ? 'Pyydä demo' : t.hero.cta?.secondary || 'Pyydä demo'}
+                    sectionName="hero"
+                    trackHover={true}
+                    additionalProperties={{
+                      cta_style: 'neon_border',
+                      cta_color: 'green_outline',
+                      expected_conversion: 'demo_request',
+                    }}
+                  >
+                    <button className="neon-border w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg border-2 border-[var(--neon-green)] text-white rounded-lg hover:opacity-80 transition-all">
+                      {typeof t.hero.cta === 'string' ? 'Pyydä demo' : t.hero.cta?.secondary || 'Pyydä demo'}
+                    </button>
+                  </TrackCTA>
           </motion.div>
 
           {/* Mobile-friendly trust indicators */}
