@@ -3,7 +3,7 @@
  * Test A (Current) vs B (Optimized) with 50/50 traffic split
  */
 
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 
 export interface ABTestVariant {
   id: 'A' | 'B';
@@ -457,7 +457,8 @@ export const abTesting = ABTestingManager.getInstance();
 // React hook for A/B testing
 export function useABTesting() {
   // Store variant and functions in refs to prevent re-renders
-  const variantRef = useRef<'A' | 'B' | null>(null);
+  const variantRef = useRef<'A' | 'B'>('A');
+  const variantInitializedRef = useRef(false);
   const functionsRef = useRef<{
     trackEvent: typeof abTesting.trackEvent;
     trackPageView: typeof abTesting.trackPageView;
@@ -467,8 +468,10 @@ export function useABTesting() {
     getTestResults: typeof abTesting.getTestResults;
   } | null>(null);
   const resultRef = useRef<{
-    variant: 'A' | 'B';
-    isOptimized: boolean;
+    readonly variant: 'A' | 'B';
+    readonly isOptimized: boolean;
+    getVariant: () => 'A' | 'B';
+    isOptimizedVariant: () => boolean;
     trackEvent: typeof abTesting.trackEvent;
     trackPageView: typeof abTesting.trackPageView;
     trackConversion: typeof abTesting.trackConversion;
@@ -477,12 +480,15 @@ export function useABTesting() {
     getTestResults: typeof abTesting.getTestResults;
   } | null>(null);
 
-  // Only assign variant once
-  if (variantRef.current === null && typeof window !== 'undefined') {
-    variantRef.current = abTesting.assignVariant();
+  // Only assign variant once per component instance
+  if (!variantInitializedRef.current) {
+    if (typeof window !== 'undefined') {
+      variantRef.current = abTesting.assignVariant();
+    } else {
+      variantRef.current = 'A';
+    }
+    variantInitializedRef.current = true;
   }
-
-  const variant = variantRef.current || 'A';
 
   // Store bound functions in ref to prevent re-renders
   if (functionsRef.current === null) {
@@ -499,8 +505,14 @@ export function useABTesting() {
   // Store result object in ref to prevent re-renders
   if (resultRef.current === null) {
     resultRef.current = {
-      variant,
-      isOptimized: variant === 'B',
+      get variant() {
+        return variantRef.current;
+      },
+      get isOptimized() {
+        return variantRef.current === 'B';
+      },
+      getVariant: () => variantRef.current,
+      isOptimizedVariant: () => variantRef.current === 'B',
       trackEvent: functionsRef.current.trackEvent,
       trackPageView: functionsRef.current.trackPageView,
       trackConversion: functionsRef.current.trackConversion,
