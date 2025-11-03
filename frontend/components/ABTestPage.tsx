@@ -38,12 +38,8 @@ export default function ABTestPage() {
     // Only run once on mount
   }, [])
 
-  // Update variant once we're safely on the client
-  useEffect(() => {
-    if (!isClient || typeof window === 'undefined') return
-    variantRef.current = abTesting.getVariant()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isClient]) // Only depend on isClient - abTesting is stable from hook
+  // Don't update variant here - useABTesting hook handles it in useEffect
+  // Just read the variant from the hook when client is ready
 
   // Keep function refs in sync - but only assign once, not on every render
   // These should be stable from the hook, so just update refs once on mount

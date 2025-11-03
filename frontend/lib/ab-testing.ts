@@ -484,14 +484,17 @@ export function useABTesting() {
   // Set default to 'A' for SSR, will be updated in useEffect on client
   if (!variantInitializedRef.current) {
     variantRef.current = 'A';
-    variantInitializedRef.current = true;
+    // Don't set variantInitializedRef here - let useEffect handle initialization
   }
 
   // Use useEffect to assign variant only on client side
   useEffect(() => {
-    if (typeof window !== 'undefined' && !variantInitializedRef.current) {
-      variantRef.current = abTesting.assignVariant();
-      variantInitializedRef.current = true;
+    if (typeof window !== 'undefined') {
+      // Only assign if not already initialized in this effect
+      if (!variantInitializedRef.current) {
+        variantRef.current = abTesting.assignVariant();
+        variantInitializedRef.current = true;
+      }
     }
   }, []);
 
