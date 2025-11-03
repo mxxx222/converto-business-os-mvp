@@ -129,6 +129,11 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # PRODUCTION: Performance middleware
+    from shared_core.middleware.performance import PerformanceMiddleware
+
+    app.add_middleware(PerformanceMiddleware)
+
     # OPTIMIZED: Rate limiting middleware (Redis-powered)
     from backend.middleware.rate_limit import RateLimitMiddleware
 

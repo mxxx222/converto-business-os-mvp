@@ -21,18 +21,41 @@ const nextConfig = {
   reactStrictMode: true,
   trailingSlash: false,
   skipTrailingSlashRedirect: true,
+  // PRODUCTION: Enable SWC minification
+  swcMinify: true,
+  // PRODUCTION: Enable compression
+  compress: true,
   // Only use static export for marketing site (premium, kiitos pages)
   // Dashboard requires SSR for middleware and Supabase auth
   ...(enrolledStaticExport && {
     output: 'export',
     distDir: 'out',
   }),
+  // PRODUCTION: Package import optimization
+  experimental: {
+    optimizePackageImports: [
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      'lucide-react',
+      '@supabase/supabase-js',
+    ],
+  },
   // Rewrites for subdomain routing (pilot.converto.fi)
   async rewrites() {
     return [
       {
         source: '/pilot',
         destination: '/pilot',
+      },
+    ];
+  },
+  // PRODUCTION: Redirects for legacy routes
+  async redirects() {
+    return [
+      {
+        source: '/dashboard',
+        destination: '/app/dashboard',
+        permanent: true,
       },
     ];
   },
@@ -46,11 +69,14 @@ const nextConfig = {
     ...(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_ENABLED !== 'true' && {
       unoptimized: false,
       formats: ['image/avif', 'image/webp'],
+      deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+      imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     }),
     minimumCacheTTL: 86_400,
     domains: [
       'cdn.converto.app',
       'cdn.converto.fi', // Cloudflare R2 custom domain
+      'supabase-cdn.com',
       'assets.stripe.com',
       'images.unsplash.com',
       'via.placeholder.com',
@@ -75,6 +101,40 @@ const nextConfig = {
         {
           source: '/icon-:path*',
           headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+        },
+        // PRODUCTION: API route caching
+        {
+          source: '/api/:path*',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=60, s-maxage=120',
+            },
+          ],
+        },
+        // PRODUCTION: Static assets caching
+        {
+          source: '/static/:path*',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=31536000, immutable',
+            },
+          ],
+        },
+        // PRODUCTION: Performance headers
+        {
+          source: '/(.*)',
+          headers: [
+            {
+              key: 'X-DNS-Prefetch-Control',
+              value: 'on',
+            },
+            {
+              key: 'X-Process-Time',
+              value: '0',
+            },
+          ],
         },
       ];
     },

@@ -6,6 +6,17 @@ export async function middleware(request: NextRequest) {
   // Update Supabase session and check auth
   const response = await updateSession(request);
 
+  // PRODUCTION: Add security headers
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set(
+    'Permissions-Policy',
+    'geolocation=(), microphone=(), camera=()'
+  );
+  response.headers.set('X-DNS-Prefetch-Control', 'on');
+
   // Track 404 errors for Plausible
   if (request.nextUrl.pathname.startsWith('/404')) {
     // Track 404 via API (server-side)
