@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth/useAuth';
 import { useRealtimeInsights } from '@/hooks/useRealtimeInsights';
 import { useMonitoring } from '@/hooks/useMonitoring';
+import { useAnalytics, useFeatureTracking } from '@/hooks/useAnalytics';
 import { fetchInsights } from '@/lib/api/finance-agent';
 import { OSLayout } from '@/components/dashboard/OSLayout';
 import { TrendingUp, AlertCircle, Lightbulb, Target, Loader } from 'lucide-react';
@@ -28,10 +29,17 @@ export default function InsightsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user, team } = useAuth();
-  const supabase = createClient();
+  const { trackPageView } = useAnalytics();
+  const { trackInsightsView } = useFeatureTracking();
 
   // Initialize monitoring
   useMonitoring();
+
+  // Track analytics
+  useEffect(() => {
+    trackPageView('insights_dashboard');
+    trackInsightsView();
+  }, [trackPageView, trackInsightsView]);
 
   // Subscribe to realtime insights
   useRealtimeInsights((newInsight: InsightUpdate) => {
