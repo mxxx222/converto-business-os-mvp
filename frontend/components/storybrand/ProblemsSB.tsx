@@ -3,39 +3,52 @@
 import { motion } from 'framer-motion';
 
 import { useSBTranslation } from '@/lib/i18n/useSBTranslation';
+import { TrackProblemsSection } from '@/components/analytics/TrackSection';
 
 export default function ProblemsSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
   const t = useSBTranslation(lang);
 
   const problems = [
     {
-      type: 'Ulkoinen ongelma',
-      description: t.problems.external,
+      type: t.problems.external?.type || 'Ulkoinen ongelma',
+      description: t.problems.external?.description || t.problems.external,
       icon: '⏰',
       color: 'from-red-500/20 to-red-600/20',
+      severity: 'high',
     },
     {
-      type: 'Sisäinen ongelma',
-      description: t.problems.internal,
+      type: t.problems.internal?.type || 'Sisäinen ongelma',
+      description: t.problems.internal?.description || t.problems.internal,
       icon: '😤',
       color: 'from-orange-500/20 to-orange-600/20',
+      severity: 'medium',
     },
     {
-      type: 'Filosofinen ongelma',
-      description: t.problems.philosophical,
+      type: t.problems.philosophical?.type || 'Filosofinen ongelma',
+      description: t.problems.philosophical?.description || t.problems.philosophical,
       icon: '⚡',
       color: 'from-purple-500/20 to-purple-600/20',
+      severity: 'critical',
     },
   ];
 
   return (
-    <section className="bg-black text-white py-12 md:py-20" id="problems" aria-labelledby="problems-title">
+    <TrackProblemsSection
+      className="bg-black text-white py-12 md:py-20"
+      id="problems"
+      aria-labelledby="problems-title"
+      additionalProperties={{
+        problem_count: problems.length,
+        problem_types: problems.map((p) => p.severity),
+        section_style: 'three_column_grid',
+      }}
+    >
       <div className="container mx-auto px-4 md:px-6">
         <h2
           id="problems-title"
           className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-8 md:mb-16"
         >
-          Tunnistamme ongelmasi
+          {t.problems.title || 'Tunnistamme ongelmasi'}
         </h2>
 
         {/* Mobile-first grid */}
@@ -48,6 +61,8 @@ export default function ProblemsSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
               viewport={{ once: true }}
               transition={{ delay: index * 0.2 }}
               className={`bg-gradient-to-br ${problem.color} bg-gray-900 p-6 md:p-8 rounded-lg border border-gray-800 hover:border-[var(--neon-green)] transition-all duration-300 hover:scale-105`}
+              data-problem-type={problem.severity}
+              data-problem-index={index}
             >
               {/* Suurempi emoji mobile-laitteille */}
               <div className="text-3xl md:text-4xl mb-4 text-center md:text-left">
@@ -65,6 +80,6 @@ export default function ProblemsSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
           ))}
         </div>
       </div>
-    </section>
+    </TrackProblemsSection>
   );
 }

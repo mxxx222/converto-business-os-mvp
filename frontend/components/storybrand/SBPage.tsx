@@ -8,10 +8,24 @@ import CTASB from './CTASB';
 import SuccessSB from './SuccessSB';
 import CustomerHeroSB from './CustomerHeroSB';
 import { StructuredData } from '@/components/seo/StructuredData';
+import { TrackPage } from '@/components/analytics/TrackPage';
 
 export default function SBPage() {
   return (
-    <>
+    <TrackPage
+      pageName="storybrand_landing"
+      pageType="storybrand"
+      enableScrollTracking={true}
+      enableExitIntent={true}
+      additionalProperties={{
+        page_version: '1.0',
+        framework: 'storybrand',
+        sections_count: 7,
+        has_structured_data: true,
+        mobile_optimized: true,
+        seo_optimized: true,
+      }}
+    >
       <StructuredData />
 
       <main>
@@ -45,6 +59,6 @@ export default function SBPage() {
           <CTASB />
         </section>
       </main>
-    </>
+    </TrackPage>
   );
 }

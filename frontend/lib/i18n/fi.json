@@ -1,20 +1,71 @@
 {
   "hero": {
+    "title": {
+      "part1": "Automatisoi yrityksesi –",
+      "part2": "vapauta",
+      "part3": "10 tuntia",
+      "part4": "viikossa"
+    },
     "headline": "Automatisoi yrityksesi – vapauta 10 tuntia viikossa",
+    "subtitle": "Sinä olet sankari. Me olemme opas.",
     "sub": "Sinä olet sankari. Me olemme opas.",
-    "cta": "Kokeile 30 päivää ilmaiseksi"
+    "cta": {
+      "primary": "Kokeile 30 päivää ilmaiseksi",
+      "secondary": "Pyydä demo"
+    },
+    "trust": {
+      "uptime": "99,9% käyttöaika",
+      "setup": "7 päivän käyttöönotto",
+      "customers": "50+ tyytyväistä asiakasta"
+    }
   },
   "problems": {
-    "external": "Rutiinityöt sitovat 8–15 tuntia viikossa.",
-    "internal": "Tunnet olosi jumissa – aikaa ei jää kasvulle.",
-    "philosophical": "Yrityksesi ansaitsee toimia älykkäästi, ei manuaalisesti."
+    "title": "Tunnistamme ongelmasi",
+    "external": {
+      "type": "Ulkoinen ongelma",
+      "description": "Rutiinityöt sitovat 8–15 tuntia viikossa."
+    },
+    "internal": {
+      "type": "Sisäinen ongelma",
+      "description": "Tunnet olosi jumissa – aikaa ei jää kasvulle."
+    },
+    "philosophical": {
+      "type": "Filosofinen ongelma",
+      "description": "Yrityksesi ansaitsee toimia älykkäästi, ei manuaalisesti."
+    }
   },
   "solution": {
-    "empathy": "Ymmärrämme, miten turhauttavaa manuaalinen työ on.",
-    "authority": "Olemme auttaneet 50+ yritystä automatisoimaan prosessinsa.",
+    "empathy": {
+      "title": "Ymmärrämme",
+      "description": "Ymmärrämme, miten turhauttavaa manuaalinen työ on."
+    },
+    "authority": {
+      "title": "Olemme auttaneet 50+ yritystä",
+      "uptime": "Käyttöaika",
+      "customers": "Asiakasta",
+      "setup": "Päivän käyttöönotto"
+    },
+    "statement": {
+      "title": "Ratkaisu",
+      "description": "Converto™ hoitaa laskutuksen, raportoinnin ja ALV:n puolestasi."
+    },
     "result": "Converto™ hoitaa laskutuksen, raportoinnin ja ALV:n puolestasi."
   },
   "plan": {
+    "title": "3-vaiheinen suunnitelma",
+    "subtitle": "Aloita matkasi kohti automatisoitua liiketoimintaa",
+    "step1": {
+      "title": "Aloita pilotti",
+      "description": "Ilmainen 30 päivän pilotti, ei korttitietoja"
+    },
+    "step2": {
+      "title": "Automatisoi",
+      "description": "Automatisoi prosessit 7 päivässä"
+    },
+    "step3": {
+      "title": "Kasva",
+      "description": "Kasva ilman kiirettä – säästä 10h/viikko"
+    },
     "steps": [
       "Aloita ilmainen pilotti (30 päivää)",
       "Automatisoi prosessit 7 päivässä",
@@ -22,8 +73,23 @@
     ]
   },
   "cta": {
-    "primary": "Aloita nyt",
-    "secondary": "Pyydä demo"
+    "primary": {
+      "text": "Aloita nyt"
+    },
+    "secondary": {
+      "text": "Pyydä demo"
+    },
+    "failure": {
+      "title": "Älä anna rutiinien varjostaa potentiaaliasi",
+      "description": "Aloita ilmainen 30 päivän pilotti ja koe, miten paljon aikaa vapautuu kasvulle."
+    },
+    "success": {
+      "title": "Kun valitset Converton:",
+      "metric1": "Enemmän aikaa strategialle",
+      "metric2": "Ydinvirheitä kirjanpidossa",
+      "metric3": "Asiakastuki vastaa"
+    },
+    "testimonial": "Converto muutti tavan, jolla hallitsemme taloutemme."
   },
   "success": {
     "metric1": "10h/viikko säästetty aikaa",
