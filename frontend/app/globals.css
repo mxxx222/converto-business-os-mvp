@@ -1161,6 +1161,17 @@ a {
 html {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  /* Mobile viewport fixes */
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Body mobile fixes */
+body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 
 /* Mobile-safe viewport */
@@ -1168,4 +1179,14 @@ html {
   .min-h-screen {
     min-height: 100dvh;
   }
+}
+
+/* Prevent horizontal scroll on mobile */
+* {
+  box-sizing: border-box;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
 }
