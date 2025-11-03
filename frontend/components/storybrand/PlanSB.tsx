@@ -35,14 +35,13 @@ export default function PlanSB({ lang = 'fi' }: { lang?: 'fi' | 'en' }) {
   return (
     <TrackPlanSection
       className="py-12 md:py-20 bg-black"
-      id="plan"
-      aria-labelledby="plan-title"
       additionalProperties={{
         plan_steps_count: steps.length,
         plan_complexity: 'simple',
         has_duration_estimates: true,
       }}
     >
+      <div id="plan" aria-labelledby="plan-title">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-12 md:mb-16">
           <h2 id="plan-title" className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6 md:mb-8 neon-glow">
