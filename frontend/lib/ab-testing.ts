@@ -50,14 +50,8 @@ class ABTestingManager {
    * Assign visitor to variant based on traffic split
    */
   assignVariant(): 'A' | 'B' {
-    // Don't check stored variant here - that should be done in useEffect
     // This function only assigns a new variant based on hash
-
-    // Check test status
-    if (!this.isTestActive()) {
-      this.currentVariant = 'A'; // Default to control if test not active
-      return 'A';
-    }
+    // No localStorage reads, no side effects - all checking done in useEffect
 
     // Generate consistent variant assignment based on user ID/session
     const userHash = this.generateUserHash();
@@ -65,10 +59,6 @@ class ABTestingManager {
 
     // 50/50 split for this test
     this.currentVariant = random < 0.5 ? 'A' : 'B';
-
-    // Don't store or track here - both should be done in useEffect to avoid side effects
-    // this.storeVariant(this.currentVariant);
-    // this.trackEvent('variant_assignment', { variant: this.currentVariant });
 
     return this.currentVariant;
   }
@@ -484,19 +474,34 @@ export function useABTesting() {
   // Use useEffect to assign variant only on client side
   useEffect(() => {
     if (typeof window !== 'undefined' && !variantInitializedRef.current) {
-      // Check stored variant first (read localStorage in useEffect, not in assignVariant)
+      // All localStorage reads happen here, not in assignVariant
       let assignedVariant: 'A' | 'B';
       try {
+        // Check stored variant first
         const stored = localStorage.getItem('converto_ab_variant');
         if (stored === 'A' || stored === 'B') {
           assignedVariant = stored;
         } else {
-          // Assign new variant (without reading localStorage)
-          assignedVariant = abTesting.assignVariant();
+          // Check if test is active (read localStorage here)
+          const testDisabled = localStorage.getItem('converto_ab_test_disabled');
+          if (testDisabled === 'true') {
+            assignedVariant = 'A';
+          } else {
+            // Check test schedule
+            const testStart = new Date('2025-11-03');
+            const testEnd = new Date('2025-12-03');
+            const now = new Date();
+            if (now >= testStart && now <= testEnd) {
+              // Test is active - assign new variant
+              assignedVariant = abTesting.assignVariant();
+            } else {
+              assignedVariant = 'A';
+            }
+          }
         }
       } catch {
-        // If localStorage fails, assign new variant
-        assignedVariant = abTesting.assignVariant();
+        // If localStorage fails, default to 'A'
+        assignedVariant = 'A';
       }
 
       variantRef.current = assignedVariant;
