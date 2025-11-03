@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth/useAuth';
+import { generateReports, downloadReport } from '@/lib/api/reports';
 import { OSLayout } from '@/components/dashboard/OSLayout';
 import { Download, TrendingUp, TrendingDown, DollarSign, Loader } from 'lucide-react';
 
@@ -23,35 +24,21 @@ export default function ReportsPage() {
 
   useEffect(() => {
     if (user) {
-      generateReports();
+      loadReports();
     }
   }, [selectedPeriod, user, team]);
 
-  const generateReports = async () => {
+  const loadReports = async () => {
     try {
       setLoading(true);
 
       // Try to fetch from API
       try {
-        const session = await supabase.auth.getSession();
-        const token = session.data.session?.access_token;
-
-        const response = await fetch('/api/reports/generate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-          body: JSON.stringify({ period: selectedPeriod }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.reports && Array.isArray(data.reports)) {
-            setReports(data.reports);
-            setLoading(false);
-            return;
-          }
+        const data = await generateReports(selectedPeriod); // API call
+        if (data.reports && Array.isArray(data.reports)) {
+          setReports(data.reports);
+          setLoading(false);
+          return;
         }
       } catch (apiError) {
         console.warn('Reports API not available, using demo data:', apiError);
@@ -146,29 +133,9 @@ export default function ReportsPage() {
     },
   ];
 
-  const downloadReport = async (reportType: string) => {
+  const handleDownload = async (reportType: string) => {
     try {
-      const session = await supabase.auth.getSession();
-      const token = session.data.session?.access_token;
-
-      const response = await fetch(
-        `/api/reports/download?type=${reportType}&period=${selectedPeriod}&format=pdf`,
-        {
-          headers: {
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-        }
-      );
-
-      if (!response.ok) throw new Error('Download failed');
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${reportType}-${selectedPeriod}.pdf`;
-      a.click();
-      window.URL.revokeObjectURL(url);
+      await downloadReport(reportType, selectedPeriod);
     } catch (error) {
       console.error('Error downloading report:', error);
       alert('Virhe ladattaessa raporttia - PDF-generointi tulossa pian');
@@ -271,7 +238,7 @@ export default function ReportsPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => downloadReport('vat')}
+                      onClick={() => handleDownload('vat')}
                       className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                     >
                       <Download size={16} />
@@ -343,7 +310,7 @@ export default function ReportsPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => downloadReport('cashflow')}
+                      onClick={() => handleDownload('cashflow')}
                       className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                     >
                       <Download size={16} />
@@ -434,7 +401,7 @@ export default function ReportsPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => downloadReport('income')}
+                      onClick={() => handleDownload('income')}
                       className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                     >
                       <Download size={16} />
@@ -501,7 +468,7 @@ export default function ReportsPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => downloadReport('expenses')}
+                      onClick={() => handleDownload('expenses')}
                       className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                     >
                       <Download size={16} />
@@ -553,7 +520,7 @@ export default function ReportsPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => downloadReport('customers')}
+                      onClick={() => handleDownload('customers')}
                       className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                     >
                       <Download size={16} />

@@ -31,6 +31,7 @@ from shared_core.modules.finance_agent.router import router as finance_agent_rou
 from shared_core.modules.notion.router import router as notion_router
 from shared_core.modules.ocr.router import router as ocr_router
 from shared_core.modules.receipts.router import router as receipts_router
+from shared_core.modules.reports.router import router as reports_router
 from shared_core.modules.supabase.router import router as supabase_router
 from shared_core.utils.db import Base, engine
 
@@ -160,6 +161,7 @@ def create_app() -> FastAPI:
     app.include_router(finance_agent_router)
     app.include_router(ocr_router)
     app.include_router(receipts_router)
+    app.include_router(reports_router)
     app.include_router(supabase_router)
     app.include_router(notion_router)
     # app.include_router(linear_router)  # Replaced by linear_optimized_router

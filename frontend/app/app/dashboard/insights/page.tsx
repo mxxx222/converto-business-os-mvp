@@ -3,9 +3,13 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth/useAuth';
+import { useRealtimeInsights } from '@/hooks/useRealtimeInsights';
+import { useMonitoring } from '@/hooks/useMonitoring';
+import { fetchInsights } from '@/lib/api/finance-agent';
 import { OSLayout } from '@/components/dashboard/OSLayout';
 import { TrendingUp, AlertCircle, Lightbulb, Target, Loader } from 'lucide-react';
 import Link from 'next/link';
+import type { InsightUpdate } from '@/lib/realtime/subscriptions';
 
 interface Insight {
   id: string;
@@ -26,52 +30,42 @@ export default function InsightsPage() {
   const { user, team } = useAuth();
   const supabase = createClient();
 
-  useEffect(() => {
-    if (user) {
-      fetchInsights();
-    }
-  }, [user, team]);
+  // Initialize monitoring
+  useMonitoring();
 
-  const fetchInsights = async () => {
+  // Subscribe to realtime insights
+  useRealtimeInsights((newInsight: InsightUpdate) => {
+    setInsights((prev) => {
+      // Tarkista onko insight jo olemassa
+      const exists = prev.some((i) => i.id === newInsight.id);
+      if (!exists) {
+        return [{ ...newInsight, created_at: new Date().toISOString() } as Insight, ...prev];
+      }
+      return prev;
+    });
+  });
+
+  const loadInsights = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      // Try to fetch from FinanceAgent API
-      try {
-        const session = await supabase.auth.getSession();
-        const token = session.data.session?.access_token;
-
-        const response = await fetch('/api/finance-agent/insights', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.insights && Array.isArray(data.insights)) {
-            setInsights(data.insights);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch (apiError) {
-        console.warn('FinanceAgent API not available, using demo data:', apiError);
-      }
-
-      // Fallback: use demo insights
-      setInsights(getDemoInsights());
-    } catch (err: any) {
-      console.error('Error fetching insights:', err);
+      const data = await fetchInsights();
+      setInsights(data.insights || []);
+    } catch (err) {
+      console.error('Error loading insights:', err);
       setError('Virhe ladattaessa insights-dataa');
+      // Fallback: use demo insights
       setInsights(getDemoInsights());
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      loadInsights();
+    }
+  }, [user]);
 
   const getDemoInsights = (): Insight[] => [
     {
@@ -168,7 +162,7 @@ export default function InsightsPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">AI Insights</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Automaattiset suositukset liiketoimintasi optimoimiseksi
+            Automaattiset suositukset liiketoimintasi optimoimiseksi (Realtime)
           </p>
         </div>
 

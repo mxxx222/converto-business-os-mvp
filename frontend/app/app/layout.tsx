@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import { ToastContainer } from '@/components/dashboard/Toast';
 
 export const metadata: Metadata = {
   title: 'Converto™ Business OS – Kirjaudu',
@@ -82,6 +83,7 @@ export default function AppLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       {children}
+      <ToastContainer />
       {/* Plausible tracking for app subdomain */}
       <Script
         async
@@ -92,4 +94,3 @@ export default function AppLayout({
     </>
   );
 }
-

@@ -1,10 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth/useAuth';
 import { ProtectedButton } from '@/components/dashboard/ProtectedButton';
 import { OSLayout } from '@/components/dashboard/OSLayout';
+import { useRealtimeReceipts } from '@/hooks/useRealtimeReceiptsNew';
+import { useMonitoring } from '@/hooks/useMonitoring';
+import { fetchReceipts, uploadReceipt, deleteReceipt } from '@/lib/api/receipts';
+import type { ReceiptUpdate } from '@/lib/realtime/subscriptions';
 import {
   Upload,
   Download,
@@ -25,57 +29,44 @@ export default function ReceiptsPage() {
   const { user, team } = useAuth();
   const supabase = createClient();
 
-  useEffect(() => {
-    if (user) {
-      fetchReceipts();
+  // Initialize monitoring
+  useMonitoring();
 
-      // Subscribe to realtime updates
-      const channel = supabase
-        .channel('receipts-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'receipts',
-            filter: team?.teamId ? `team_id=eq.${team.teamId}` : undefined,
-          },
-          () => {
-            fetchReceipts();
-          }
-        )
-        .subscribe();
+  // Subscribe to realtime updates
+  const handleReceiptUpdate = useCallback(
+    (updatedReceipt: ReceiptUpdate) => {
+      setReceipts((prev) => {
+        const index = prev.findIndex((r) => r.id === updatedReceipt.id);
+        if (index >= 0) {
+          const updated = [...prev];
+          updated[index] = { ...updated[index], ...updatedReceipt };
+          return updated;
+        }
+        return [{ ...updatedReceipt } as Receipt, ...prev];
+      });
+    },
+    []
+  );
 
-      return () => {
-        channel.unsubscribe();
-      };
-    }
-  }, [user, team, filter]);
+  useRealtimeReceipts(handleReceiptUpdate);
 
-  const fetchReceipts = async () => {
+  const loadReceipts = async () => {
     try {
       setLoading(true);
-      let query = supabase.from('receipts').select('*').order('created_at', { ascending: false });
-
-      if (filter !== 'all') {
-        query = query.eq('status', filter);
-      }
-
-      // Filter by team if available
-      if (team?.teamId) {
-        query = query.eq('team_id', team.teamId);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-      setReceipts((data || []) as Receipt[]);
+      const data = await fetchReceipts(0, 50, filter !== 'all' ? filter : undefined);
+      setReceipts((data.receipts || []) as Receipt[]);
     } catch (error: any) {
-      console.error('Error fetching receipts:', error);
+      console.error('Error loading receipts:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      loadReceipts();
+    }
+  }, [user, team, filter]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -83,69 +74,8 @@ export default function ReceiptsPage() {
 
     try {
       setUploading(true);
-
-      // 1. Upload to Supabase Storage (if bucket exists)
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}_${file.name}`;
-      const storagePath = `${user.id}/${fileName}`;
-
-      // Try to upload to storage
-      let imageUrl: string | null = null;
-      try {
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('receipts')
-          .upload(storagePath, file);
-
-        if (!uploadError && uploadData) {
-          const { data: urlData } = supabase.storage.from('receipts').getPublicUrl(storagePath);
-          imageUrl = urlData?.publicUrl || null;
-        }
-      } catch (storageError) {
-        console.warn('Storage not available, continuing without image URL:', storageError);
-      }
-
-      // 2. Call OCR API (if available)
-      let ocrData: any = null;
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const ocrResponse = await fetch('/api/ocr/process', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (ocrResponse.ok) {
-          ocrData = await ocrResponse.json();
-        }
-      } catch (ocrError) {
-        console.warn('OCR API not available, creating receipt without OCR data:', ocrError);
-      }
-
-      // 3. Insert receipt to database
-      const receiptData: any = {
-        user_id: user.id,
-        team_id: team.teamId,
-        vendor: ocrData?.vendor || file.name.split('.')[0],
-        total_amount: ocrData?.total_amount || ocrData?.amount || 0,
-        vat_amount: ocrData?.vat_amount || 0,
-        net_amount: ocrData?.net_amount || ocrData?.total_amount || 0,
-        category: ocrData?.category || 'other',
-        date: ocrData?.date || new Date().toISOString().split('T')[0],
-        image_url: imageUrl,
-        ocr_confidence: ocrData?.confidence || null,
-        ocr_raw_data: ocrData || null,
-        status: ocrData ? 'processed' : 'pending',
-      };
-
-      const { error: insertError } = await supabase.from('receipts').insert(receiptData);
-
-      if (insertError) throw insertError;
-
-      // Refresh list
-      fetchReceipts();
-
-      // Reset input
+      await uploadReceipt(file);
+      loadReceipts();
       e.target.value = '';
     } catch (error: any) {
       console.error('Error uploading receipt:', error);
@@ -159,10 +89,8 @@ export default function ReceiptsPage() {
     if (!confirm('Oletko varma että haluat poistaa tämän kuittia?')) return;
 
     try {
-      const { error } = await supabase.from('receipts').delete().eq('id', receiptId);
-
-      if (error) throw error;
-      fetchReceipts();
+      await deleteReceipt(receiptId);
+      setReceipts((prev) => prev.filter((r) => r.id !== receiptId));
     } catch (error: any) {
       console.error('Error deleting receipt:', error);
       alert('Virhe poistettaessa kuittia: ' + (error.message || 'Tuntematon virhe'));
@@ -207,7 +135,7 @@ export default function ReceiptsPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Kuitit</h1>
-            <p className="text-gray-600 dark:text-gray-400">Hallinnoi ja käsittele kuitteja</p>
+            <p className="text-gray-600 dark:text-gray-400">Hallinnoi ja käsittele kuitteja (Realtime)</p>
           </div>
 
           <ProtectedButton
