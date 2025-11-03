@@ -3,7 +3,7 @@
  */
 export function reportWebVitals(metric: any) {
   // Send to analytics
-  if (typeof window !== 'undefined' && window.fetch) {
+  if (typeof window !== 'undefined') {
     fetch('/api/analytics/web-vitals', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
