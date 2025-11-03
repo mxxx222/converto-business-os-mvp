@@ -99,7 +99,7 @@ export class RealtimeManager {
         console.error('Realtime error:', err);
         onError(new Error(err.message || 'Realtime connection error'));
       })
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         console.log(`Channel ${channelName} status:`, status);
       });
 
