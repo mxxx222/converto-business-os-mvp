@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import postsData from '../../../data/blog/posts.json';
+import postsData from '@/data/blog/posts.json';
 import '../styles.css';
 
 interface BlogPostPageProps {
@@ -54,13 +54,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     <div class="prose-content">
       <h1>${post.title}</h1>
       <p class="lead text-xl text-gray-600 mb-8">${post.excerpt}</p>
-      
+
       <div class="space-y-6">
         <section>
           <h2>Johdanto</h2>
           <p>Tämä on esimerkki-blogiartikkeli. Sisältö voidaan ladata markdown-tiedostoista tai tietokannasta.</p>
         </section>
-        
+
         <section>
           <h2>Päällimmäiset hyödyt</h2>
           <ul>
@@ -70,7 +70,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <li>Parantaa työnlaatua</li>
           </ul>
         </section>
-        
+
         <section>
           <h2>Yhteenveto</h2>
           <p>Automaatio on investointi joka maksaa itsensä takaisin nopeasti. Aloita pienenä ja kasva tarpeen mukaan.</p>
@@ -84,8 +84,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-6">
-          <Link 
-            href="/blog" 
+          <Link
+            href="/blog"
             className="text-gray-600 hover:text-gray-900 inline-flex items-center mb-4"
           >
             ← Takaisin blogiin
@@ -106,11 +106,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </span>
             ))}
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             {post.title}
           </h1>
-          
+
           <p className="text-xl text-gray-600 mb-6">
             {post.excerpt}
           </p>
@@ -133,7 +133,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </header>
 
         {/* Article Content */}
-        <article 
+        <article
           className="prose prose-lg max-w-none mb-12"
           dangerouslySetInnerHTML={{ __html: content }}
         />
@@ -200,4 +200,3 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     </div>
   );
 }
-

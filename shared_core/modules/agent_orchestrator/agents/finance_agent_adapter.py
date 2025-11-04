@@ -1,10 +1,9 @@
 """Adapter to make FinanceAgent compatible with Agent Orchestrator."""
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 from shared_core.modules.finance_agent.service import FinanceAgentService
-from shared_core.modules.finance_agent.models import AgentContextRequest
 
 from ..agent_registry import Agent, AgentMetadata, AgentType
 
@@ -14,22 +13,19 @@ logger = logging.getLogger("converto.agent_orchestrator")
 class FinanceAgentAdapter(Agent):
     """Adapter to make FinanceAgent compatible with Agent Orchestrator."""
 
-    def __init__(self, tenant_id: str, user_id: Optional[str] = None):
+    def __init__(self, tenant_id: str, user_id: str | None = None):
         self.tenant_id = tenant_id
         self.user_id = user_id
-        self._service: Optional[FinanceAgentService] = None
+        self._service: FinanceAgentService | None = None
 
     @property
     def service(self) -> FinanceAgentService:
         """Get or create FinanceAgentService instance."""
         if self._service is None:
-            self._service = FinanceAgentService(
-                tenant_id=self.tenant_id,
-                user_id=self.user_id
-            )
+            self._service = FinanceAgentService(tenant_id=self.tenant_id, user_id=self.user_id)
         return self._service
 
-    async def execute(self, input_data: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, input_data: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """Execute FinanceAgent analysis.
 
         Args:
@@ -46,6 +42,7 @@ class FinanceAgentAdapter(Agent):
                 # In production, use dependency injection or pass db via context
                 # For now, we'll use a session generator
                 from shared_core.utils.db import get_session
+
                 db = next(get_session(), None)
                 if not db:
                     raise ValueError("Database session not available")
@@ -55,16 +52,19 @@ class FinanceAgentAdapter(Agent):
             insights = self.service.analyze_receipts(db, days_back=days_back)
 
             # Convert insights to dict
-            insights_data = [
-                {
-                    "type": insight.type,
-                    "title": insight.title,
-                    "description": insight.description,
-                    "confidence": insight.confidence,
-                    "metadata": insight.metadata,
-                }
-                for insight in insights
-            ] if insights else []
+            if insights:
+                insights_data = [
+                    {
+                        "type": insight.type,
+                        "title": insight.title,
+                        "description": insight.description,
+                        "confidence": insight.confidence,
+                        "metadata": insight.metadata,
+                    }
+                    for insight in insights
+                ]
+            else:
+                insights_data = []
 
             # Detect spending alerts
             alerts = self.service.detect_spending_alerts(db)
@@ -131,7 +131,7 @@ class FinanceAgentAdapter(Agent):
             avg_response_time_ms=2000,  # Average response time
         )
 
-    async def validate_input(self, input_data: Dict[str, Any]) -> bool:
+    async def validate_input(self, input_data: dict[str, Any]) -> bool:
         """Validate input data for FinanceAgent.
 
         Args:

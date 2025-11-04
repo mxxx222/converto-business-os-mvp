@@ -6,7 +6,7 @@ Sentry.init({
   environment: process.env.NODE_ENV || 'development',
   // Server-side specific config
   integrations: [
-    Sentry.httpIntegration(),
+    new Sentry.Integrations.Http({ tracing: true }),
   ],
 });
 

@@ -60,66 +60,22 @@ export default function PremiumPricing(): JSX.Element {
 
   const handlePlanSelect = async (planName: string) => {
     try {
-      // Get email from user (you can add a form or prompt)
-      const email = prompt('Syötä sähköpostiosoitteesi jatkaaksesi maksamaan:')
-
-      if (!email || !email.includes('@')) {
-        alert('Kelvollinen sähköpostiosoite vaaditaan')
-        return
-      }
-
-      // Create Stripe checkout session
-      const response = await fetch('/api/checkout', {
+      const response = await fetch('/api/pilot-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          email: '',
+          source: 'premium_pricing',
           plan: planName,
-          billingCycle: billingCycle,
-          email: email
+          billing: billingCycle
         })
       })
 
       if (response.ok) {
-        const { url } = await response.json()
-        if (url) {
-          window.location.href = url
-        } else {
-          // Fallback to pilot signup if Stripe not configured
-          const pilotResponse = await fetch('/api/pilot-signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email,
-              source: 'premium_pricing',
-              plan: planName,
-              billing: billingCycle
-            })
-          })
-
-          if (pilotResponse.ok) {
-            window.location.href = '/kiitos'
-          }
-        }
-      } else {
-        // Fallback to pilot signup
-        const pilotResponse = await fetch('/api/pilot-signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            source: 'premium_pricing',
-            plan: planName,
-            billing: billingCycle
-          })
-        })
-
-        if (pilotResponse.ok) {
-          window.location.href = '/kiitos'
-        }
+        window.location.href = '/kiitos'
       }
     } catch (error) {
-      console.error('Checkout error:', error)
-      alert('Tapahtui virhe. Yritä uudelleen.')
+      console.error('Signup error:', error)
     }
   }
 

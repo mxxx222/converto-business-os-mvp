@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import postsData from '../../data/blog/posts.json';
+import postsData from '@/data/blog/posts.json';
 import './styles.css';
 
 export const metadata: Metadata = {
@@ -22,8 +22,8 @@ export default function BlogPage() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-6">
-          <Link 
-            href="/premium" 
+          <Link
+            href="/premium"
             className="text-gray-600 hover:text-gray-900 inline-flex items-center mb-4"
           >
             ← Takaisin etusivulle
@@ -158,4 +158,3 @@ export default function BlogPage() {
     </div>
   );
 }
-

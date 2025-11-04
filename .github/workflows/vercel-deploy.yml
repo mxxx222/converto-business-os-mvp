@@ -1,83 +1,44 @@
-name: Vercel Deploy
+# 🚀 Vercel Deployment - Converto Business OS
+name: Deploy to Vercel
 
 on:
   push:
-    branches: [main]
+    branches: [marketing-v0, main]
   workflow_dispatch:
 
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Deploy to Vercel
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: 'frontend/package-lock.json'
 
       - name: Install dependencies
-        run: |
-          cd frontend
-          npm ci
+        run: npm ci
 
       - name: Build project
-        run: |
-          cd frontend
-          npm run build
-        env:
-          NODE_ENV: production
+        run: npm run build
 
-      - name: Check build output
-        run: |
-          ls -la frontend/.next/
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
 
-      - name: Deploy to Vercel (with conditional secrets)
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_PROJECT_ID" ]; then
-            echo "🚀 Deploying to Vercel with automated deployment..."
-            npm install -g vercel@latest
-            vercel --prod --token=$VERCEL_TOKEN --yes
-          else
-            echo "⚠️ Vercel secrets not configured. Manual deployment required."
-          fi
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deployment instructions
-        run: |
-          echo "🌐 CONVERTO BUSINESS OS DEPLOYMENT STATUS"
-          echo "=========================================="
-          echo ""
-          echo "✅ Build completed successfully"
-          echo "🔧 Manual deployment options:"
-          echo ""
-          echo "OPTION 1 - Vercel CLI (RECOMMENDED):"
-          echo "  cd frontend"
-          echo "  npm install -g vercel@latest"
-          echo "  vercel login"
-          echo "  vercel --prod --yes"
-          echo ""
-          echo "OPTION 2 - Vercel Dashboard:"
-          echo "  URL: https://vercel.com/maxs-projects-149851b4/converto-business-os-quantum-mvp-1"
-          echo "  1. Open dashboard"
-          echo "  2. Go to Settings → Git"
-          echo "  3. Ensure GitHub repo is connected"
-          echo "  4. Deploy manually"
-          echo ""
-          echo "OPTION 3 - Wait for auto-deployment:"
-          echo "  - Push changes to GitHub main branch"
-          echo "  - Vercel will auto-deploy if configured"
-          echo ""
-          echo "🎯 DEPLOYMENT VERIFICATION:"
-          echo "  1. Check https://converto.fi"
-          echo "  2. Verify 'Converto Business OS™ - Automatisoi yrityksesi' appears"
-          echo "  3. Confirm NO gamification/AI assistant content"
-          echo "  4. Should show Services Overview (OCR, VAT, ChatService, Automation)"
-          echo ""
-          echo "📞 If issues persist, manual Vercel CLI deployment is required."
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

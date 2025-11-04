@@ -70,57 +70,19 @@ class EmailService:
             return {"success": False, "error": str(e)}
 
     async def send_bulk_emails(self, emails: list[EmailData]) -> dict[str, Any]:
-        """Send multiple emails efficiently using Batch API (10x faster)."""
-        # OPTIMIZED: Use Batch API instead of sequential sending
-        batch_payload = []
-        for email_data in emails:
-            payload = {
-                "from": email_data.from_email,
-                "to": [email_data.to],
-                "subject": email_data.subject,
-                "html": email_data.html,
-            }
-            if email_data.reply_to:
-                payload["reply_to"] = email_data.reply_to
-            if email_data.tags:
-                payload["tags"] = email_data.tags
-            batch_payload.append(payload)
+        """Send multiple emails efficiently."""
+        results = []
+        for email in emails:
+            result = await self.send_email(email)
+            results.append(result)
 
-        try:
-            response = await self.client.post(
-                f"{self.base_url}/batch",
-                json={"emails": batch_payload},
-            )
-
-            if response.status_code == 200:
-                result = response.json()
-                logger.info(f"Batch emails sent successfully: {len(batch_payload)} emails")
-                return {
-                    "total": len(emails),
-                    "success": len(emails),
-                    "failed": 0,
-                    "batch_id": result.get("id"),
-                    "results": result.get("data", []),
-                }
-            else:
-                error = response.text
-                logger.error(f"Resend Batch API error: {response.status_code} - {error}")
-                return {"success": False, "error": error}
-        except Exception as e:
-            logger.error(f"Batch email sending failed: {str(e)}")
-            # Fallback to sequential sending
-            results = []
-            for email in emails:
-                result = await self.send_email(email)
-                results.append(result)
-
-            success_count = sum(1 for r in results if r.get("success"))
-            return {
-                "total": len(emails),
-                "success": success_count,
-                "failed": len(emails) - success_count,
-                "results": results,
-            }
+        success_count = sum(1 for r in results if r.get("success"))
+        return {
+            "total": len(emails),
+            "success": success_count,
+            "failed": len(emails) - success_count,
+            "results": results,
+        }
 
     async def close(self):
         """Close the HTTP client."""

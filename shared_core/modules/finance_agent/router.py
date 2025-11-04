@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -107,56 +105,6 @@ async def get_insights(
 
     agent = FinanceAgentService(tenant_id=tenant_id)
     return agent.analyze_receipts(db, days_back=days_back)
-
-
-@router.get("/insights/dashboard")
-async def get_dashboard_insights(
-    tenant_id: str | None = None,
-    days_back: int = 30,
-    db: Session = Depends(get_session),
-) -> dict:
-    """Get dashboard-formatted insights (compatible with frontend dashboard)."""
-
-    # Get tenant_id from request state if not provided
-    # This endpoint should be called with auth middleware setting tenant_id
-    try:
-        agent = FinanceAgentService(tenant_id=tenant_id or "dev-tenant")
-        insights = agent.analyze_receipts(db, days_back=days_back)
-        agent.detect_spending_alerts(db)
-
-        # Convert to dashboard format
-        dashboard_insights = []
-        for insight in insights:
-            dashboard_insights.append(
-                {
-                    "id": insight.id if hasattr(insight, "id") else str(hash(str(insight))),
-                    "title": insight.title if hasattr(insight, "title") else str(insight),
-                    "description": insight.description if hasattr(insight, "description") else "",
-                    "type": insight.type if hasattr(insight, "type") else "recommendation",
-                    "impact": insight.impact if hasattr(insight, "impact") else "medium",
-                    "confidence": insight.confidence if hasattr(insight, "confidence") else 0.8,
-                    "created_at": datetime.now().isoformat(),
-                }
-            )
-
-        return {
-            "insights": dashboard_insights,
-            "generated_at": datetime.now().isoformat(),
-            "receipt_count": 0,  # TODO: Get from DB
-            "total_amount": 0.0,
-            "total_vat": 0.0,
-            "avg_amount": 0.0,
-        }
-    except Exception:
-        # Return empty insights on error (fallback to demo data)
-        return {
-            "insights": [],
-            "generated_at": datetime.now().isoformat(),
-            "receipt_count": 0,
-            "total_amount": 0.0,
-            "total_vat": 0.0,
-            "avg_amount": 0.0,
-        }
 
 
 @router.get("/alerts", response_model=list[SpendingAlert])

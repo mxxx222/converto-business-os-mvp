@@ -1,7 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import { MetricsDashboard } from '@/components/workflows/MetricsDashboard';
 
 export default function WorkflowMetricsPage() {

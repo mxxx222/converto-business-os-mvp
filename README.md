@@ -2,7 +2,7 @@
 
 **AI-powered business management platform for Finnish entrepreneurs**
 
-[![Production Ready](https://img.shields.io/badge/status-production%20ready-success)](https://github.com/mxxx222/converto-business-os-mvp)
+[![Production Ready](https://img.shields.io/badge/status-production%20ready-success)](https://github.com/mxxx222/converto-business-os-quantum-mvp-1)
 [![Next.js](https://img.shields.io/badge/Next.js-14.2.10-black)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -59,8 +59,8 @@
 ### Local Development (Docker)
 ```bash
 # Clone repository
-git clone https://github.com/mxxx222/converto-business-os-mvp.git
-cd converto-business-os-mvp
+git clone https://github.com/mxxx222/converto-business-os-quantum-mvp-1.git
+cd converto-business-os-quantum-mvp-1
 
 # Setup environment
 cp .env.example .env

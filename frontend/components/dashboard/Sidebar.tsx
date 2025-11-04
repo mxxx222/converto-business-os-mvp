@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Brain, Receipt, BarChart3, Settings, ChevronLeft, Gift } from 'lucide-react';
+import { Home, Brain, Receipt, BarChart3, Settings, ChevronLeft } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 interface SidebarProps {
@@ -11,12 +11,11 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { icon: Home, label: 'Dashboard', path: '/app/dashboard' },
-  { icon: Brain, label: 'Insights', path: '/app/dashboard/insights' },
-  { icon: Receipt, label: 'Kuitit', path: '/app/dashboard/receipts' },
-  { icon: BarChart3, label: 'Raportit', path: '/app/dashboard/reports' },
-  { icon: Gift, label: 'Referral', path: '/app/dashboard/referral' },
-  { icon: Settings, label: 'Asetukset', path: '/app/dashboard/settings' },
+  { icon: Home, label: 'Dashboard', path: '/dashboard' },
+  { icon: Brain, label: 'Insights', path: '/dashboard/insights' },
+  { icon: Receipt, label: 'Kuitit', path: '/dashboard/receipts' },
+  { icon: BarChart3, label: 'Raportit', path: '/dashboard/reports' },
+  { icon: Settings, label: 'Asetukset', path: '/dashboard/settings' },
 ];
 
 export function Sidebar({ currentPath, collapsed, onToggle }: SidebarProps) {

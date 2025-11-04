@@ -1,11 +1,9 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import { useEffect, useState } from 'react';
-import { WorkflowCanvas } from '../../components/workflows/WorkflowCanvas';
-import { NodePalette } from '../../components/workflows/NodePalette';
-import { WorkflowTemplates } from '../../components/workflows/WorkflowTemplates';
+import { WorkflowCanvas } from '@/components/workflows/WorkflowCanvas';
+import { NodePalette } from '@/components/workflows/NodePalette';
+import { WorkflowTemplates } from '@/components/workflows/WorkflowTemplates';
 
 interface WorkflowTemplate {
   template_id: string;

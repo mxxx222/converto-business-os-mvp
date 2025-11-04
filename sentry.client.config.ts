@@ -7,8 +7,8 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0,
   environment: process.env.NODE_ENV || 'development',
   integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration(),
+    new Sentry.BrowserTracingIntegration(),
+    new Sentry.ReplayIntegration(),
   ],
   // Performance monitoring
   beforeSend(event, hint) {

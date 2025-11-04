@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '../../lib/supabase/client';
-import type { Receipt } from '../../types/receipt';
+import { createClient } from '@/lib/supabase/client';
+import type { Receipt } from '@/types/receipt';
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
-import { OSLayout } from '../../components/dashboard/OSLayout';
-import { KPIWidget } from '../../components/dashboard/KPIWidget';
-import { FinanceAgentFeed } from '../../components/dashboard/FinanceAgentFeed';
-import { ReceiptList } from '../../components/dashboard/ReceiptList';
-import { showToast } from '../../components/dashboard/Toast';
-import { Euro, TrendingUp, Receipt as ReceiptIcon, Zap, Workflow } from 'lucide-react';
+import { OSLayout } from '@/components/dashboard/OSLayout';
+import { KPIWidget } from '@/components/dashboard/KPIWidget';
+import { FinanceAgentFeed } from '@/components/dashboard/FinanceAgentFeed';
+import { ReceiptList } from '@/components/dashboard/ReceiptList';
+import { showToast } from '@/components/dashboard/Toast';
+import { Euro, TrendingUp, Receipt as ReceiptIcon, Zap, Workflow, FileText, Clock } from 'lucide-react';
 import Link from 'next/link';
 
 const SUPABASE_CONFIGURED = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
@@ -24,6 +24,8 @@ export default function DashboardPage() {
     monthlySpending: { value: '0', change: 0 },
     receiptsProcessed: { value: 0, change: 0 },
     aiInsights: { value: 0 },
+    indexedFiles: { value: 0, change: 0 },
+    lastBuiltAt: null as string | null,
   });
 
   const supabase = createClient();
@@ -47,6 +49,7 @@ export default function DashboardPage() {
       if (user) {
         loadReceipts();
         setupRealtimeSubscription();
+        loadSearchStats();
       } else {
         setLoading(false);
       }
@@ -68,7 +71,8 @@ export default function DashboardPage() {
       );
       const monthlyTotal = monthly.reduce((sum, r) => sum + (r.total_amount || 0), 0);
 
-      setKpis({
+      setKpis((prev) => ({
+        ...prev,
         cashFlow: {
           value: total.toFixed(2) + '€',
           change: 12.5, // Mock - would calculate from previous period
@@ -84,7 +88,7 @@ export default function DashboardPage() {
         aiInsights: {
           value: 3, // Mock - would fetch from FinanceAgent
         },
-      });
+      }));
 
       if (!loading) {
         showToast(`${receipts.length} kuittia ladattu`, 'success');
@@ -156,48 +160,70 @@ export default function DashboardPage() {
     return channel;
   };
 
-  const exportToCSV = () => {
-    if (receipts.length === 0) {
-      showToast('Ei kuitteja viedäväksi', 'error');
-      return;
+  const loadSearchStats = async () => {
+    try {
+      // Try to fetch from backend API
+      const response = await fetch('/api/search/stats');
+      if (response.ok) {
+        const data = await response.json();
+        setKpis((prev) => ({
+          ...prev,
+          indexedFiles: {
+            value: data.count || 0,
+            change: 0,
+          },
+          lastBuiltAt: data.last_indexed_at || null,
+        }));
+      } else {
+        // Fallback: use build timestamp from environment
+        const buildTime = process.env.NEXT_PUBLIC_BUILD_TIME ||
+                         process.env.RENDER_GIT_COMMIT ||
+                         new Date().toISOString();
+        setKpis((prev) => ({
+          ...prev,
+          indexedFiles: {
+            value: receipts.length, // Fallback to receipts count
+            change: 0,
+          },
+          lastBuiltAt: buildTime,
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading search stats:', error);
+      // Fallback
+      const buildTime = process.env.NEXT_PUBLIC_BUILD_TIME || new Date().toISOString();
+      setKpis((prev) => ({
+        ...prev,
+        indexedFiles: {
+          value: receipts.length,
+          change: 0,
+        },
+        lastBuiltAt: buildTime,
+      }));
     }
-
-    const headers = ['Päivämäärä', 'Kauppa', 'Summa', 'ALV', 'Kategoria'];
-    const rows = receipts.map(r => [
-      r.created_at ? new Date(r.created_at).toLocaleDateString('fi-FI') : '',
-      r.vendor || '',
-      (r.total_amount || 0).toFixed(2),
-      (r.vat_amount || 0).toFixed(2),
-      r.category || '',
-    ]);
-
-    const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `converto-kuitti-export-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    showToast('CSV-export aloitettu', 'success');
   };
 
-  const exportToPDF = async () => {
-    if (receipts.length === 0) {
-      showToast('Ei kuitteja viedäväksi', 'error');
-      return;
+  const formatBuildTime = (timestamp: string | null) => {
+    if (!timestamp) return 'Ei saatavilla';
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleString('fi-FI', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch {
+      return timestamp;
     }
-
-    // In production, call backend API to generate PDF
-    showToast('PDF-export tulossa pian', 'info');
   };
 
   if (loading) {
     return (
       <OSLayout>
         <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
-            <div className="text-lg text-gray-600 dark:text-gray-400">Ladataan dashboardia...</div>
-          </div>
+          <div className="text-lg text-gray-600 dark:text-gray-400">Ladataan dashboardia...</div>
         </div>
       </OSLayout>
     );
@@ -277,7 +303,7 @@ export default function DashboardPage() {
         </div>
 
         {/* KPI Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           <KPIWidget
             title="Kassavirta"
             value={kpis.cashFlow.value}
@@ -311,6 +337,23 @@ export default function DashboardPage() {
             changeLabel="aktiiviset"
             icon={<Zap className="w-5 h-5" />}
             color="purple"
+            loading={loading}
+          />
+          <KPIWidget
+            title="Indeksoidut tiedostot"
+            value={kpis.indexedFiles.value.toString()}
+            change={kpis.indexedFiles.change}
+            changeLabel="vs. viime viikko"
+            icon={<FileText className="w-5 h-5" />}
+            color="blue"
+            loading={loading}
+          />
+          <KPIWidget
+            title="Viimeisin build"
+            value={formatBuildTime(kpis.lastBuiltAt)}
+            change={0}
+            icon={<Clock className="w-5 h-5" />}
+            color="blue"
             loading={loading}
           />
         </div>

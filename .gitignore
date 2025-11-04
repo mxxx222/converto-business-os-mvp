@@ -12,7 +12,6 @@
 !package-mcp.json
 !mcp_*.js
 !mcp_*.json
-!vercel.json
 !AUTO_DEPLOY_MCP_GUIDE.md
 !test_mcp_*.sh
 !CONVERTO_ENTERPRISE_BLUEPRINT.md
@@ -32,9 +31,6 @@
 !PRIORITIES_4-7_IMPLEMENTATION.md
 !docs/
 !docs/**
-!docker-compose.modular-core.yml
-!supabase/
-!supabase/**
 
 # allow code dirs
 !backend/
@@ -42,36 +38,22 @@
 !frontend/
 !frontend/app/
 !frontend/app/**
-!frontend/data/
-!frontend/data/**
 !frontend/lib/
 !frontend/lib/**
-!frontend/components/
-!frontend/components/**
 !frontend/hooks/
 !frontend/hooks/**
 !frontend/types/
 !frontend/types/**
 !frontend/middleware.ts
-!frontend/sentry.client.config.ts
-!frontend/sentry.server.config.ts
-!sentry.client.config.ts
-!sentry.server.config.ts
 !shared_core/
 !shared_core/**
 !scripts/
 !scripts/**
 !QUICK_SETUP_GUIDE.md
-!DEPLOY.md
-!VERCEL_DEPLOY_GUIDE.md
 !frontend/.nvmrc
 !frontend/next.config.js
 !frontend/Dockerfile
 !frontend/tsconfig.json
-!frontend/vercel.json
-!frontend/package.json
-!frontend/public/
-!frontend/public/**
 !app/static/
 
 # inside allowed dirs, re-ignore heavy junk

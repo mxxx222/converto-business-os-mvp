@@ -1,154 +1,105 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
+import { type NextRequest, NextResponse } from 'next/server';
 
-// A/B test configuration
-const AB_TEST_CONFIG = {
-  enabled: process.env.NEXT_PUBLIC_AB_TESTING === 'true',
-  testName: 'storybrand_vs_original',
-  variants: {
-    original: { weight: 50, path: '/' },
-    storybrand: { weight: 50, path: '/storybrand' },
-  },
-  // Cookie settings
-  cookieName: 'ab_test_variant',
-  cookieMaxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-  // Exclusions
-  excludePaths: ['/api', '/_next', '/favicon.ico', '/robots.txt', '/sitemap.xml', '/thank-you'],
-  excludeUserAgents: ['bot', 'crawler', 'spider', 'lighthouse'],
+// A/B Test Configuration
+const AB_TEST_COOKIE_NAME = 'ab_test_variant';
+const AB_TEST_COOKIE_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
+const AB_TEST_VARIANTS = {
+  original: { weight: 50, path: '/' },
+  storybrand: { weight: 50, path: '/storybrand' },
 };
 
-function getVariantFromWeight(weights: Record<string, number>): string {
-  const random = Math.random() * 100;
-  let cumulative = 0;
+// Bot detection patterns
+const BOT_PATTERNS = [
+  /bot/i,
+  /crawl/i,
+  /spider/i,
+  /slurp/i,
+  /mediapartners/i,
+  /facebookexternalhit/i,
+  /linkedinbot/i,
+  /twitterbot/i,
+  /googlebot/i,
+];
 
-  for (const [variant, weight] of Object.entries(weights)) {
-    cumulative += weight;
-    if (random <= cumulative) {
-      return variant;
-    }
-  }
-
-  // Fallback to first variant
-  return Object.keys(weights)[0];
+function isBot(userAgent: string | null): boolean {
+  if (!userAgent) return false;
+  return BOT_PATTERNS.some((pattern) => pattern.test(userAgent));
 }
 
-function shouldExcludeFromTest(request: NextRequest): boolean {
-  const { pathname } = request.nextUrl;
-  const userAgent = request.headers.get('user-agent') || '';
-
-  // Check excluded paths
-  if (AB_TEST_CONFIG.excludePaths.some((path) => pathname.startsWith(path))) {
-    return true;
+function getVariantFromCookie(request: NextRequest): string | null {
+  const cookie = request.cookies.get(AB_TEST_COOKIE_NAME);
+  if (cookie && Object.keys(AB_TEST_VARIANTS).includes(cookie.value)) {
+    return cookie.value;
   }
+  return null;
+}
 
-  // Check excluded user agents (bots, crawlers)
-  if (
-    AB_TEST_CONFIG.excludeUserAgents.some((agent) =>
-      userAgent.toLowerCase().includes(agent)
-    )
-  ) {
-    return true;
-  }
+function assignVariant(): string {
+  // 50/50 split
+  return Math.random() < 0.5 ? 'original' : 'storybrand';
+}
 
-  // Exclude if already on storybrand path
-  if (pathname.startsWith('/storybrand')) {
-    return true;
-  }
-
-  return false;
+function shouldExcludePath(pathname: string): boolean {
+  // Exclude API routes, static files, and admin paths
+  const excludePatterns = [
+    '/api/',
+    '/_next/',
+    '/static/',
+    '/admin/',
+    '/dashboard/',
+    '/sentry-example-page',
+  ];
+  return excludePatterns.some((pattern) => pathname.startsWith(pattern));
 }
 
 export async function middleware(request: NextRequest) {
-  // Update Supabase session and check auth
+  // First, update Supabase session
   const response = await updateSession(request);
 
-  // PRODUCTION: Add security headers
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set(
-    'Permissions-Policy',
-    'geolocation=(), microphone=(), camera=()'
-  );
-  response.headers.set('X-DNS-Prefetch-Control', 'on');
+  const pathname = request.nextUrl.pathname;
 
-  // A/B test routing (only for homepage and when enabled)
-  if (
-    AB_TEST_CONFIG.enabled &&
-    !shouldExcludeFromTest(request) &&
-    request.nextUrl.pathname === '/'
-  ) {
-    // Check for existing variant cookie
-    let variant = request.cookies.get(AB_TEST_CONFIG.cookieName)?.value;
-
-    // If no variant cookie exists, assign one
-    if (!variant || !Object.keys(AB_TEST_CONFIG.variants).includes(variant)) {
-      const weights = Object.fromEntries(
-        Object.entries(AB_TEST_CONFIG.variants).map(([key, config]) => [
-          key,
-          config.weight,
-        ])
-      );
-      variant = getVariantFromWeight(weights);
-
-      // Set variant cookie
-      response.cookies.set({
-        name: AB_TEST_CONFIG.cookieName,
-        value: variant,
-        maxAge: AB_TEST_CONFIG.cookieMaxAge,
-        httpOnly: false, // Allow client-side access for analytics
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-      });
-    }
-
-    // Redirect to appropriate variant if needed
-    if (variant === 'storybrand') {
-      // Use rewrite to serve /storybrand without changing URL
-      const url = request.nextUrl.clone();
-      url.pathname = '/storybrand';
-
-      // Create rewrite response
-      const rewriteResponse = NextResponse.rewrite(url);
-
-      // Preserve variant cookie
-      rewriteResponse.cookies.set({
-        name: AB_TEST_CONFIG.cookieName,
-        value: variant,
-        maxAge: AB_TEST_CONFIG.cookieMaxAge,
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-      });
-
-      // Add variant header for analytics
-      rewriteResponse.headers.set('X-AB-Test-Variant', variant);
-
-      return rewriteResponse;
-    }
-
-    // Add variant header for analytics
-    response.headers.set('X-AB-Test-Variant', variant);
+  // Skip A/B testing for excluded paths
+  if (shouldExcludePath(pathname)) {
+    return response;
   }
 
-  // Track 404 errors for Plausible
-  if (request.nextUrl.pathname.startsWith('/404')) {
-    // Track 404 via API (server-side)
-    fetch(`${request.nextUrl.origin}/api/analytics/plausible`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: '404 Error',
-        props: {
-          path: request.nextUrl.pathname,
-          referrer: request.headers.get('referer') || '',
-        },
-      }),
-    }).catch(() => {
-      // Silent fail
+  // Skip A/B testing for bots
+  const userAgent = request.headers.get('user-agent');
+  if (isBot(userAgent)) {
+    return response;
+  }
+
+  // Only test root path
+  if (pathname !== '/') {
+    return response;
+  }
+
+  // Get variant from cookie or assign new one
+  let variant = getVariantFromCookie(request);
+  if (!variant) {
+    variant = assignVariant();
+  }
+
+  // Set cookie if not already set
+  if (!getVariantFromCookie(request)) {
+    response.cookies.set(AB_TEST_COOKIE_NAME, variant, {
+      maxAge: AB_TEST_COOKIE_MAX_AGE,
+      path: '/',
+      sameSite: 'lax',
+      httpOnly: false, // Allow client-side access
     });
+  }
+
+  // Add variant header for analytics
+  response.headers.set('X-AB-Test-Variant', variant);
+
+  // Redirect to variant path if needed
+  const variantPath = AB_TEST_VARIANTS[variant as keyof typeof AB_TEST_VARIANTS]?.path;
+  if (variantPath && variantPath !== pathname) {
+    const url = request.nextUrl.clone();
+    url.pathname = variantPath;
+    return NextResponse.redirect(url);
   }
 
   return response;
@@ -157,12 +108,12 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
+     * Match all request paths except:
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - images, fonts, etc. (static assets)
+     * - public folder
+     * - api routes (handled separately)
      */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api).*)',
   ],

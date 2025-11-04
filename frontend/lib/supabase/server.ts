@@ -24,7 +24,7 @@ export async function createClient() {
       },
       set(name: string, value: string, options: CookieOptions) {
         try {
-          cookieStore.set({ name, value, domain: '.converto.fi', ...options });
+          cookieStore.set({ name, value, ...options });
         } catch (error) {
           // The `set` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing
@@ -33,7 +33,7 @@ export async function createClient() {
       },
       remove(name: string, options: CookieOptions) {
         try {
-          cookieStore.set({ name, value: '', domain: '.converto.fi', ...options });
+          cookieStore.set({ name, value: '', ...options });
         } catch (error) {
           // The `delete` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing
@@ -43,4 +43,3 @@ export async function createClient() {
     },
   });
 }
-

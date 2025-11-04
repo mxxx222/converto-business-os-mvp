@@ -1,6 +1,6 @@
 "use client"
 
-import { trackEvent } from '../../../lib/analytics'
+import { analytics } from '@/lib/analytics'
 
 const pricingPlans = [
   {
@@ -60,7 +60,7 @@ const pricingPlans = [
 
 export default function PremiumPricingComparison() {
   const handlePlanSelect = (plan: typeof pricingPlans[0]) => {
-    trackEvent('pricing_select', { plan: plan.name, price: parseInt(plan.price) })
+    analytics.trackPricingSelect(plan.name, parseInt(plan.price))
   }
 
   return (

@@ -11,7 +11,7 @@ interface OSLayoutProps {
   currentPath?: string;
 }
 
-export function OSLayout({ children, currentPath = '/app/dashboard' }: OSLayoutProps) {
+export function OSLayout({ children, currentPath = '/dashboard' }: OSLayoutProps) {
   const [commandOpen, setCommandOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
