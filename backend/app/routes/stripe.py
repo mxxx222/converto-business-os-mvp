@@ -28,10 +28,10 @@ async def stripe_webhook(request: Request):
         event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
     except ValueError as e:
         logger.error(f"Invalid payload: {e}")
-        raise HTTPException(status_code=400, detail="Invalid payload")
+        raise HTTPException(status_code=400, detail="Invalid payload") from e
     except stripe.error.SignatureVerificationError as e:
         logger.error(f"Invalid signature: {e}")
-        raise HTTPException(status_code=400, detail="Invalid signature")
+        raise HTTPException(status_code=400, detail="Invalid signature") from e
 
     # Handle different event types
     if event["type"] == "checkout.session.completed":
@@ -80,4 +80,4 @@ async def get_products():
         }
     except Exception as e:
         logger.error(f"Error fetching products: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch products")
+        raise HTTPException(status_code=500, detail="Failed to fetch products") from e

@@ -145,10 +145,12 @@ class InterAgentMessaging:
             agent_id: Subscriber agent ID
             publisher_agent_id: Publisher agent ID
         """
-        if publisher_agent_id in self._subscribers:
-            if agent_id in self._subscribers[publisher_agent_id]:
-                self._subscribers[publisher_agent_id].remove(agent_id)
-                logger.info(f"Agent {agent_id} unsubscribed from {publisher_agent_id}")
+        if (
+            publisher_agent_id in self._subscribers
+            and agent_id in self._subscribers[publisher_agent_id]
+        ):
+            self._subscribers[publisher_agent_id].remove(agent_id)
+            logger.info(f"Agent {agent_id} unsubscribed from {publisher_agent_id}")
 
     async def request_response(
         self,

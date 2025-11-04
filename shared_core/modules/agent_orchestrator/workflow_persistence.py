@@ -84,7 +84,6 @@ class WorkflowScheduler:
         """Start the scheduler."""
         try:
             from apscheduler.schedulers.asyncio import AsyncIOScheduler
-            from apscheduler.triggers.cron import CronTrigger
 
             self.scheduler = AsyncIOScheduler()
             self.scheduler.start()

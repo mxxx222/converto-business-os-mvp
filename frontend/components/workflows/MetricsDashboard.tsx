@@ -39,11 +39,11 @@ export function MetricsDashboard() {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.converto.fi';
       const response = await fetch(`${apiUrl}/api/v1/agent-orchestrator/metrics?hours_back=24`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to load metrics');
       }
-      
+
       const data = await response.json();
       setMetrics(data);
       setError(null);
@@ -182,4 +182,3 @@ export function MetricsDashboard() {
     </div>
   );
 }
-

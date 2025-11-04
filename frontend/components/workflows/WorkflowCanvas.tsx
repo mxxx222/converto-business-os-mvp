@@ -35,7 +35,7 @@ export function WorkflowCanvas({ templateId }: WorkflowCanvasProps) {
       if (response.ok) {
         const templates = await response.json();
         const template = templates.find((t: any) => t.template_id === templateId);
-        
+
         if (template) {
           // Convert template steps to React Flow nodes
           const workflowNodes: Node[] = template.steps?.map((step: any, index: number) => ({
@@ -51,7 +51,7 @@ export function WorkflowCanvas({ templateId }: WorkflowCanvasProps) {
               ),
             },
           })) || [];
-          
+
           // Convert dependencies to edges
           const workflowEdges: Edge[] = [];
           template.steps?.forEach((step: any, index: number) => {
@@ -67,7 +67,7 @@ export function WorkflowCanvas({ templateId }: WorkflowCanvasProps) {
               });
             });
           });
-          
+
           setNodes(workflowNodes);
           setEdges(workflowEdges);
         }
@@ -109,4 +109,3 @@ export function WorkflowCanvas({ templateId }: WorkflowCanvasProps) {
     </div>
   );
 }
-

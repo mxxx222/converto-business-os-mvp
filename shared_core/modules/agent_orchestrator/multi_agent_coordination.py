@@ -1,5 +1,6 @@
 """Multi-Agent Coordination Enhancements - Advanced orchestration features."""
 
+import asyncio
 import logging
 from enum import Enum
 from typing import Any
@@ -58,20 +59,16 @@ class RoutingCondition:
                 var_value = str(var_value)
 
             # Evaluate operator
-            if operator == "<":
-                return var_value < value
-            elif operator == ">":
-                return var_value > value
-            elif operator == "<=":
-                return var_value <= value
-            elif operator == ">=":
-                return var_value >= value
-            elif operator == "==":
-                return var_value == value
-            elif operator == "!=":
-                return var_value != value
-            else:
-                return False
+            operators = {
+                "<": lambda x, y: x < y,
+                ">": lambda x, y: x > y,
+                "<=": lambda x, y: x <= y,
+                ">=": lambda x, y: x >= y,
+                "==": lambda x, y: x == y,
+                "!=": lambda x, y: x != y,
+            }
+            op_func = operators.get(operator)
+            return op_func(var_value, value) if op_func else False
 
         except Exception as e:
             logger.warning(f"Condition evaluation failed: {e}")
@@ -238,6 +235,3 @@ class RetryStrategy:
                     logger.error(f"Agent {step.agent_id} failed after {max_retries + 1} attempts")
 
         raise last_error or Exception("Unknown error")
-
-
-import asyncio
