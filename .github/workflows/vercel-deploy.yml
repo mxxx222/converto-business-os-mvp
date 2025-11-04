@@ -1,18 +1,19 @@
-# 🚀 Vercel Deployment - Converto Business OS
-name: Deploy to Vercel
+# 🚀 Vercel Pro Deployment - Converto Business OS
+name: Deploy to Vercel Pro
 
 on:
   push:
-    branches: [marketing-v0, main]
+    branches: [main]
   workflow_dispatch:
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
 jobs:
   deploy:
-    name: Deploy to Vercel
+    name: Deploy to Vercel Pro
     runs-on: ubuntu-latest
 
     steps:
@@ -24,21 +25,38 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
 
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build project
+        working-directory: ./frontend
+        run: npm run build
 
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy to Vercel Pro
+        uses: amondnet/vercel-action@v25
+        id: vercel-deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./frontend
+
+      - name: Health Check
+        run: |
+          sleep 10
+          DEPLOYMENT_URL="${{ steps.vercel-deploy.outputs.preview-url }}"
+          echo "Checking health at: $DEPLOYMENT_URL/api/health"
+          curl -f "$DEPLOYMENT_URL/api/health" || exit 1
+
+      - name: Deployment Summary
+        run: |
+          echo "🚀 Deployment successful!"
+          echo "📍 URL: ${{ steps.vercel-deploy.outputs.preview-url }}"
+          echo "📊 Logs: vercel logs ${{ steps.vercel-deploy.outputs.preview-url }} --follow"
