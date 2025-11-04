@@ -36,11 +36,7 @@ const nextConfig = {
   // Redirects
   async redirects() {
     return [
-      {
-        source: '/',
-        destination: '/premium',
-        permanent: false,
-      },
+      // Removed '/' to '/premium' redirect - root now shows ROI-focused landing page
       {
         source: '/dashboard',
         destination: '/app/dashboard',

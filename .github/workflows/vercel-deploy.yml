@@ -60,3 +60,22 @@ jobs:
           echo "🚀 Deployment successful!"
           echo "📍 URL: ${{ steps.vercel-deploy.outputs.preview-url }}"
           echo "📊 Logs: vercel logs ${{ steps.vercel-deploy.outputs.preview-url }} --follow"
+
+      - name: Log Scanning
+        run: |
+          echo "📊 Fetching deployment logs..."
+          DEPLOYMENT_URL="${{ steps.vercel-deploy.outputs.preview-url }}"
+          vercel logs "$DEPLOYMENT_URL" --limit 50 || echo "Logs not available yet"
+
+      - name: MCP Deployment Notification
+        if: success()
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+        run: |
+          echo "📧 MCP notifications can be sent via:"
+          echo "  - Resend: resend_deployment_alert"
+          echo "  - Notion: notion_deployment_log"
+          echo ""
+          echo "Deployment URL: ${{ steps.vercel-deploy.outputs.preview-url }}"
+          echo "Status: success"

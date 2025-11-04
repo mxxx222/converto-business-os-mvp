@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL('https://converto.fi'),
   alternates: {
-    canonical: '/',
+    canonical: 'https://converto.fi/',
     languages: {
       'fi-FI': '/',
       'en-US': '/en',
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code',
+    google: process.env.GOOGLE_SITE_VERIFICATION || 'your-google-verification-code',
   },
 };
 
