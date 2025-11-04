@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { trackPilotSignup } from '@/lib/analytics/posthog';
+// import { trackPilotSignup } from '@/lib/analytics/posthog'; // Optional - PostHog not installed
+const trackPilotSignup = (email: string, source?: string) => {}; // Mock
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 

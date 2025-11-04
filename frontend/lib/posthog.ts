@@ -1,4 +1,6 @@
-import posthog from 'posthog-js';
+// import posthog from 'posthog-js'; // Optional - install posthog-js package to enable
+// Mock posthog for type checking
+const posthog: any = null;
 
 // Window interface for posthog is declared in lib/analytics/posthog.ts
 

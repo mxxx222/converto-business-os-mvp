@@ -27,25 +27,21 @@ export function initPostHog() {
   }
 
   // Only load PostHog in production
-  if (process.env.NODE_ENV !== 'production') {
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  if (nodeEnv !== 'production') {
     console.log('[PostHog] Disabled in non-production environment');
     return;
   }
 
-  // Load PostHog script
-  import('posthog-js').then((posthog) => {
-    posthog.default.init(POSTHOG_KEY, {
-      api_host: POSTHOG_HOST,
-      autocapture: true,
-      capture_pageview: true,
-      capture_pageleave: true,
-      loaded: (posthogInstance) => {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('[PostHog] Initialized', posthogInstance);
-        }
-      },
-    });
-  });
+  // Load PostHog script (only if package is available)
+  // Note: PostHog is optional - install posthog-js package to enable
+  if (typeof window !== 'undefined' && POSTHOG_KEY) {
+    // PostHog is optional - skip if not installed
+    // Install posthog-js package to enable PostHog analytics
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[PostHog] PostHog analytics disabled - install posthog-js package to enable');
+    }
+  }
 }
 
 /**

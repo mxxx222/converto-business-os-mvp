@@ -2,6 +2,7 @@
  * Receipt type definition for Supabase receipts table.
  */
 export interface Receipt {
+  status?: string;
   id: string;
   vendor?: string | null;
   total_amount?: number | null;

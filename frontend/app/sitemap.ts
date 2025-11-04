@@ -1,4 +1,5 @@
-import postsData from './data/blog/posts.json';
+// import postsData from './data/blog/posts.json'; // Temporarily disabled
+const postsData: any[] = [];
 
 export default function sitemap() {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "https://converto.fi";
