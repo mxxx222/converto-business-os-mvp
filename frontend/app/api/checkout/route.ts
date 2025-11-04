@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 // import Stripe from 'stripe'; // Optional - install stripe package if needed
 type Stripe = any; // Placeholder type
 
+// Edge Runtime - 10-100x faster than Serverless Functions
+export const runtime = 'edge';
+
 // Stripe keys - server-side only (API routes), but check NEXT_PUBLIC for flexibility
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY || '';
 

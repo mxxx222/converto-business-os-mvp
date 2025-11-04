@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { trackUsage } from '@/lib/openai-usage';
+
+// Enable Edge Runtime for better performance and lower latency
+export const runtime = 'edge';
 
 // OpenAI API key - can be server-side only (no NEXT_PUBLIC needed for API routes)
 // But we check both for flexibility
@@ -56,6 +60,15 @@ export async function POST(request: NextRequest) {
     });
 
     const response = completion.choices[0]?.message?.content || 'Anteeksi, en pysty vastaamaan juuri nyt.';
+
+    // Track OpenAI usage for cost optimization
+    if (completion.usage) {
+      trackUsage(
+        process.env.OPENAI_MODEL || 'gpt-4o-mini',
+        completion.usage,
+        '/api/chat'
+      );
+    }
 
     return NextResponse.json({
       response,

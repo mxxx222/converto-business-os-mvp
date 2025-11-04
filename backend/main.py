@@ -47,7 +47,7 @@ if sentry_dsn:
                 event_level=logging.ERROR,  # Send errors as events
             ),
         ],
-        traces_sample_rate=0.2,  # 20% of transactions
+        traces_sample_rate=1.0,  # 100% of transactions for maximum observability
         profiles_sample_rate=0.1,  # 10% of transactions
         environment=settings.environment,
         # Filter sensitive data

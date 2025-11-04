@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
 import { ABTestTracker } from '@/components/analytics/ABTestTracker';
 import { PostHogProvider } from '@/components/PostHogProvider';
@@ -135,6 +136,7 @@ export default function RootLayout({
         </nav>
         {children}
         <Analytics />
+        <SpeedInsights />
         <ABTestTracker />
         <Toaster richColors position="top-right" />
         </PostHogProvider>

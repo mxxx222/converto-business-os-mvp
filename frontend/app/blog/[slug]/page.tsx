@@ -14,6 +14,9 @@ export async function generateStaticParams() {
   }));
 }
 
+// ISR: Revalidate every 24 hours for blog posts
+export const revalidate = 86400;
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = postsData.find((p: any) => p.slug === slug);

@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   },
 };
 
+// ISR: Revalidate every hour to improve performance and reduce server costs
+export const revalidate = 3600;
+
 export default function BlogPage() {
   const featuredPosts = postsData.filter((post: any) => post.featured);
   const regularPosts = postsData.filter((post: any) => !post.featured);

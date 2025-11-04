@@ -1,6 +1,9 @@
 import { updateSession } from '@/lib/supabase/middleware';
 import { type NextRequest, NextResponse } from 'next/server';
 
+// Middleware runs on Edge Runtime by default in Next.js 14
+// No need to explicitly export runtime
+
 // A/B Test Configuration
 const AB_TEST_COOKIE_NAME = 'ab_test_variant';
 const AB_TEST_COOKIE_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
