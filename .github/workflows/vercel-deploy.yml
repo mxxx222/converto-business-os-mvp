@@ -24,19 +24,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          # Disable cache to avoid path resolution issues
+          # cache: 'npm'
+          # cache-dependency-path: frontend/package-lock.json
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
       - name: Install dependencies
         working-directory: ./frontend
-        run: npm ci
+        run: npm ci --include=dev
+        continue-on-error: false
 
       - name: Build project
         working-directory: ./frontend
-        run: npm run build
+        run: NEXT_PUBLIC_STATIC_EXPORT=false npm run build
+        continue-on-error: false
 
       - name: Deploy to Vercel Pro
         uses: amondnet/vercel-action@v25
@@ -52,13 +55,17 @@ jobs:
       - name: Check Deployment Status
         if: steps.vercel-deploy.outcome != 'success'
         run: |
-          echo "❌ Vercel deployment failed. Checking alternative deployment method..."
-          echo "This might be due to missing secrets or Vercel project configuration."
+          echo "❌ Vercel deployment failed!"
+          echo ""
+          echo "Debugging info:"
+          echo "- VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN != '' && 'SET' || 'MISSING' }}"
+          echo "- VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID != '' && 'SET' || 'MISSING' }}"
+          echo "- VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID != '' && 'SET' || 'MISSING' }}"
+          echo ""
           echo "Please check:"
-          echo "1. VERCEL_TOKEN is set in GitHub Secrets"
-          echo "2. VERCEL_ORG_ID is set in GitHub Secrets"
-          echo "3. VERCEL_PROJECT_ID is set in GitHub Secrets"
-          echo "4. Vercel project exists and is linked to this repository"
+          echo "1. All Vercel secrets are set in GitHub Secrets"
+          echo "2. Vercel project exists and is linked to this repository"
+          echo "3. Vercel project settings match the workflow configuration"
           exit 1
 
       - name: Health Check
