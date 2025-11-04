@@ -8,10 +8,10 @@
   "rootDirectory": "frontend",
   "regions": ["iad1"],
   "functions": {
-    "frontend/app/api/**/*.ts": {
+    "app/api/**/*.ts": {
       "maxDuration": 30
     },
-    "frontend/app/api/ocr/**/*.ts": {
+    "app/api/ocr/**/*.ts": {
       "maxDuration": 60
     }
   },
