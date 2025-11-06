@@ -1,9 +1,6 @@
 "use client"
 
 import { useEffect } from 'react'
-
-// ISR: Cache for 1 hour to improve performance and reduce costs
-export const revalidate = 3600;
 import { analytics } from '@/lib/analytics'
 import PremiumNavbar from './_components/PremiumNavbar'
 import WowNavbar from './_components/WowNavbar'

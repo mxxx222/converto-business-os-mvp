@@ -55,3 +55,5 @@ export function WorkflowTemplates({ templates, onSelectTemplate }: WorkflowTempl
     </div>
   );
 }
+
+

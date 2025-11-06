@@ -9,3 +9,5 @@ __all__ = [
     "supabase_auth",
     "SupabaseAuthMiddleware",
 ]
+
+

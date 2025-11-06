@@ -48,6 +48,7 @@ class PilotSignupRequest(BaseModel):
     email: str
     name: str
     company: str
+    document_types: list[str] | None = None
 
 
 class DeploymentNotificationRequest(BaseModel):
@@ -64,6 +65,12 @@ class ErrorAlertRequest(BaseModel):
     error_message: str
     service: str
     severity: str = "high"
+
+
+class LaunchAnnouncementRequest(BaseModel):
+    recipient_email: str
+    recipient_name: str = "Friend"
+    batch: bool = False  # If True, send to all pilot signups
 
 
 # Routes
@@ -99,7 +106,7 @@ async def pilot_signup_workflow(
     """Trigger pilot signup email workflow."""
     try:
         result = await workflows.pilot_onboarding_sequence(
-            request.email, request.name, request.company
+            request.email, request.name, request.company, document_types=request.document_types
         )
         return result
     except Exception as e:
@@ -263,6 +270,45 @@ async def email_health() -> dict[str, str]:
     except Exception as e:
         logger.error(f"Email health check failed: {e}")
         return {"status": "unhealthy", "service": "email", "error": str(e)}
+
+
+@router.post("/launch-announcement")
+async def send_launch_announcement(
+    request: LaunchAnnouncementRequest, email_service: EmailService = Depends(get_email_service)
+) -> dict[str, Any]:
+    """Send launch announcement email."""
+    try:
+        from_email = os.getenv("RESEND_FROM_EMAIL", "info@converto.fi")
+        templates = EmailTemplates()
+        
+        html_content = templates.launch_announcement(request.recipient_name)
+        
+        email_data = EmailData(
+            to=request.recipient_email,
+            subject="🎉 Converto Business OS on Nyt Live! - Aloita Ilmainen Pilotti",
+            html=html_content,
+            from_email=from_email,
+            reply_to="info@converto.fi",
+            tags=[{"name": "category", "value": "launch_announcement"}],
+        )
+        
+        result = await email_service.send_email(email_data)
+        
+        if result.get("success"):
+            logger.info(f"Launch announcement sent to {request.recipient_email}")
+            return {
+                "success": True,
+                "message": "Launch announcement sent successfully",
+                "recipient": request.recipient_email,
+                "email_id": result.get("id"),
+            }
+        else:
+            raise HTTPException(
+                status_code=500, detail=f"Failed to send launch announcement: {result.get('error')}"
+            )
+    except Exception as e:
+        logger.error(f"Launch announcement failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/test")

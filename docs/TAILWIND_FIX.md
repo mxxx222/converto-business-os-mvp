@@ -91,3 +91,5 @@ NEXT_PUBLIC_STATIC_EXPORT=true npm run build
 ✅ CSS generoituu
 
 **Dashboard pitäisi nyt näyttää oikein Tailwind-tyyleillä!**
+
+

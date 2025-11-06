@@ -6,7 +6,7 @@ import { crmIntegration } from "@/lib/crm-integration"
 import { trackPilotSignup } from "@/lib/analytics/posthog"
 
 export default function PilotForm() {
-  const [form, setForm] = useState({ name: "", email: "", company: "" })
+  const [form, setForm] = useState({ name: "", email: "", company: "", document_types: [] as string[] })
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -14,11 +14,18 @@ export default function PilotForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    
+    // Validate document types
+    if (form.document_types.length === 0) {
+      setError('Valitse vähintään yksi dokumenttityyppi')
+      return
+    }
+    
     setLoading(true)
     setError("")
 
     try {
-      const response = await fetch("/api/pilot", {
+      const response = await fetch("/api/pilot-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -40,12 +47,13 @@ export default function PilotForm() {
         company: form.company,
         source: 'pilot_form',
         stage: 'pilot',
+        document_types: form.document_types,
       })
       
       // Track conversion
-      trackPilot('landing', { company: form.company })
+      trackPilot('landing', { company: form.company, document_types: form.document_types })
       
-      setForm({ name: "", email: "", company: "" })
+      setForm({ name: "", email: "", company: "", document_types: [] })
     } catch (err) {
       setError(err instanceof Error ? err.message : "Virhe tapahtui")
     } finally {
@@ -125,6 +133,57 @@ export default function PilotForm() {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
+        </div>
+
+        {/* Document Types Selection */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Mitä dokumentteja käsittelette? (valitse kaikki sopivat) *
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {[
+              { value: 'purchase_invoices', label: 'Ostolaskut', icon: '📄' },
+              { value: 'receipts', label: 'ALV-kuitit', icon: '🧾' },
+              { value: 'delivery_notes', label: 'Rahtikirjat', icon: '📦' },
+              { value: 'order_confirmations', label: 'Tilausvahvistukset', icon: '✅' },
+              { value: 'contracts', label: 'Sopimukset', icon: '💼' },
+              { value: 'other', label: 'Muut', icon: '📋' },
+            ].map((docType) => {
+              const isSelected = form.document_types.includes(docType.value);
+              return (
+                <label
+                  key={docType.value}
+                  className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
+                    isSelected
+                      ? 'border-blue-500 bg-blue-50 shadow-md'
+                      : 'border-gray-300 hover:border-blue-300 hover:shadow-sm'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    value={docType.value}
+                    checked={isSelected}
+                    onChange={(e) => {
+                      const current = form.document_types;
+                      const updated = e.target.checked
+                        ? [...current, docType.value]
+                        : current.filter(t => t !== docType.value);
+                      setForm({ ...form, document_types: updated });
+                    }}
+                    className="sr-only"
+                  />
+                  <div className="text-2xl mb-1">{docType.icon}</div>
+                  <div className="text-xs font-medium">{docType.label}</div>
+                </label>
+              );
+            })}
+          </div>
+          {form.document_types.length === 0 && (
+            <p className="text-xs text-red-600 mt-2">Valitse vähintään yksi dokumenttityyppi</p>
+          )}
+          <p className="text-xs text-gray-500 mt-2">
+            💡 Valitse kaikki jotka käsittelette - näytämme ne demo:ssa!
+          </p>
         </div>
 
         <button

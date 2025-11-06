@@ -4,12 +4,12 @@ import { type NextRequest, NextResponse } from 'next/server';
 // Middleware runs on Edge Runtime by default in Next.js 14
 // No need to explicitly export runtime
 
-// A/B Test Configuration
-const AB_TEST_COOKIE_NAME = 'ab_test_variant';
+// A/B Test Configuration (bump name to invalidate old cookies)
+const AB_TEST_COOKIE_NAME = 'ab_test_variant_v3';
 const AB_TEST_COOKIE_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 const AB_TEST_VARIANTS = {
-  original: { weight: 50, path: '/' },
-  storybrand: { weight: 50, path: '/storybrand' },
+  original: { weight: 100, path: '/' },
+  premium: { weight: 0, path: '/premium' },
 };
 
 // Bot detection patterns
@@ -39,8 +39,18 @@ function getVariantFromCookie(request: NextRequest): string | null {
 }
 
 function assignVariant(): string {
-  // 50/50 split
-  return Math.random() < 0.5 ? 'original' : 'storybrand';
+  // Respect weights from AB_TEST_VARIANTS
+  const totalWeight = Object.values(AB_TEST_VARIANTS).reduce((sum, variant) => sum + variant.weight, 0);
+  let random = Math.random() * totalWeight;
+
+  for (const [variant, config] of Object.entries(AB_TEST_VARIANTS)) {
+    random -= config.weight;
+    if (random <= 0) {
+      return variant;
+    }
+  }
+
+  return 'original'; // fallback
 }
 
 function shouldExcludePath(pathname: string): boolean {
@@ -60,51 +70,20 @@ export async function middleware(request: NextRequest) {
   // First, update Supabase session
   const response = await updateSession(request);
 
-  const pathname = request.nextUrl.pathname;
-
-  // Skip A/B testing for excluded paths
-  if (shouldExcludePath(pathname)) {
-    return response;
+  // Proactively clear legacy A/B test cookies that may force premium variant
+  const legacyCookies = ['ab_test_variant', 'ab_test_variant_v2'];
+  for (const name of legacyCookies) {
+    if (request.cookies.get(name)) {
+      response.cookies.set({
+        name,
+        value: '',
+        maxAge: 0,
+        path: '/',
+      });
+    }
   }
 
-  // Skip A/B testing for bots
-  const userAgent = request.headers.get('user-agent');
-  if (isBot(userAgent)) {
-    return response;
-  }
-
-  // Only test root path
-  if (pathname !== '/') {
-    return response;
-  }
-
-  // Get variant from cookie or assign new one
-  let variant = getVariantFromCookie(request);
-  if (!variant) {
-    variant = assignVariant();
-  }
-
-  // Set cookie if not already set
-  if (!getVariantFromCookie(request)) {
-    response.cookies.set(AB_TEST_COOKIE_NAME, variant, {
-      maxAge: AB_TEST_COOKIE_MAX_AGE,
-      path: '/',
-      sameSite: 'lax',
-      httpOnly: false, // Allow client-side access
-    });
-  }
-
-  // Add variant header for analytics
-  response.headers.set('X-AB-Test-Variant', variant);
-
-  // Redirect to variant path if needed
-  const variantPath = AB_TEST_VARIANTS[variant as keyof typeof AB_TEST_VARIANTS]?.path;
-  if (variantPath && variantPath !== pathname) {
-    const url = request.nextUrl.clone();
-    url.pathname = variantPath;
-    return NextResponse.redirect(url);
-  }
-
+  // Do not perform any A/B redirects. Always continue to requested path.
   return response;
 }
 

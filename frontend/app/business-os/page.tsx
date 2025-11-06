@@ -6,6 +6,9 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Link from "next/link"
 
+// ISR: Cache for 1 hour to improve performance and reduce costs
+export const revalidate = 3600;
+
 export const metadata = {
   title: "Converto Business OS™ – Automatisoi koko yrityksesi",
   description:

@@ -277,3 +277,5 @@ CREATE TABLE IF NOT EXISTS receipts (
 ---
 
 **💡 ALoita: SETUP_NOW.md → Vaihe 2 & 3 → Dashboard toimii!** 🚀
+
+

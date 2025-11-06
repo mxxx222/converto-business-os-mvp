@@ -116,3 +116,5 @@
 - **Feature adoption:** +60% (selkeämmät toiminnot)
 
 **Kokonais-ROI: 10-15x / 30 päivää**
+
+

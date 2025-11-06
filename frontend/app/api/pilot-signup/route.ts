@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.converto.fi';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, source, name, company } = body;
+    const { email, source, name, company, document_types } = body;
 
     // Validate email
     if (!email || typeof email !== 'string' || !email.includes('@')) {
@@ -15,11 +15,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate document_types if provided
+    if (document_types && !Array.isArray(document_types)) {
+      return NextResponse.json(
+        { error: 'document_types must be an array' },
+        { status: 400 }
+      );
+    }
+
     // Prepare backend request with required fields
     const backendPayload = {
       email,
       name: name || email.split('@')[0], // Use email prefix if name not provided
       company: company || 'Not provided',
+      document_types: document_types || [],
     };
 
     // Forward to backend API
@@ -57,3 +66,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

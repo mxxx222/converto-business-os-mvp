@@ -74,3 +74,5 @@ else
     echo "3. See SETUP_NOW.md for detailed instructions"
     exit 1
 fi
+
+

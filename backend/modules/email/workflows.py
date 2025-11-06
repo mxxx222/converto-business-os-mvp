@@ -160,7 +160,7 @@ class PilotOnboardingWorkflow(EmailWorkflow):
         self.follow_up_delays = [24 * 3600, 7 * 24 * 3600, 30 * 24 * 3600]  # 1d, 7d, 30d
 
     async def start_onboarding(
-        self, user_name: str, user_email: str, locale: str = "fi"
+        self, user_name: str, user_email: str, locale: str = "fi", company: str = "Converto Business OS", document_types: list[str] | None = None
     ) -> dict[str, Any]:
         """Start pilot onboarding workflow."""
         logger.info(f"Starting pilot onboarding for {user_name} ({user_email})")
@@ -169,7 +169,7 @@ class PilotOnboardingWorkflow(EmailWorkflow):
         from backend.modules.email.templates import EmailTemplates
 
         templates = EmailTemplates()
-        html_content = templates.pilot_signup_welcome(user_name, "Converto Business OS")
+        html_content = templates.pilot_signup_welcome(user_name, company, document_types)
 
         # Use EmailService directly to send email
         import os
@@ -349,11 +349,11 @@ class EmailWorkflows:
         return await pilot_onboarding.start_onboarding(user_name, user_email, locale)
 
     async def pilot_onboarding_sequence(
-        self, email: str, name: str, company: str, locale: str = "fi"
+        self, email: str, name: str, company: str, locale: str = "fi", document_types: list[str] | None = None
     ) -> dict[str, Any]:
         """Pilot signup sequence - sends welcome email to new pilot signup."""
         logger.info(f"Pilot onboarding sequence for {name} ({email}) from {company}")
-        return await pilot_onboarding.start_onboarding(name, email, locale)
+        return await pilot_onboarding.start_onboarding(name, email, locale, company, document_types)
 
     async def notify_deployment_success(
         self, service_name: str, recipient: str = "max@herbspot.fi"

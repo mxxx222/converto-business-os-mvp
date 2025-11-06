@@ -75,3 +75,5 @@ echo -e "${BLUE}🔑 API Key:${NC}"
 echo -e "If prompted, set API key:"
 echo -e "  ${YELLOW}Cmd+Shift+P${NC} → ${YELLOW}Codeium: Set API Key${NC}"
 echo -e "  Or get from: https://app.kilocode.ai/settings/api-keys\n"
+
+

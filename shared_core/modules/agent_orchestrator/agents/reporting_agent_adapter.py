@@ -416,3 +416,5 @@ class ReportingAgentAdapter(Agent):
         has_data = "insights" in input_data or "vat_data" in input_data
 
         return has_data
+
+

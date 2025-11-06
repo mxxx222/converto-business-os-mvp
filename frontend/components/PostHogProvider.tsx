@@ -2,9 +2,7 @@
 
 import { useEffect, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-// import { initPostHog, trackPageView } from '@/lib/analytics/posthog'; // Optional - PostHog not installed
-const initPostHog = () => {}; // Mock
-const trackPageView = (path: string) => {}; // Mock
+import { initPostHog, trackPageView } from '@/lib/analytics/posthog';
 
 function PostHogProviderInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

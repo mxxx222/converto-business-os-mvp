@@ -184,3 +184,5 @@ class VATAgentAdapter(Agent):
         )
 
         return has_total
+
+

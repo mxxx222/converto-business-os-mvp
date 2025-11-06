@@ -175,3 +175,5 @@ https://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@
 - Performance: Transaction traces ja replay sessionit käytössä
 
 **Seuraava askel:** Testaa Sentry error tracking käyttäen yllä olevia menetelmiä.
+
+

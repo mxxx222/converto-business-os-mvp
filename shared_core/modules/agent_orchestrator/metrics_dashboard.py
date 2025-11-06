@@ -154,3 +154,5 @@ class WorkflowMetrics:
             }
             for e in executions
         ]
+
+

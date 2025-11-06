@@ -34,6 +34,15 @@ export default function SentryExamplePage() {
     });
   };
 
+  // Intentionally trigger an unhandled error to verify automatic capture
+  const triggerUndefinedFunction = () => {
+    // @ts-ignore - intentionally call an undefined function
+    // This should be captured automatically by Sentry as an unhandled error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    myUndefinedFunction();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
@@ -84,7 +93,23 @@ export default function SentryExamplePage() {
 
             <div className="border border-gray-200 rounded-lg p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                3. Trigger Custom Event
+                3. Call myUndefinedFunction() (Unhandled)
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Kutsuu olematonta funktiota ilman try/catchia. Sentryn tulisi
+                napata virhe automaattisesti, jos konfiguraatio on oikein.
+              </p>
+              <button
+                onClick={triggerUndefinedFunction}
+                className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors"
+              >
+                Call myUndefinedFunction()
+              </button>
+            </div>
+
+            <div className="border border-gray-200 rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                4. Trigger Custom Event
               </h2>
               <p className="text-gray-600 mb-4">
                 Lähettää custom-tapahtuman Sentryyn tagien ja extra-datan kanssa.
@@ -103,7 +128,7 @@ export default function SentryExamplePage() {
             <p className="text-sm text-blue-800">
               Mene{' '}
               <a
-                href="https://sentry.io/organizations/converto/issues/"
+                href="https://sentry.io/organizations/viking-labs/projects/javascript-nextjs/issues/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline"

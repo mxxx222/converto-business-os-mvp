@@ -10,6 +10,7 @@ export interface Lead {
   source: string;
   stage: 'pilot' | 'demo' | 'qualified' | 'customer';
   createdAt: Date;
+  document_types?: string[];
   metadata?: Record<string, any>;
 }
 
