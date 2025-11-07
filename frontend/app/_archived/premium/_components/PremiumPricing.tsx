@@ -60,11 +60,13 @@ export default function PremiumPricing(): JSX.Element {
 
   const handlePlanSelect = async (planName: string) => {
     try {
-      const response = await fetch('/api/pilot-signup', {
+      const response = await fetch('/api/pilot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           email: '', 
+          name: '',
+          company: '',
           source: 'premium_pricing',
           plan: planName,
           billing: billingCycle

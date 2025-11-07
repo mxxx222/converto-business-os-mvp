@@ -9,10 +9,15 @@ export default function PremiumCTA(): JSX.Element {
     e.preventDefault()
     
     try {
-      const response = await fetch('/api/pilot-signup', {
+      const response = await fetch('/api/pilot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'premium_final_cta' })
+        body: JSON.stringify({ 
+          email, 
+          name: '',
+          company: '',
+          source: 'premium_final_cta' 
+        })
       })
       
       if (response.ok) {

@@ -1,14 +1,17 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import ChatBot from '@/components/ChatBot';
 
 export const metadata: Metadata = {
-  title: 'Converto Business OS - Automaatio yrityksellesi',
-  description: 'Automatisoi yrityksesi Converto Business OS:lla. OCR-kuittien käsittely, ALV-laskelmat, lakisäädäntöjen seuranta ja paljon muuta. Aloita ilmaiseksi.',
-  keywords: 'automaatio, yritys, OCR, ALV, laskutus, Suomi, business os, converto',
-  authors: [{ name: 'Converto Business OS' }],
-  creator: 'Converto Business OS',
-  publisher: 'Converto Business OS',
+  title: 'DocFlow by Converto – Automatisoi dokumentit AI:lla',
+  description: 'DocFlow (by Converto). OCR + AI + suorat integraatiot Netvisoriin, Procountoriin ja Vero.fi:hin. Säästä jopa 70 % taloushallinnon työstä – ilman järjestelmävaihtoa.',
+  keywords: 'netvisor automaatio, ostolaskut ocr, kuittien skannaus, kirjanpito automaatio, y-tunnus tarkistus, alv ilmoitus automaatio, dokumenttien digitointi, taloushallinto ai, docflow, converto',
+  authors: [{ name: 'DocFlow by Converto' }],
+  creator: 'DocFlow by Converto',
+  publisher: 'DocFlow by Converto',
   formatDetection: {
     email: false,
     address: false,
@@ -23,16 +26,16 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Converto Business OS - Automaatio yrityksellesi',
-    description: 'Automatisoi yrityksesi Converto Business OS:lla. OCR-kuittien käsittely, ALV-laskelmat, lakisäädäntöjen seuranta ja paljon muuta.',
+    title: 'DocFlow by Converto – Automatisoi dokumentit AI:lla',
+    description: 'OCR + AI + integraatiot Netvisoriin/Procountoriin ja Vero.fi-lähetys. 15 minuutin käyttöönotto.',
     url: 'https://converto.fi',
-    siteName: 'Converto Business OS',
+    siteName: 'DocFlow by Converto',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-docflow.jpg',
         width: 1200,
         height: 630,
-        alt: 'Converto Business OS - Automaatio yrityksellesi',
+        alt: 'DocFlow by Converto – Automatisoi dokumentit AI:lla',
       },
     ],
     locale: 'fi_FI',
@@ -40,9 +43,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Converto Business OS - Automaatio yrityksellesi',
-    description: 'Automatisoi yrityksesi Converto Business OS:lla. OCR-kuittien käsittely, ALV-laskelmat, lakisäädäntöjen seuranta.',
-    images: ['/og-image.jpg'],
+    title: 'DocFlow by Converto – Automatisoi dokumentit AI:lla',
+    description: 'OCR + AI + integraatiot Netvisoriin/Procountoriin ja Vero.fi-lähetys. 15 minuutin käyttöönotto.',
+    images: ['/og-docflow.jpg'],
   },
   robots: {
     index: true,
@@ -73,11 +76,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://api.converto.fi" />
         <link rel="preconnect" href="https://calendly.com" />
-        
+
         {/* DNS prefetch for performance */}
         <link rel="dns-prefetch" href="//resend.com" />
         <link rel="dns-prefetch" href="//plausible.io" />
-        
+
         {/* Privacy-friendly analytics by Plausible */}
         <script async src="https://plausible.io/js/pa-LIVALOWbQ1Cpkjh1mkLq1.js"></script>
         <script
@@ -90,46 +93,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <nav className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center">
-                <a href="/" className="text-xl font-bold text-gray-900">
-                  CONVERTO
-                </a>
-                <div className="ml-10 flex items-baseline space-x-4">
-                  <a
-                    href="/dashboard"
-                    className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    Dashboard
-                  </a>
-                  {process.env.NODE_ENV !== 'production' && (
-                    <a
-                      href="/storybrand/totals"
-                      className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium dev-link"
-                    >
-                      Totals
-                    </a>
-                  )}
-                  <a
-                    href="/receipts"
-                    className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    Kuitit
-                  </a>
-                  <a
-                    href="/receipts/list"
-                    className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    Lista
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
+        <Navbar />
         {children}
+        <Footer />
+        <ChatBot />
         <Analytics />
       </body>
     </html>

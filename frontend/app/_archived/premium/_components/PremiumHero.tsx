@@ -9,10 +9,15 @@ export default function PremiumHero(): JSX.Element {
     e.preventDefault()
 
     try {
-      const response = await fetch('/api/pilot-signup', {
+      const response = await fetch('/api/pilot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'premium_hero' })
+        body: JSON.stringify({ 
+          email, 
+          name: '',
+          company: '',
+          source: 'premium_hero' 
+        })
       })
 
       if (response.ok) {

@@ -7,8 +7,8 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/": ["./"],
-      "@content/": ["./content/"]
+      "@/*": ["./*"],
+      "@content/*": ["./content/*"]
     },
     "lib": [
       "dom",
