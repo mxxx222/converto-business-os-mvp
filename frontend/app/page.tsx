@@ -170,7 +170,7 @@ function Features() {
     ['Ostolaskut', 'AI täyttää kentät, tunnistaa poikkeamat ja luo hyväksyntäketjut.'],
     ['Kuitit (ALV)', 'Mobiilikaappaus, ALV‑erottelu, kululuokat, työntekijäkohtaiset hyväksynnät.'],
     ['Rahtikirjat & tilausvahvistukset', 'OCR riveittäin, automaattinen hinnoittelu ja laskutus.'],
-    ['Vero.fi', 'ALV‑ilmoitukset suoraan DocFlow'sta Suomi.fi‑valtuutuksella.'],
+    ['Vero.fi', 'ALV‑ilmoitukset suoraan DocFlow\'sta Suomi.fi‑valtuutuksella.'],
     ['Duplikaatit & petosesto', 'Fuzzy‑haku viitteistä, summista ja toimittajista – varoitukset ennen maksua.'],
     ['Monikielinen AI', 'FI, EN, SV, RU, ET, SO, AR, UK, VI – puhe tai teksti, selkokieliset vastaukset.'],
     ['BYO Database', 'Omista datasi (Supabase/Postgres). DocFlow prosessoi, sinä päätät sijainnin.'],
