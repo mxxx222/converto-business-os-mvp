@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import ChatBot from '@/components/ChatBot';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import ChatBot from '../components/ChatBot';
 
 export const metadata: Metadata = {
   title: 'DocFlow by Converto – Automatisoi dokumentit AI:lla',
