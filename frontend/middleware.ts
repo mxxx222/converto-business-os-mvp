@@ -1,8 +1,25 @@
-import { updateSession } from './lib/supabase/middleware';
-import { type NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+export function middleware(req: NextRequest) {
+  const host = req.headers.get('host') || '';
+  const url = req.nextUrl;
+
+  // 1) Kanonisoi www → apex
+  if (host.startsWith('www.')) {
+    url.host = host.slice(4); // pudota "www."
+    return NextResponse.redirect(url, 308);
+  }
+
+  // 2) Noindex Previeweihin
+  const isProd = process.env.NEXT_PUBLIC_ENV === 'production';
+  if (!isProd) {
+    const res = NextResponse.next();
+    res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return res;
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
