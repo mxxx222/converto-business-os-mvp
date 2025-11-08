@@ -2,7 +2,7 @@ export const revalidate = 3600
 
 // DocFlow Marketing Site - Force deployment update
 import Link from 'next/link'
-import ROICalculator from '@/components/ROICalculator'
+import ROICalculator from '../components/ROICalculator'
 
 export default function HomePage() {
   return (
