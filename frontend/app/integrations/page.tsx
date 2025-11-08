@@ -18,13 +18,13 @@ export default function IntegrationsPage() {
     },
     {
       name: 'Vero.fi',
-      desc: 'ALV‑ilmoitukset suoraan DocFlow'sta Suomi.fi‑valtuutuksella. Täydet audit‑lokit.',
+      desc: 'ALV‑ilmoitukset suoraan DocFlow\'sta Suomi.fi‑valtuutuksella. Täydet audit‑lokit.',
       eta: 'Beta',
       features: ['ALV-ilmoitukset', 'Suomi.fi valtuutus', 'Audit-lokit']
     },
     {
       name: 'Holvi',
-      desc: 'Pienyrityksille: kuitit ja tositteet suoraan DocFlow'sta Holviin.',
+      desc: 'Pienyrityksille: kuitit ja tositteet suoraan DocFlow\'sta Holviin.',
       eta: 'Valmis',
       features: ['Kuitit', 'Tositteet', 'Pienyrityksille']
     },
