@@ -94,22 +94,22 @@
 
 ### Slack Integration Setup (Ops Channel)
 
-#### Step 1: Connect Pingdom to Slack
-1. **Pingdom Dashboard → Settings → Integrations**
-2. Click **"Add Integration"** → Select **"Slack"**
-3. Click **"Authorize Slack"** → Select your workspace
-4. Grant permissions:
-   - `chat:write` (send messages)
-   - `channels:read` (list channels)
-   - `channels:join` (join channels)
+**Note:** Pingdom uses Webhook integration for Slack. You need to create a Slack Incoming Webhook first.
 
-#### Step 2: Configure Ops Channel
-1. **Select Channel:** `#ops` (or your ops channel name)
-2. **Test Connection:** Send test message to verify
-3. **Channel Settings:**
-   - Enable notifications: ✅
-   - Mention @channel: Only for critical alerts
-   - Message format: Rich formatting enabled
+#### Step 1: Create Slack Incoming Webhook
+1. **Slack → Your Workspace → Apps → Incoming Webhooks**
+2. Click **"Add to Slack"**
+3. Select channel: `#ops` (or your ops channel)
+4. Click **"Add Incoming Webhooks Integration"**
+5. Copy the **Webhook URL** (format: `https://hooks.slack.com/services/XXXXX/YYYYY/ZZZZZ`)
+
+#### Step 2: Create Pingdom Webhook Integration
+1. **Pingdom Dashboard → Integrations → Add Integration**
+2. Select **Type: Webhook**
+3. **Name:** `Slack - Ops Channel`
+4. **URL:** Paste your Slack webhook URL from Step 1
+5. **Active:** ✅ Enabled
+6. Click **"Save integration"**
 
 #### Step 3: Configure Alert Messages
 

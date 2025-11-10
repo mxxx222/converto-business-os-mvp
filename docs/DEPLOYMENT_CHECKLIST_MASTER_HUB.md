@@ -90,31 +90,33 @@ curl -Ik "https://docflow.fi/?pingdom=1" | head -n 20
 ```
 
 #### Slack-hälytykset (Ops-kanava)
-1. **Pingdom Dashboard → Integrations**
-   - Valitse "Slack" integration
-   - Authorize Slack workspace
-   - Valitse kanava: `#ops` (tai vastaava ops-kanava)
-   
-2. **Configure Alert Settings**
+**Note:** Pingdom käyttää Webhook-integrationia Slackille. Tarvitset Slack Incoming Webhook URL:n.
+
+1. **Slack → Workspace → Apps → Incoming Webhooks**
+   - Klikkaa "Add to Slack"
+   - Valitse kanava: `#ops`
+   - Kopioi Webhook URL (muoto: `https://hooks.slack.com/services/XXXXX/YYYYY/ZZZZZ`)
+
+2. **Pingdom Dashboard → Integrations → Add Integration**
+   - Type: **Webhook**
+   - Name: `Slack - Ops Channel`
+   - URL: Liitä Slack webhook URL
+   - Active: ✅ Enabled
+   - Save integration
+
+3. **Configure Alert Settings** (checkin muokkausnäkymässä)
    - **When check goes down:**
-     - Send to Slack: `#ops`
-     - Message: "🚨 DocFlow.fi DOWN: {check_name} failed"
-     - Include: Check name, URL, Response time, Error message
+     - Valitse Webhook: `Slack - Ops Channel`
+     - Message format: Pingdom lähettää automaattisesti JSON-dataa Slackiin
    
    - **When check goes up:**
-     - Send to Slack: `#ops`
-     - Message: "✅ DocFlow.fi RECOVERED: {check_name} is back online"
-     - Include: Check name, Downtime duration
-   
-   - **When check is slow:**
-     - Threshold: > 3000ms response time
-     - Send to Slack: `#ops`
-     - Message: "⚠️ DocFlow.fi SLOW: {check_name} response time {response_time}ms"
-   
-3. **Test Alert**
-   - Pingdom Dashboard → Test check manually
+     - Valitse Webhook: `Slack - Ops Channel`
+     - Recovery notification: ✅ Enabled
+
+4. **Test Alert**
+   - Pingdom Dashboard → Select check → Test Check
    - Verify Slack message appears in `#ops` channel
-   - Format: `[Pingdom] 🚨 DocFlow.fi - Keyword Check is DOWN`
+   - Format: Pingdom webhook lähettää JSON-dataa, joka näkyy Slackissa muotoiltuna viestinä
 
 **Quick Setup Links:**
 - [Pingdom Setup Guide](./MONITORING_SETUP_PINGDOM.md)
