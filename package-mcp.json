@@ -109,6 +109,13 @@ Learn what you can{
       "env": {
         "RESEND_API_KEY": "${RESEND_API_KEY}"
       }
+    },
+    "vercel-tools": {
+      "command": "node",
+      "args": ["mcp_vercel_server.js"],
+      "env": {
+        "VERCEL_API_TOKEN": "gZpLcGjNgouSvuQ10g2andEI"
+      }
     }
   }
 }

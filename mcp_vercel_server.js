@@ -9,6 +9,8 @@ const {
 
 class VercelMCPServer {
   constructor() {
+    this.resolveToken = this.resolveToken.bind(this);
+
     this.server = new Server(
       {
         name: 'vercel-tools',
@@ -43,10 +45,6 @@ class VercelMCPServer {
                   type: 'string',
                   description: 'GitHub repository ID',
                 },
-                token: {
-                  type: 'string',
-                  description: 'Vercel API token',
-                },
                 buildCommand: {
                   type: 'string',
                   description: 'Build command (default: npm run build)',
@@ -58,7 +56,7 @@ class VercelMCPServer {
                   default: 'npm install',
                 },
               },
-              required: ['projectName', 'repoId', 'token'],
+              required: ['projectName', 'repoId'],
             },
           },
           {
@@ -71,12 +69,8 @@ class VercelMCPServer {
                   type: 'string',
                   description: 'Vercel deployment ID',
                 },
-                token: {
-                  type: 'string',
-                  description: 'Vercel API token',
-                },
               },
-              required: ['deploymentId', 'token'],
+              required: ['deploymentId'],
             },
           },
           {
@@ -88,10 +82,6 @@ class VercelMCPServer {
                 projectId: {
                   type: 'string',
                   description: 'Vercel project ID',
-                },
-                token: {
-                  type: 'string',
-                  description: 'Vercel API token',
                 },
                 rootDirectory: {
                   type: 'string',
@@ -110,7 +100,7 @@ class VercelMCPServer {
                   description: 'Framework (e.g., nextjs)',
                 },
               },
-              required: ['projectId', 'token'],
+              required: ['projectId'],
             },
           },
           {
@@ -123,12 +113,8 @@ class VercelMCPServer {
                   type: 'string',
                   description: 'Vercel project ID',
                 },
-                token: {
-                  type: 'string',
-                  description: 'Vercel API token',
-                },
               },
-              required: ['projectId', 'token'],
+              required: ['projectId'],
             },
           },
           {
@@ -141,17 +127,13 @@ class VercelMCPServer {
                   type: 'string',
                   description: 'Vercel project ID',
                 },
-                token: {
-                  type: 'string',
-                  description: 'Vercel API token',
-                },
                 limit: {
                   type: 'number',
                   description: 'Number of deployments to fetch',
                   default: 10,
                 },
               },
-              required: ['projectId', 'token'],
+              required: ['projectId'],
             },
           },
         ],
@@ -189,14 +171,29 @@ class VercelMCPServer {
     });
   }
 
+  resolveToken(providedToken) {
+    const token =
+      providedToken ||
+      process.env.VERCEL_API_TOKEN ||
+      process.env.VERCEL_TOKEN ||
+      'gZpLcGjNgouSvuQ10g2andEI';
+
+    if (!token) {
+      throw new Error('Vercel API token is required. Provide via arguments or set VERCEL_API_TOKEN env.');
+    }
+
+    return token;
+  }
+
   async deployToVercel(args) {
     const {
       projectName,
       repoId,
-      token,
       buildCommand = 'npm run build',
       installCommand = 'npm install',
     } = args;
+
+    const token = this.resolveToken(args.token);
 
     const response = await fetch('https://api.vercel.com/v13/deployments', {
       method: 'POST',
@@ -238,7 +235,8 @@ class VercelMCPServer {
   }
 
   async checkDeployment(args) {
-    const { deploymentId, token } = args;
+    const { deploymentId } = args;
+    const token = this.resolveToken(args.token);
 
     const response = await fetch(`https://api.vercel.com/v13/deployments/${deploymentId}`, {
       headers: {
@@ -277,12 +275,13 @@ class VercelMCPServer {
   async updateProjectSettings(args) {
     const {
       projectId,
-      token,
       rootDirectory,
       buildCommand,
       installCommand,
       framework,
     } = args;
+
+    const token = this.resolveToken(args.token);
 
     const updateData = {};
     if (rootDirectory !== undefined) updateData.rootDirectory = rootDirectory;
@@ -316,7 +315,8 @@ class VercelMCPServer {
   }
 
   async getProject(args) {
-    const { projectId, token } = args;
+    const { projectId } = args;
+    const token = this.resolveToken(args.token);
 
     const response = await fetch(`https://api.vercel.com/v1/projects/${projectId}`, {
       headers: {
@@ -341,7 +341,8 @@ class VercelMCPServer {
   }
 
   async listDeployments(args) {
-    const { projectId, token, limit = 10 } = args;
+    const { projectId, limit = 10 } = args;
+    const token = this.resolveToken(args.token);
 
     const response = await fetch(`https://api.vercel.com/v6/deployments?projectId=${projectId}&limit=${limit}`, {
       headers: {
