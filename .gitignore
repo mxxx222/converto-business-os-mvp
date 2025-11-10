@@ -51,6 +51,8 @@
 !shared_core/**
 !scripts/
 !scripts/**
+!apps/
+!apps/**
 !QUICK_SETUP_GUIDE.md
 !frontend/.nvmrc
 !frontend/next.config.js

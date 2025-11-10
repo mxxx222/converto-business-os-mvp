@@ -21,16 +21,28 @@ const nextConfig = {
       max_age: 10886400,
       endpoints: [{ url: backendReportUrl }],
     };
+
+    const securityHeaders = [
+      { key: 'Content-Security-Policy-Report-Only', value: csp },
+      { key: 'Report-To', value: JSON.stringify(reportTo) },
+      { key: 'Referrer-Policy', value: 'no-referrer' },
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'X-Frame-Options', value: 'DENY' },
+      { key: 'Strict-Transport-Security', value: 'max-age=15552000; includeSubDomains' },
+    ];
+
     return [
       {
-        source: '/:path*',
+        source: '/_next/static/:path*',
         headers: [
-          { key: 'Content-Security-Policy-Report-Only', value: csp },
-          { key: 'Report-To', value: JSON.stringify(reportTo) },
-          { key: 'Referrer-Policy', value: 'no-referrer' },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'DENY' },
-          { key: 'Strict-Transport-Security', value: 'max-age=15552000; includeSubDomains' },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/((?!_next/static|_next/image|favicon.ico).*)',
+        headers: [
+          ...securityHeaders,
+          { key: 'Cache-Control', value: 'no-store, must-revalidate' },
         ],
       },
     ];
