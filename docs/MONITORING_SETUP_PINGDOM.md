@@ -90,12 +90,83 @@
 ### Notification Channels
 - **Email:** Primary contact for all alerts
 - **SMS:** Critical alerts only (downtime > 5 minutes)
-- **Slack:** Optional integration for team notifications
+- **Slack:** **REQUIRED** - Ops channel integration for team notifications
+
+### Slack Integration Setup (Ops Channel)
+
+#### Step 1: Connect Pingdom to Slack
+1. **Pingdom Dashboard → Settings → Integrations**
+2. Click **"Add Integration"** → Select **"Slack"**
+3. Click **"Authorize Slack"** → Select your workspace
+4. Grant permissions:
+   - `chat:write` (send messages)
+   - `channels:read` (list channels)
+   - `channels:join` (join channels)
+
+#### Step 2: Configure Ops Channel
+1. **Select Channel:** `#ops` (or your ops channel name)
+2. **Test Connection:** Send test message to verify
+3. **Channel Settings:**
+   - Enable notifications: ✅
+   - Mention @channel: Only for critical alerts
+   - Message format: Rich formatting enabled
+
+#### Step 3: Configure Alert Messages
+
+**When Check Goes DOWN:**
+```
+🚨 DocFlow.fi DOWN: {check_name} failed
+URL: {url}
+Response Time: {response_time}ms
+Error: {error_message}
+Status Code: {status_code}
+Time: {timestamp}
+```
+
+**When Check Goes UP (Recovery):**
+```
+✅ DocFlow.fi RECOVERED: {check_name} is back online
+Downtime Duration: {downtime_duration}
+Total Outage Time: {total_outage_time}
+Time: {timestamp}
+```
+
+**When Check is SLOW:**
+```
+⚠️ DocFlow.fi SLOW: {check_name} response time {response_time}ms
+Threshold: 3000ms
+URL: {url}
+Time: {timestamp}
+```
+
+#### Step 4: Alert Thresholds per Check Type
+
+**Keyword Check:**
+- Alert on: 2 consecutive failures
+- Slack channel: `#ops`
+- Mention @channel: No (use @here for first alert)
+
+**Redirect Check:**
+- Alert on: 3 consecutive failures
+- Slack channel: `#ops`
+- Mention @channel: No
+
+**HSTS Header Check:**
+- Alert on: 1 failure (immediate)
+- Slack channel: `#ops`
+- Mention @channel: Yes (security-critical)
+
+#### Step 5: Test Alert Configuration
+1. **Pingdom Dashboard → Select a check**
+2. Click **"Test Check"** or **"Simulate Failure"**
+3. Verify Slack message appears in `#ops` channel
+4. Check message format and variables are populated correctly
+5. Test recovery alert by manually fixing the check
 
 ### Escalation Policy
-1. **Immediate (0 min):** Email notification
-2. **5 minutes:** SMS notification (if downtime continues)
-3. **15 minutes:** Escalate to secondary contact
+1. **Immediate (0 min):** Slack notification to `#ops`
+2. **5 minutes:** Email notification + SMS (if downtime continues)
+3. **15 minutes:** Escalate to secondary contact + @channel mention
 4. **30 minutes:** Page on-call engineer
 
 ### Alert Thresholds
@@ -242,7 +313,11 @@ curl -s https://docflow.fi | grep "Automatisoi dokumentit"
 - [ ] Keyword monitoring configured
 - [ ] Redirect monitoring configured
 - [ ] Security headers monitoring configured
-- [ ] Alert notifications tested
+- [ ] **Slack integration connected** (Pingdom → Slack workspace)
+- [ ] **Ops channel configured** (`#ops` or equivalent)
+- [ ] **Alert messages tested** (DOWN, UP, SLOW)
+- [ ] **Test alert sent** to verify Slack notifications work
+- [ ] Alert notifications tested (Email + SMS)
 - [ ] Escalation policy documented
 - [ ] Team members notified of monitoring setup
 - [ ] First week of monitoring data collected

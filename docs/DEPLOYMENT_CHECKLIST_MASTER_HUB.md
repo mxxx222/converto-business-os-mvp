@@ -52,15 +52,75 @@
 - [ ] **Propagation verified** - `vercel domains inspect converto.fi` OK
 - [ ] **Curl test passed** - `curl -I https://converto.fi` → single 301 → docflow.fi
 
-### Pingdom Monitoring
-- [ ] **Keyword check** - https://docflow.fi ("Automatisoi dokumentit AI:lla")
-- [ ] **Redirect check** - https://www.docflow.fi (301 → docflow.fi)
-- [ ] **HSTS check** - Security headers monitoring
-- [ ] **Alerts configured** - Email + SMS notifications
+### 📈 Pingdom-seuranta (valmiit URLit)
+
+#### Perus Checkit
+- [ ] **Keyword check** - https://docflow.fi
+  - Type: HTTP(S) Uptime
+  - Region: Europe
+  - Advanced → Content Match:
+    - Match type: Contains
+    - Content: DocFlow
+    - Case sensitive: No
+- [ ] **Redirect check** - https://www.docflow.fi
+  - Type: HTTP(S) Uptime
+  - Region: Europe
+  - Advanced:
+    - Follow redirects: Yes
+    - Expected status: 301
+    - Expected final URL: https://docflow.fi
+- [ ] **HSTS header check** - https://docflow.fi
+  - Type: HTTP(S) Uptime
+  - Region: Europe
+  - Advanced → Header Validation:
+    - Header: Strict-Transport-Security
+    - Expected value: max-age=31536000; includeSubDomains; preload
+    - Match: Contains
+
+#### Testauskomentot
+```bash
+# Test HSTS header
+curl -Ik https://docflow.fi | grep -i strict-transport-security
+
+# Test www redirect
+curl -Ik https://www.docflow.fi | egrep -i "HTTP/2 301|location:"
+
+# Test main site response
+curl -Ik "https://docflow.fi/?pingdom=1" | head -n 20
+```
+
+#### Slack-hälytykset (Ops-kanava)
+1. **Pingdom Dashboard → Integrations**
+   - Valitse "Slack" integration
+   - Authorize Slack workspace
+   - Valitse kanava: `#ops` (tai vastaava ops-kanava)
+   
+2. **Configure Alert Settings**
+   - **When check goes down:**
+     - Send to Slack: `#ops`
+     - Message: "🚨 DocFlow.fi DOWN: {check_name} failed"
+     - Include: Check name, URL, Response time, Error message
+   
+   - **When check goes up:**
+     - Send to Slack: `#ops`
+     - Message: "✅ DocFlow.fi RECOVERED: {check_name} is back online"
+     - Include: Check name, Downtime duration
+   
+   - **When check is slow:**
+     - Threshold: > 3000ms response time
+     - Send to Slack: `#ops`
+     - Message: "⚠️ DocFlow.fi SLOW: {check_name} response time {response_time}ms"
+   
+3. **Test Alert**
+   - Pingdom Dashboard → Test check manually
+   - Verify Slack message appears in `#ops` channel
+   - Format: `[Pingdom] 🚨 DocFlow.fi - Keyword Check is DOWN`
 
 **Quick Setup Links:**
 - [Pingdom Setup Guide](./MONITORING_SETUP_PINGDOM.md)
 - [Incident Runbook](./INCIDENT_RUNBOOK_DOMAIN_SEO.md)
+
+- [ ] **Pingdom setup done?** - Kaikki 3 checkiä luotu ja Slack-hälytykset konfiguroitu
 
 ---
 
