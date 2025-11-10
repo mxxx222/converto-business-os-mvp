@@ -45,6 +45,25 @@
 
 ---
 
+## ✅ DNS & Monitorointi – Pikachecklist
+
+### DNS Status
+- [ ] **DNS done?** - converto.fi registrar-muutos tehty
+- [ ] **Propagation verified** - `vercel domains inspect converto.fi` OK
+- [ ] **Curl test passed** - `curl -I https://converto.fi` → single 301 → docflow.fi
+
+### Pingdom Monitoring
+- [ ] **Keyword check** - https://docflow.fi ("Automatisoi dokumentit AI:lla")
+- [ ] **Redirect check** - https://www.docflow.fi (301 → docflow.fi)
+- [ ] **HSTS check** - Security headers monitoring
+- [ ] **Alerts configured** - Email + SMS notifications
+
+**Quick Setup Links:**
+- [Pingdom Setup Guide](./MONITORING_SETUP_PINGDOM.md)
+- [Incident Runbook](./INCIDENT_RUNBOOK_DOMAIN_SEO.md)
+
+---
+
 ## ⚠️ Pending Actions
 
 ### High Priority
