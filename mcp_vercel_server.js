@@ -175,11 +175,12 @@ class VercelMCPServer {
     const token =
       providedToken ||
       process.env.VERCEL_API_TOKEN ||
-      process.env.VERCEL_TOKEN ||
-      'gZpLcGjNgouSvuQ10g2andEI';
+      process.env.VERCEL_TOKEN;
 
     if (!token) {
-      throw new Error('Vercel API token is required. Provide via arguments or set VERCEL_API_TOKEN env.');
+      throw new Error(
+        'Vercel API token is required. Provide via arguments or set VERCEL_API_TOKEN / VERCEL_TOKEN environment variable.'
+      );
     }
 
     return token;
