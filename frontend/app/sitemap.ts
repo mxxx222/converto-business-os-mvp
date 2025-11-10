@@ -1,9 +1,9 @@
 import type { MetadataRoute } from 'next';
 
 const BASE_URL = 'https://docflow.fi';
-const LANGUAGES: readonly string[] = [];
+const LANGUAGES: readonly string[] = ['fi', 'en'];
 
-const PATHS = [''] as const;
+const PATHS = ['', '/pricing', '/contact', '/security', '/privacy'] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
@@ -27,4 +27,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
     return [baseEntry, ...localizedEntries];
   });
 }
-

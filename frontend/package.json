@@ -1,46 +1,28 @@
 {
-  "name": "docflow-site",
-  "version": "0.1.0",
+  "name": "docflow-frontend",
   "private": true,
+  "version": "0.1.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3000",
     "lint": "eslint . --max-warnings=0",
-    "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
-    "e2e": "playwright test",
-    "openapi:lint": "spectral lint docs/openapi.yaml -r .spectral.yaml",
-    "openapi:lint:report": "spectral lint docs/openapi.yaml -r .spectral.yaml -f json > openapi-lint-report.json || true"
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18.18.0"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.80.0",
-    "jsonwebtoken": "^9.0.2",
-    "lucide-react": "^0.553.0",
-    "next": "15.1.3",
+    "next": "^16.0.1",
     "next-intl": "^4.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "tesseract.js": "^6.0.1",
-    "zod": "^3.23.8"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.0",
-    "@sentry/nextjs": "^8.27.0",
-    "@stoplight/spectral-cli": "^6.11.1",
-    "@tailwindcss/forms": "^0.5.7",
-    "@tailwindcss/typography": "^0.5.10",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20.11.30",
-    "@types/react": "^18.3.8",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.18",
-    "eslint": "^9",
-    "eslint-config-next": "15.1.3",
-    "msw": "^2.12.1",
-    "postcss": "^8.4.35",
-    "prettier": "^3.3.3",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.6.3"
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.1",
+    "typescript": "^5.9.3"
   }
 }
