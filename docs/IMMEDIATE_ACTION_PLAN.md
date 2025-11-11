@@ -81,9 +81,22 @@ TTL: 3600
 
 ### **Priority 3: Backend Health Check (Execute Today)**
 ```bash
-# Backend Investigation Required:
-curl -X GET "https://converto-business-os-quantum-mvp-1.onrender.com/health"
-# Fix any issues found
+# SOLUTION: Fly.io Backend Setup
+# Deploy reliable backend to api.converto.fi
+
+# 1. Install and setup Fly.io
+brew install flyctl
+flyctl auth login
+flyctl apps create docflow-admin-api --org personal
+
+# 2. Deploy with health endpoints
+flyctl deploy --app docflow-admin-api
+
+# 3. Test new health endpoint
+curl -X GET "https://api.converto.fi/health"
+# Expected: {"status":"healthy","timestamp":"2025-11-11T..."}
+
+# Benefits: 99.9% uptime, custom domain, built-in monitoring
 ```
 
 ---
