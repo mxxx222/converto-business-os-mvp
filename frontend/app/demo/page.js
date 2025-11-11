@@ -3,6 +3,8 @@ export const metadata = {
   description: "Varaa 15 minuutin demo ja näe miten DocFlow automatisoi dokumenttien käsittelyn. Henkilökohtainen esittely suomeksi.",
 };
 
+import Link from 'next/link';
+
 export default function DemoPage() {
   return (
     <main>
@@ -69,7 +71,11 @@ export default function DemoPage() {
 
           <div className="mt-8 text-center">
             <p className="text-sm text-slate-600">
-              Ei ehdi demoon? <a href="/signup" className="text-blue-600 hover:underline">Aloita suoraan ilmainen kokeilu</a>.
+              Ei ehdi demoon?{' '}
+              <Link href="/signup" className="text-blue-600 hover:underline">
+                Aloita suoraan ilmainen kokeilu
+              </Link>
+              .
             </p>
           </div>
         </div>

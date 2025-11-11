@@ -14,11 +14,17 @@ import {
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const RESEND_API_BASE = 'https://api.resend.com';
+const DEFAULT_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@docflow.fi';
 
 if (!RESEND_API_KEY) {
   console.error('Error: RESEND_API_KEY environment variable is required');
+  console.error('Please set RESEND_API_KEY in your environment');
   process.exit(1);
 }
+
+console.log(`🚀 Resend MCP Server initializing...`);
+console.log(`📧 From: ${DEFAULT_FROM_EMAIL}`);
+console.log(`🌐 API Base: ${RESEND_API_BASE}`);
 
 const server = new Server(
   {
@@ -57,7 +63,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             from: {
               type: 'string',
               description: 'Sender email address',
-              default: 'noreply@converto.fi',
+              default: DEFAULT_FROM_EMAIL,
             },
           },
           required: ['to', 'subject', 'html'],

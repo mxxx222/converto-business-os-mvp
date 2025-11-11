@@ -233,7 +233,7 @@ export default function DashboardPage() {
             </h3>
             <div className="mt-2 text-sm text-blue-700">
               <ul className="list-disc list-inside space-y-1">
-                <li>Lataa dokumentteja klikkaamalla "Lataa dokumentti" -painiketta</li>
+                <li>{'Lataa dokumentteja klikkaamalla "Lataa dokumentti" -painiketta'}</li>
                 <li>Seuraa käsittelyn edistymistä reaaliajassa</li>
                 <li>Tarkista ja muokkaa OCR-tuloksia tarvittaessa</li>
                 <li>Hyväksy tai hylkää dokumentteja käsittelyn jälkeen</li>

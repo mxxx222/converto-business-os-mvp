@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Calculator, TrendingUp } from 'lucide-react';
 import { CalendlyButton } from './CalendlyButton';
@@ -290,12 +291,12 @@ export function ROICalculator() {
           Valmis säästämään <strong className="text-yellow-300">€{results.savingsMonthly.toLocaleString('fi-FI')}</strong> kuukaudessa?
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
+          <Link
             href="/beta"
             className="inline-block bg-white text-blue-600 px-10 py-5 rounded-xl font-bold text-xl hover:shadow-2xl transition-all"
           >
             🚀 Aloita Ilmainen Kokeilu
-          </a>
+          </Link>
           <CalendlyButton variant="secondary" size="lg" text="📅 Varaa Demo" />
         </div>
         <p className="text-sm text-blue-200 mt-4">

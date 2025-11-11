@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ReactNode } from 'react';
 
 interface DashboardLayoutProps {
@@ -20,30 +21,30 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               
               {/* Navigation Links */}
               <div className="hidden md:ml-6 md:flex md:space-x-8">
-                <a
+                <Link
                   href="/dashboard"
                   className="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Yleiskatsaus
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/dashboard/documents"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Dokumentit
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/dashboard/reports"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Raportit
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/dashboard/settings"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Asetukset
-                </a>
+                </Link>
               </div>
             </div>
             

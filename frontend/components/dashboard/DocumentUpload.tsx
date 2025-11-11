@@ -30,27 +30,7 @@ export default function DocumentUpload({
 
   const generateFileId = () => Math.random().toString(36).substring(2, 15);
 
-  const addFile = useCallback((file: File) => {
-    const validation = validateFile(file);
-    if (!validation.isValid) {
-      onUploadError?.(validation.error || 'Tiedosto ei ole kelvollinen');
-      return;
-    }
-
-    const uploadedFile: UploadedFile = {
-      file,
-      id: generateFileId(),
-      status: 'pending',
-      progress: 0,
-    };
-
-    setFiles(prev => [...prev, uploadedFile]);
-    
-    // Start upload immediately
-    uploadFile(uploadedFile);
-  }, [onUploadError]);
-
-  const uploadFile = async (uploadedFile: UploadedFile) => {
+  const uploadFile = useCallback(async (uploadedFile: UploadedFile) => {
     setFiles(prev => prev.map(f => 
       f.id === uploadedFile.id 
         ? { ...f, status: 'uploading', progress: 0 }
@@ -92,7 +72,27 @@ export default function DocumentUpload({
       ));
       onUploadError?.(errorMessage);
     }
-  };
+  }, [onUploadComplete, onUploadError]);
+
+  const addFile = useCallback((file: File) => {
+    const validation = validateFile(file);
+    if (!validation.isValid) {
+      onUploadError?.(validation.error || 'Tiedosto ei ole kelvollinen');
+      return;
+    }
+
+    const uploadedFile: UploadedFile = {
+      file,
+      id: generateFileId(),
+      status: 'pending',
+      progress: 0,
+    };
+
+    setFiles(prev => [...prev, uploadedFile]);
+    
+    // Start upload immediately
+    uploadFile(uploadedFile);
+  }, [onUploadError, uploadFile]);
 
   const removeFile = (id: string) => {
     setFiles(prev => prev.filter(f => f.id !== id));

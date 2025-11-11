@@ -19,6 +19,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "lucide-react": "^0.548.0"
+    "lucide-react": "^0.548.0",
+    "resend": "^6.4.2"
   }
 }

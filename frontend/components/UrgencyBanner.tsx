@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { X } from 'lucide-react';
 
@@ -25,12 +26,12 @@ export function UrgencyBanner() {
         </div>
 
         <div className="flex items-center gap-3">
-          <a
+          <Link
             href="/beta"
             className="bg-white text-red-600 px-4 py-2 rounded-lg font-bold text-sm hover:shadow-lg transition-all flex-shrink-0"
           >
             Hae Nyt →
-          </a>
+          </Link>
           
           <button
             onClick={() => setIsVisible(false)}
