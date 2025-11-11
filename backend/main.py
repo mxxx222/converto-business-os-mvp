@@ -16,6 +16,8 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 from backend.app.routes.leads import router as leads_router
 from backend.app.routes.metrics import router as metrics_router
+from backend.app.routes.auth import router as auth_router
+from backend.app.routes.users import router as users_router
 from backend.config import get_settings
 from backend.modules.email.router import router as email_router
 from backend.routes.csp import router as csp_router
@@ -138,6 +140,8 @@ def create_app() -> FastAPI:
     app.include_router(metrics_router)
     app.include_router(email_router)
     app.include_router(leads_router)
+    app.include_router(auth_router)
+    app.include_router(users_router)
 
     # Back-compat alias: preserve body via 307 redirect
     @app.api_route("/api/v1/ocr-ai/scan", methods=["POST", "OPTIONS"], include_in_schema=False)
