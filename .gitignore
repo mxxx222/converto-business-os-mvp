@@ -66,6 +66,13 @@ app/**/.venv/
 app/**/__pycache__/
 app/**/dist/
 app/**/build/
+apps/**/node_modules/
+apps/**/.turbo/
+apps/**/.next/
+apps/**/dist/
+apps/**/build/
+backend/**/node_modules/
+backend/**/__pycache__/
 frontend/**/node_modules/
 frontend/**/.turbo/
 frontend/**/.next/
