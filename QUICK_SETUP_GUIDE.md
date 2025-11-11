@@ -31,7 +31,7 @@ export RENDER_API_KEY=your-render-api-key
 ```
 SENTRY_DSN=https://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@o4507887226847232.ingest.sentry.io/4507887226847232
 
-SUPABASE_URL=https://pwghuqkxryxgnnsnsiah.supabase.co
+SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=sbp_3239ba703a96cee5e258396939111c5db2aecd9c
 SUPABASE_AUTH_ENABLED=true
 
@@ -74,7 +74,7 @@ LOG_LEVEL=info
 ```
 NEXT_PUBLIC_SENTRY_DSN=https://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@o4507887226847232.ingest.sentry.io/4507887226847232
 
-NEXT_PUBLIC_SUPABASE_URL=https://pwghuqkxryxgnnsnsiah.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
@@ -169,3 +169,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 ---
 
 © 2025 Converto Business OS
+

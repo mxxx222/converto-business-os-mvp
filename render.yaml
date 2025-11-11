@@ -1,0 +1,70 @@
+services:
+  # Dashboard (SSR) - Requires Supabase Auth & Realtime
+  - type: web
+    name: converto-dashboard
+    env: node
+    plan: starter
+    buildCommand: npm ci --include=dev && NEXT_PUBLIC_STATIC_EXPORT=false npm run build
+    startCommand: npm run start
+    rootDir: frontend
+    healthCheckPath: /dashboard
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: NEXT_PUBLIC_STATIC_EXPORT
+        value: 'false'
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://pwghuqkxryxgnnsnsiah.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3Z2h1cWt4cnl4Z25uc25zaWFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4NjY4NTcsImV4cCI6MjA3NzQ0Mjg1N30.jj89OSBznwr8UnQORBHXVASZcydJRB3tl9vdyjeHCoU
+      - key: NEXT_PUBLIC_SENTRY_DSN
+        value: https://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@o4507887226847232.ingest.sentry.io/4507887226847232
+      - key: NEXT_PUBLIC_API_URL
+        value: https://api.converto.fi
+
+  # Backend (Business OS) - FastAPI Backend
+  - type: web
+    name: converto-business-os-quantum-mvp-1
+    env: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    rootDir: .
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DATABASE_URL
+        value: postgresql://demo:demo@demo.supabase.co:5432/demo
+      - key: SUPABASE_URL
+        value: https://pwghuqkxryxgnnsnsiah.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: sbp_3239ba703a96cee5e258396939111c5db2aecd9c
+      - key: SUPABASE_AUTH_ENABLED
+        value: 'true'
+      - key: SENTRY_DSN
+        value: https://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@o4507887226847232.ingest.sentry.io/4507887226847232
+      - key: OCR_PROVIDER
+        value: tesseract
+      - key: CORS_ORIGINS_STR
+        value: https://app.converto.fi,https://converto.fi,http://localhost:3000
+      - key: LOG_LEVEL
+        value: info
+      - key: UPLOAD_V2_ENABLED
+        value: false
+      - key: SECURITY_STRICT_HEADERS
+        value: true
+      - key: CSV_EXPORT_ENABLED
+        value: true
+      - key: S3_REGION
+        value: us-east-1
+      - key: S3_BUCKET
+        value: converto-uploads
+      - key: S3_ACCESS_KEY_ID
+        value: demo
+      - key: S3_SECRET_ACCESS_KEY
+        value: demo
+      - key: RESEND_API_KEY
+        value: ${RESEND_API_KEY}
+      - key: RESEND_FROM_EMAIL
+        value: info@converto.fi

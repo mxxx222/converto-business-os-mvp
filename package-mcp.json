@@ -54,8 +54,7 @@ Learn what you can{
     "auto-deploy": "node mcp_auto_deploy_server.js",
     "notion": "node mcp_notion_server.js",
     "openai": "node mcp_openai_server.js",
-    "resend": "node mcp_resend_server.js",
-    "vercel-deploy": "node mcp_vercel_deploy_server.js"
+    "resend": "node mcp_resend_server.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.5.0"
@@ -111,11 +110,12 @@ Learn what you can{
         "RESEND_API_KEY": "${RESEND_API_KEY}"
       }
     },
-    "vercel-deploy-tools": {
+    "vercel-tools": {
       "command": "node",
-      "args": ["mcp_vercel_deploy_server.js"],
+      "args": ["mcp_vercel_server.js"],
       "env": {
-        "VERCEL_TOKEN": "${VERCEL_TOKEN}"
+        "VERCEL_API_TOKEN": "${VERCEL_API_TOKEN}",
+        "VERCEL_TEAM_ID": "${VERCEL_TEAM_ID}"
       }
     }
   }

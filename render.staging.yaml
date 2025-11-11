@@ -1,0 +1,63 @@
+# Render Blueprint - Converto™ Staging Environment
+
+databases:
+  - name: converto-db-staging
+    databaseName: converto_staging
+    user: converto
+    region: frankfurt
+    plan: free
+
+services:
+  # Backend API (Staging)
+  - type: web
+    name: converto-api-staging
+    env: python
+    region: frankfurt
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: converto-db-staging
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: ENVIRONMENT
+        value: staging
+      - key: ALLOWED_ORIGINS
+        value: https://staging.converto.fi,https://converto-api-staging.onrender.com
+      - key: AI_PROVIDER
+        value: openai
+      - key: VISION_PROVIDER
+        value: openai
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: SENTRY_ENV
+        value: staging
+
+  # Frontend (Staging)
+  - type: web
+    name: converto-frontend-staging
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: cd frontend && npm ci && npm run build
+    startCommand: cd frontend && npm start
+    healthCheckPath: /
+    autoDeploy: false
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NEXT_PUBLIC_API_BASE
+        value: https://converto-api-staging.onrender.com
+      - key: NEXT_PUBLIC_APP_ENV
+        value: staging
+      - key: NEXT_PUBLIC_PREMIUM_HOME
+        value: "1"

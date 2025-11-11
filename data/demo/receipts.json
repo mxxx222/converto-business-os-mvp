@@ -1,0 +1,41 @@
+[
+  {
+    "id": "28a03be7-2ef2-4499-8ca7-7014093780c2",
+    "tenant": "tenant_demo",
+    "vendor": "K-Market",
+    "total_cents": 3420,
+    "total_eur": 34.2,
+    "vat_rate": 14.0,
+    "vat_cents": 420,
+    "date": "2025-10-11",
+    "category": "Tarvikkeet",
+    "status": "confirmed",
+    "created_at": "2025-10-11T00:02:05.429402"
+  },
+  {
+    "id": "22f637e4-ab73-471e-8593-34de9f027c36",
+    "tenant": "tenant_demo",
+    "vendor": "Shell",
+    "total_cents": 6590,
+    "total_eur": 65.9,
+    "vat_rate": 24.0,
+    "vat_cents": 1278,
+    "date": "2025-10-08",
+    "category": "Polttoaine",
+    "status": "confirmed",
+    "created_at": "2025-10-08T00:02:05.429402"
+  },
+  {
+    "id": "c152e85b-3d11-476f-ab5e-fd52f49658e4",
+    "tenant": "tenant_demo",
+    "vendor": "Ravintola Savoy",
+    "total_cents": 2590,
+    "total_eur": 25.9,
+    "vat_rate": 14.0,
+    "vat_cents": 321,
+    "date": "2025-10-12",
+    "category": "Edustus",
+    "status": "confirmed",
+    "created_at": "2025-10-12T00:02:05.429402"
+  }
+]

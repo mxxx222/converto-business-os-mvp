@@ -1,0 +1,13 @@
+{
+  "tenant": "tenant_demo",
+  "month": "2025-10",
+  "rate_current": 25.5,
+  "sales_vat_cents": 18200,
+  "sales_vat_eur": 182.0,
+  "purchases_vat_cents": 9400,
+  "purchases_vat_eur": 94.0,
+  "net_vat_cents": 8800,
+  "net_vat_eur": 88.0,
+  "last_filing": "2025-09-13",
+  "next_deadline": "2025-10-23"
+}

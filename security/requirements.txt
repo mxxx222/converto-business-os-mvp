@@ -1,0 +1,57 @@
+# Security & Compliance Dependencies
+
+# FIDO2/WebAuthn
+webauthn==1.12.0
+pyotp==2.9.0
+cryptography==41.0.8
+
+# TPM Hardware Attestation
+tpm2-pytss==2.0.1
+
+# HTTP and API
+httpx==0.25.2
+requests==2.31.0
+
+# Data Processing
+pandas==2.1.4
+openpyxl==3.1.2
+
+# Security Scanning Tools
+semgrep==1.45.0
+gitleaks==8.18.0
+trivy==0.47.0
+
+# GitHub Integration
+PyGithub==1.59.1
+github3.py==3.2.0
+
+# XML Processing
+lxml==4.9.3
+xmltodict==0.13.0
+
+# Async and Background Tasks
+celery==5.3.4
+apscheduler==3.10.4
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.13.0
+psycopg2-binary==2.9.9
+
+# Monitoring and Logging
+structlog==23.2.0
+prometheus-client==0.19.0
+
+# Configuration
+pydantic==2.5.0
+python-dotenv==1.0.0
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-mock==3.12.0
+
+# Development
+black==24.1.1
+ruff==0.1.8
+mypy==1.8.0

@@ -1,0 +1,119 @@
+# Fastfile for Converto iOS App
+# Usage:
+#   fastlane beta    # Build and upload to TestFlight
+#   fastlane release # Build and upload to App Store
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    # Increment build number
+    increment_build_number(
+      xcodeproj: "App/App.xcodeproj"
+    )
+
+    # Build the app
+    build_app(
+      scheme: "App",
+      workspace: "App/App.xcworkspace",
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "Converto.ipa"
+    )
+
+    # Upload to TestFlight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      distribute_external: false,
+      notify_external_testers: false
+    )
+
+    # Notify success
+    slack(
+      message: "New TestFlight build uploaded! 🚀",
+      success: true
+    ) if ENV['SLACK_WEBHOOK_URL']
+  end
+
+  desc "Build and upload to App Store"
+  lane :release do
+    # Ensure clean git status
+    ensure_git_status_clean
+
+    # Increment version
+    increment_version_number(
+      xcodeproj: "App/App.xcodeproj",
+      bump_type: "patch"
+    )
+
+    # Increment build number
+    increment_build_number(
+      xcodeproj: "App/App.xcodeproj"
+    )
+
+    # Build the app
+    build_app(
+      scheme: "App",
+      workspace: "App/App.xcworkspace",
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "Converto.ipa"
+    )
+
+    # Upload to App Store
+    upload_to_app_store(
+      submit_for_review: false,
+      automatic_release: false,
+      force: true,
+      skip_metadata: false,
+      skip_screenshots: false,
+      precheck_include_in_app_purchases: false
+    )
+
+    # Commit version bump
+    commit_version_bump(
+      message: "chore(ios): bump version to #{lane_context[SharedValues::VERSION_NUMBER]}",
+      xcodeproj: "App/App.xcodeproj"
+    )
+
+    # Create git tag
+    add_git_tag(
+      tag: "ios-v#{lane_context[SharedValues::VERSION_NUMBER]}"
+    )
+
+    # Push to remote
+    push_to_git_remote
+
+    # Notify success
+    slack(
+      message: "New App Store build uploaded! 🎉",
+      success: true
+    ) if ENV['SLACK_WEBHOOK_URL']
+  end
+
+  desc "Run tests"
+  lane :test do
+    run_tests(
+      scheme: "App",
+      workspace: "App/App.xcworkspace"
+    )
+  end
+
+  desc "Take screenshots for App Store"
+  lane :screenshots do
+    capture_screenshots(
+      scheme: "App",
+      output_directory: "./screenshots"
+    )
+  end
+
+  # Error handling
+  error do |lane, exception|
+    slack(
+      message: "Error in lane #{lane}: #{exception}",
+      success: false
+    ) if ENV['SLACK_WEBHOOK_URL']
+  end
+end

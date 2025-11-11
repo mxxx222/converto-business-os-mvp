@@ -25,12 +25,12 @@ test_endpoint() {
     local name=$1
     local url=$2
     local expected_status=${3:-200}
-
+    
     TESTS=$((TESTS + 1))
     echo -n "Testing $name... "
-
+    
     response=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
-
+    
     if [ "$response" = "$expected_status" ]; then
         echo -e "${GREEN}✅ PASS${NC} (HTTP $response)"
         PASSED=$((PASSED + 1))
@@ -46,12 +46,12 @@ test_content() {
     local name=$1
     local url=$2
     local search_term=$3
-
+    
     TESTS=$((TESTS + 1))
     echo -n "Testing $name contains '$search_term'... "
-
+    
     content=$(curl -s "$url" 2>/dev/null || echo "")
-
+    
     if echo "$content" | grep -q "$search_term"; then
         echo -e "${GREEN}✅ PASS${NC}"
         PASSED=$((PASSED + 1))
@@ -98,5 +98,4 @@ else
     echo -e "${GREEN}✅ All dashboard tests passed!${NC}"
     exit 0
 fi
-
 

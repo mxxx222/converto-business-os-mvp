@@ -9,7 +9,7 @@
 ### **1️⃣ Backend Setup** (5 min)
 👉 [QUICK_START.md](QUICK_START.md#1-backend-setup-️-5-min)
 
-### **2️⃣ Dashboard Setup** (5 min)
+### **2️⃣ Dashboard Setup** (5 min)  
 👉 [QUICK_START.md](QUICK_START.md#2-dashboard-setup-️-5-min)
 
 ### **3️⃣ Enable Realtime** (2 min)
@@ -85,12 +85,11 @@ make test-dashboard      # Test dashboard
 
 ---
 
-**💡 Tarvitset apua?**
+**💡 Tarvitset apua?** 
 - Katso: [PROJECT_COMPLETE_SUMMARY.md](PROJECT_COMPLETE_SUMMARY.md)
 - Tai: [FINAL_CHECKLIST.md](FINAL_CHECKLIST.md)
 
 ---
 
 © 2025 Converto Business OS
-
 

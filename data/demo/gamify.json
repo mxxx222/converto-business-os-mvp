@@ -1,0 +1,36 @@
+{
+  "tenant": "tenant_demo",
+  "user_id": "demo_user",
+  "total_points": 220,
+  "lifetime_points": 1050,
+  "streak_days": 4,
+  "level": 3,
+  "next_level_points": 300,
+  "recent_events": [
+    {
+      "action": "scanned_receipt",
+      "points": 10,
+      "date": "2025-10-13T00:02:05.429402"
+    },
+    {
+      "action": "paid_invoice",
+      "points": 20,
+      "date": "2025-10-12T00:02:05.429402"
+    },
+    {
+      "action": "vat_report",
+      "points": 30,
+      "date": "2025-10-11T00:02:05.429402"
+    },
+    {
+      "action": "scanned_receipt",
+      "points": 10,
+      "date": "2025-10-10T00:02:05.429402"
+    },
+    {
+      "action": "legal_sync",
+      "points": 15,
+      "date": "2025-10-09T00:02:05.429402"
+    }
+  ]
+}

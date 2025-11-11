@@ -248,7 +248,7 @@ Aloita ilmaisella 30 päivän kokeilulla. Ei luottokorttia, ei sitoumuksia. Kats
 
 Haluatko nähdä Converton toiminnassa? Varaa ilmainen demo-puhelu, jossa näytämme, miten järjestelmä toimii juuri sinun liiketoimintasi kontekstissa.
 
-👉 **Varaa demo:** info@converto.fi
+👉 **Varaa demo:** hello@converto.fi
 
 ### Lataa Ilmainen Testiversio
 

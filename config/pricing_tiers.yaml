@@ -1,0 +1,302 @@
+# Converto™ Business OS - Pricing & Entitlements
+# MVP Pricing Strategy: "Ydin ilmainen, lisät maksullisia"
+
+currency: EUR
+billing_cycle: monthly
+
+# ========================================
+# SUBSCRIPTION TIERS
+# ========================================
+
+tiers:
+  starter:
+    name: "Starter"
+    price: 19
+    description: "Yksinyrittäjälle - perus automaatio"
+    includes:
+      - ocr_core
+      - ai_insights_basic
+      - vat_core
+      - pwa_offline
+      - gamify_points
+    limits:
+      ocr_scans_per_month: 150
+      ai_tokens_per_month: 150000
+      users: 1
+    features:
+      - "📸 Kuittiskannaus (150/kk)"
+      - "🤖 AI-analyysi (basic)"
+      - "🧮 ALV-laskenta (FI)"
+      - "📱 PWA mobile"
+      - "🎮 Gamification"
+
+  pro:
+    name: "Pro"
+    price: 39
+    description: "Mikroyrityksille - Notion + WhatsApp"
+    includes:
+      - ocr_core
+      - ai_insights_pro
+      - vat_core
+      - notion_sync
+      - whatsapp_notify
+      - gamify_points
+      - reports_export
+    limits:
+      ocr_scans_per_month: 500
+      ai_tokens_per_month: 400000
+      users: 3
+    features:
+      - "✨ Kaikki Starter"
+      - "📓 Notion-integraatio"
+      - "💬 WhatsApp-muistutukset"
+      - "📊 Raportit (PDF/CSV)"
+      - "👥 3 käyttäjää"
+    popular: true
+
+  business:
+    name: "Business"
+    price: 79
+    description: "PK-yrityksille - täysi automaatio"
+    includes:
+      - ocr_core
+      - ai_insights_pro
+      - vat_core
+      - notion_sync
+      - whatsapp_notify
+      - bank_sync
+      - logistics_track
+      - stripe_billing_pro
+      - legal_light
+      - reports_export
+      - admin_console
+    limits:
+      ocr_scans_per_month: 1500
+      ai_tokens_per_month: 1200000
+      users: 10
+    features:
+      - "✨ Kaikki Pro"
+      - "🏦 Pankkisynkronointi"
+      - "📦 Logistiikkaseuranta"
+      - "⚖️ Legal compliance (light)"
+      - "👨‍💼 Admin console"
+      - "👥 10 käyttäjää"
+
+  enterprise:
+    name: "Enterprise"
+    price: 149
+    description: "Tilitoimistoille ja isoille - SLA + audit"
+    includes:
+      - ocr_core
+      - ai_insights_pro
+      - vat_core
+      - notion_sync
+      - whatsapp_notify
+      - bank_sync
+      - logistics_track
+      - stripe_billing_pro
+      - legal_ml_engine
+      - audit_trail
+      - sso_saml
+      - priority_sla
+      - reports_export
+      - admin_console
+    limits:
+      ocr_scans_per_month: 5000
+      ai_tokens_per_month: 3500000
+      users: -1  # unlimited
+    features:
+      - "✨ Kaikki Business"
+      - "🧠 Legal ML Engine"
+      - "📋 Audit Trail"
+      - "🔐 SSO/SAML"
+      - "⚡ Priority SLA (4h)"
+      - "👥 Unlimited users"
+
+# ========================================
+# ADD-ON MODULES (a la carte)
+# ========================================
+
+modules:
+  ocr_core:
+    name: "OCR Core"
+    stripe_product: "PROD_OCR"
+    included_in_all: true
+    roi_hint: "Säästää ~3–6h/kk kuittityössä."
+
+  ai_insights_basic:
+    name: "AI Insights (Basic)"
+    stripe_product: "PROD_AI_BASIC"
+    env_flags: ["AI_MODE=basic"]
+
+  ai_insights_pro:
+    name: "AI Insights (Pro)"
+    stripe_product: "PROD_AI_PRO"
+    env_flags: ["AI_MODE=pro"]
+
+  vat_core:
+    name: "VAT Calculator (Regulatory Truth)"
+    stripe_product: "PROD_VAT"
+    env_flags: ["VAT_ENGINE=regulatory_truth"]
+    included_in_all: true
+
+  notion_sync:
+    name: "Notion Sync + Calendar"
+    stripe_product: "PROD_NOTION"
+    env_flags: ["NOTION_SYNC_ENABLED=true"]
+    addon_price: 9
+    passthrough_cost: 0
+    roi_hint: "Säästää 2h/kk raportoinnissa. ROI 600%."
+
+  whatsapp_notify:
+    name: "WhatsApp Notifications"
+    stripe_product: "PROD_WA"
+    env_flags: ["WA_ENABLED=true"]
+    addon_price: 9
+    passthrough_cost: 3
+    roi_hint: "Parantaa retentiota +20%. Twilio ~1–3 €/kk."
+
+  bank_sync:
+    name: "Bank Sync (Nordigen/PSD2)"
+    stripe_product: "PROD_BANK"
+    env_flags: ["BANK_SYNC_ENABLED=true"]
+    addon_price: 15
+    passthrough_cost: 5
+    roi_hint: "Automaattinen täsmäytys. Nordigen ~5 €/kk."
+
+  logistics_track:
+    name: "Logistics & Customs Tracking"
+    stripe_product: "PROD_LOGI"
+    env_flags: ["LOGISTICS_ENABLED=true"]
+    addon_price: 19
+    passthrough_cost: 7
+    roi_hint: "EasyPost ~5–7 €/kk."
+
+  stripe_billing_pro:
+    name: "Stripe Billing Pro"
+    stripe_product: "PROD_BILLPRO"
+    env_flags: ["BILLING_PRO=true"]
+    addon_price: 9
+    passthrough_cost: 0
+
+  legal_light:
+    name: "Legal Compliance (Light)"
+    stripe_product: "PROD_LEGAL_LIGHT"
+    env_flags: ["LEGAL_LIGHT=true"]
+    addon_price: 29
+    passthrough_cost: 5
+
+  legal_ml_engine:
+    name: "Legal ML Engine (Full)"
+    stripe_product: "PROD_LEGAL_ML"
+    env_flags: ["LEGAL_ML=true"]
+
+  audit_trail:
+    name: "Audit Trail & Compliance"
+    stripe_product: "PROD_AUDIT"
+    env_flags: ["AUDIT_ENABLED=true"]
+
+  reports_export:
+    name: "Reports Export (PDF/CSV)"
+    stripe_product: "PROD_EXPORTS"
+    env_flags: ["EXPORTS_ENABLED=true"]
+
+  admin_console:
+    name: "Admin Console"
+    stripe_product: "PROD_ADMIN"
+    env_flags: ["ADMIN_CONSOLE=true"]
+
+  sso_saml:
+    name: "SSO (SAML/OIDC)"
+    stripe_product: "PROD_SSO"
+    env_flags: ["SSO_SAML=true"]
+
+  priority_sla:
+    name: "Priority SLA (4h response)"
+    stripe_product: "PROD_SLA"
+    env_flags: ["SLA_PRIORITY=true"]
+
+  gamify_points:
+    name: "Gamification & Points"
+    stripe_product: "PROD_GAMIFY"
+    env_flags: ["GAMIFY_ENABLED=true"]
+    included_in_all: true
+
+  pwa_offline:
+    name: "PWA Offline Mode"
+    included_in_all: true
+
+# ========================================
+# BUNDLED OFFERS (Suites)
+# ========================================
+
+bundles:
+  power_suite:
+    name: "Power Suite"
+    price: 39
+    description: "Notion + WhatsApp + Reports (save 8€)"
+    includes:
+      - notion_sync
+      - whatsapp_notify
+      - reports_export
+    regular_price: 47
+
+  logistics_bundle:
+    name: "Logistics Bundle"
+    price: 59
+    description: "Bank Sync + Logistics + Billing Pro (save 10€)"
+    includes:
+      - bank_sync
+      - logistics_track
+      - stripe_billing_pro
+    regular_price: 69
+
+# ========================================
+# COST STRUCTURE (for internal use)
+# ========================================
+
+cost_per_tier:
+  starter:
+    infrastructure: 5   # Render, DB
+    api_costs: 3        # OpenAI basic
+    total: 8
+    margin: 11          # 19 - 8 = 11€ (58% margin)
+
+  pro:
+    infrastructure: 7
+    api_costs: 8        # OpenAI pro, Notion, WA
+    total: 15
+    margin: 24          # 39 - 15 = 24€ (62% margin)
+
+  business:
+    infrastructure: 10
+    api_costs: 22       # All APIs
+    total: 32
+    margin: 47          # 79 - 32 = 47€ (59% margin)
+
+  enterprise:
+    infrastructure: 15
+    api_costs: 35
+    total: 50
+    margin: 99          # 149 - 50 = 99€ (66% margin)
+
+# ========================================
+# NOTES
+# ========================================
+
+# Stripe activation flow:
+# 1. Customer subscribes → Stripe webhook
+# 2. Parse product_id → map to module (e.g., PROD_NOTION)
+# 3. Update tenant entitlements table
+# 4. Set environment flags for tenant
+# 5. Frontend re-fetches /api/v1/modules → shows new features
+
+# ROI Calculator (for sales):
+# - Notion Sync: 2h/mo saved × 30€/h = 60€ value → 9€ cost = 600% ROI
+# - Bank Sync: 4h/mo saved × 30€/h = 120€ value → 15€ cost = 700% ROI
+# - WhatsApp: +20% retention = reduced churn cost
+
+# Upsell strategy:
+# - Show "Integration ROI" card on dashboard
+# - Suggest next module based on usage patterns
+# - Offer bundle discounts (e.g., Power Suite)

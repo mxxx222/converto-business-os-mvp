@@ -1,0 +1,12 @@
+[
+  {
+    "id": "rule_001",
+    "title": "Arvonlisäverokantojen muutos 1.9.2024",
+    "regulation_code": "AVL 85a §",
+    "domain": "VAT",
+    "summary": "Yleinen verokanta nousee 24%:sta 25,5%:iin 1.9.2024 alkaen.",
+    "valid_from": "2024-09-01",
+    "source_url": "https://www.finlex.fi/fi/laki/ajantasa/1993/19931501",
+    "is_active": true
+  }
+]

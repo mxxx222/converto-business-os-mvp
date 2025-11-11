@@ -239,7 +239,7 @@ git push origin main
 
 ## 🤝 Contributing
 
-This is a commercial project. For partnership inquiries, contact: info@converto.fi
+This is a commercial project. For partnership inquiries, contact: hello@converto.fi
 
 ---
 

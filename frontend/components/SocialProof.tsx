@@ -1,62 +1,70 @@
-"use client"
+'use client';
 
-interface SocialProofProps {
-  companyCount?: number
-  testimonials?: Array<{
-    name: string
-    company: string
-    text: string
-    avatar?: string
-  }>
-}
-
-export default function SocialProof({
-  companyCount = 50,
-  testimonials = []
-}: SocialProofProps) {
+export function SocialProof() {
   return (
-    <section className="py-16 px-6 bg-white">
-      <div className="max-w-6xl mx-auto">
-        {/* Company Count */}
-        <div className="text-center mb-12">
-          <p className="text-2xl font-semibold text-gray-900 mb-2">
-            {companyCount}+ suomalaista yritystä jo käytössä
-          </p>
-          <p className="text-gray-600">Luottavat Converto Solutions -brändiin</p>
-        </div>
-
-        {/* Logo Gallery (placeholder) */}
-        <div className="flex flex-wrap items-center justify-center gap-8 opacity-60 mb-12">
-          {/* Placeholder logos - replace with actual logos */}
-          <div className="text-gray-400 text-sm font-medium">Logo 1</div>
-          <div className="text-gray-400 text-sm font-medium">Logo 2</div>
-          <div className="text-gray-400 text-sm font-medium">Logo 3</div>
-          <div className="text-gray-400 text-sm font-medium">Logo 4</div>
-          <div className="text-gray-400 text-sm font-medium">Logo 5</div>
-        </div>
-
-        {/* Testimonials */}
-        {testimonials.length > 0 && (
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            {testimonials.map((testimonial, i) => (
-              <div key={i} className="p-6 bg-gray-50 rounded-xl border border-gray-200">
-                <p className="text-gray-700 mb-4">"{testimonial.text}"</p>
-                <div className="flex items-center gap-3">
-                  {testimonial.avatar && (
-                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                      {testimonial.avatar}
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-semibold text-gray-900">{testimonial.name}</p>
-                    <p className="text-sm text-gray-600">{testimonial.company}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+    <div className="bg-white border-2 border-blue-200 rounded-xl p-6 text-center shadow-lg">
+      
+      {/* User Avatars */}
+      <div className="flex items-center justify-center -space-x-3 mb-4">
+        {[
+          { initials: 'MK', color: 'from-blue-400 to-blue-600' },
+          { initials: 'TL', color: 'from-green-400 to-green-600' },
+          { initials: 'AS', color: 'from-purple-400 to-purple-600' },
+          { initials: 'JH', color: 'from-orange-400 to-orange-600' },
+          { initials: 'RL', color: 'from-pink-400 to-pink-600' }
+        ].map((user, i) => (
+          <div 
+            key={i}
+            className={`w-12 h-12 bg-gradient-to-br ${user.color} rounded-full border-4 border-white flex items-center justify-center text-white font-bold shadow-lg`}
+          >
+            {user.initials}
           </div>
-        )}
+        ))}
+        <div className="w-12 h-12 bg-gray-200 rounded-full border-4 border-white flex items-center justify-center text-gray-600 font-bold shadow-lg">
+          +3
+        </div>
       </div>
-    </section>
-  )
+
+      <p className="text-gray-700 mb-2">
+        <strong className="text-blue-600">8 yritystä</strong> ilmoittautunut beta-ohjelmaan
+      </p>
+      <p className="text-sm text-gray-600 mb-4">
+        🕐 Viimeisin ilmoittautuminen 2 tuntia sitten
+      </p>
+
+      {/* Trust Badges */}
+      <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+        <div className="text-center">
+          <div className="text-2xl mb-1">🇪🇺</div>
+          <div className="text-xs text-gray-600 font-medium">EU Hosting</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl mb-1">🔒</div>
+          <div className="text-xs text-gray-600 font-medium">GDPR</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl mb-1">⚡</div>
+          <div className="text-xs text-gray-600 font-medium">99.9% SLA</div>
+        </div>
+      </div>
+
+      {/* Additional trust elements */}
+      <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            Suomi
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+            24/7 Monitoring
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+            ISO 27001
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }

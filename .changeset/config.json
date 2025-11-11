@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@2.3.1/schema.json",
+  "access": "public",
+  "baseBranch": "main",
+  "changelog": [
+    "@changesets/changelog-git",
+    { "repo": "converto/business-os" }
+  ],
+  "commit": false,
+  "fixed": [["apps/dashboard", "apps/billing", "apps/receipts", "apps/legal"]],
+  "linked": [],
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
+

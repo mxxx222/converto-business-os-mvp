@@ -1,23 +1,28 @@
-// import postsData from './data/blog/posts.json'; // Temporarily disabled
-const postsData: any[] = [];
+import type { MetadataRoute } from 'next';
 
-export default function sitemap() {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://converto.fi";
-  const now = new Date();
+const baseUrl = 'https://docflow.fi';
 
-  // Blog posts
-  const blogPosts = postsData.map((post: any) => ({
-    url: `${base}/blog/${post.slug}`,
-    lastModified: new Date(post.updatedAt || post.publishedAt),
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
+const routes = [
+  '/',
+  '/fi',
+  '/en',
+  '/fi/pricing',
+  '/fi/demo',
+  '/fi/signup',
+  '/fi/contact',
+  '/en/pricing',
+  '/en/demo',
+  '/en/signup',
+  '/en/contact',
+  '/fi/security',
+  '/en/security',
+] as const;
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return routes.map((path) => ({
+    url: `${baseUrl}${path}`,
+    changefreq: 'weekly',
+    priority: path === '/' || path === '/fi' ? 1 : 0.6,
   }));
-
-  return [
-    { url: `${base}/`, lastModified: now, changeFrequency: 'weekly' as const, priority: 1.0 },
-    { url: `${base}/premium`, lastModified: now, changeFrequency: 'weekly' as const, priority: 1.0 },
-    { url: `${base}/kiitos`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.5 },
-    { url: `${base}/blog`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.8 },
-    ...blogPosts,
-  ];
 }
+

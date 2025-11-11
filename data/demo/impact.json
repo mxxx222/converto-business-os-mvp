@@ -1,0 +1,36 @@
+{
+  "tenant": "tenant_demo",
+  "period": "current_month",
+  "minutes_saved": 185,
+  "hours_saved": 3.08,
+  "eur_saved": 77.0,
+  "receipts_scanned": 3,
+  "vat_reports_generated": 1,
+  "reminders_sent": 5,
+  "breakdown": {
+    "ocr": {
+      "minutes": 6,
+      "description": "3 kuitit × 2min"
+    },
+    "vat": {
+      "minutes": 30,
+      "description": "ALV-raportti"
+    },
+    "billing": {
+      "minutes": 0,
+      "description": "Ei laskuja"
+    },
+    "reminders": {
+      "minutes": 25,
+      "description": "5 muistutusta × 5min"
+    },
+    "legal": {
+      "minutes": 60,
+      "description": "Lakipäivitys"
+    },
+    "manual_work_saved": {
+      "minutes": 64,
+      "description": "Muu automaatio"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "title": "Business OS — Go‑Live",
+  "tags": ["business-os","copilot","go-live"],
+  "timezone": "browser",
+  "time": { "from": "now-24h", "to": "now" },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Error rate (canary)",
+      "gridPos": {"x":0,"y":0,"w":6,"h":4},
+      "targets": [{
+        "expr": "sum(rate(copilot_errors_total{phase=\"canary\"}[5m])) / sum(rate(copilot_requests_total{phase=\"canary\"}[5m]))",
+        "legendFormat": "error_rate"
+      }],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation":"horizontal"},
+      "fieldConfig": {"defaults": {"unit": "percentunit", "thresholds": {"mode":"absolute","steps":[{"color":"green","value":null},{"color":"red","value":0.02}]}}}
+    },
+    {
+      "type": "stat",
+      "title": "Drift % (shadow vs prod)",
+      "gridPos": {"x":6,"y":0,"w":6,"h":4},
+      "targets": [{
+        "expr": "(avg(copilot_shadow_latency_ms[5m]) - avg(copilot_prod_latency_ms[5m])) / avg(copilot_prod_latency_ms[5m])",
+        "legendFormat": "drift_pct"
+      }],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "thresholds": {"mode":"absolute","steps":[{"color":"green","value":null},{"color":"red","value":0.05}]}}}
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency p95 (prod vs shadow)",
+      "gridPos": {"x":0,"y":4,"w":12,"h":8},
+      "targets": [
+        {"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{flow=\"order_to_invoice\",phase=\"prod\"}[5m])) by (le))", "legendFormat": "p95 prod"},
+        {"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{flow=\"order_to_invoice\",phase=\"shadow\"}[5m])) by (le))", "legendFormat": "p95 shadow"}
+      ]
+    },
+    {
+      "type": "bargauge",
+      "title": "Success rate by capability",
+      "gridPos": {"x":0,"y":12,"w":6,"h":8},
+      "targets": [{
+        "expr": "sum(rate(copilot_success_total[5m])) by (capability) / sum(rate(copilot_requests_total[5m])) by (capability)",
+        "legendFormat": "capability"
+      }],
+      "fieldConfig": {"defaults": {"unit":"percentunit"}}
+    },
+    {
+      "type": "table",
+      "title": "Recent changes (audit diffs)",
+      "gridPos": {"x":6,"y":12,"w":6,"h":8},
+      "targets": [{
+        "datasource": {"type":"loki"},
+        "expr": "{app=\"copilot\", stream=\"stdout\"} | json | level=\"info\" | action=\"write\" | line_format \".trace_id .capability .resource .diff\""
+      }]
+    }
+  ],
+  "templating": {"list": [
+    {"name":"capability","type":"query","query":"label_values(copilot_requests_total, capability)","datasource": "Prometheus"},
+    {"name":"phase","type":"custom","query":"prod,shadow,canary","current":{"text":"prod,shadow","value":"prod,shadow","selected":true}}
+  ]},
+  "schemaVersion": 39,
+  "version": 1
+}

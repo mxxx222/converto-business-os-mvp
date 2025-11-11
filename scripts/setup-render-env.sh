@@ -34,7 +34,7 @@ echo ""
 # Environment variables to set
 declare -A ENV_VARS=(
     ["SENTRY_DSN"]="https://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@o4507887226847232.ingest.sentry.io/4507887226847232"
-    ["SUPABASE_URL"]="https://pwghuqkxryxgnnsnsiah.supabase.co"
+    ["SUPABASE_URL"]="https://your-project.supabase.co"
     ["SUPABASE_SERVICE_ROLE_KEY"]="sbp_3239ba703a96cee5e258396939111c5db2aecd9c"
     ["SUPABASE_AUTH_ENABLED"]="true"
     ["ENVIRONMENT"]="production"
@@ -67,7 +67,7 @@ cat > render-env-vars.txt << EOF
 
 SENTRY_DSN=https://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@o4507887226847232.ingest.sentry.io/4507887226847232
 
-SUPABASE_URL=https://pwghuqkxryxgnnsnsiah.supabase.co
+SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=sbp_3239ba703a96cee5e258396939111c5db2aecd9c
 SUPABASE_AUTH_ENABLED=true
 
@@ -102,7 +102,7 @@ cat > render-frontend-env-vars.txt << EOF
 
 NEXT_PUBLIC_SENTRY_DSN=https://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@o4507887226847232.ingest.sentry.io/4507887226847232
 
-NEXT_PUBLIC_SUPABASE_URL=https://pwghuqkxryxgnnsnsiah.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 EOF
 
@@ -121,3 +121,4 @@ echo "1. Update SUPABASE_URL with your actual Supabase project URL"
 echo "2. Get NEXT_PUBLIC_SUPABASE_ANON_KEY from Supabase Dashboard"
 echo "3. Update DATABASE_URL, OPENAI_API_KEY, RESEND_API_KEY with actual values"
 echo ""
+

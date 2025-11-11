@@ -1,0 +1,38 @@
+services:
+  - name: converto-dashboard
+    type: web
+    env: node
+    plan: starter
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start -- --port $PORT
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: NEXT_PUBLIC_API_BASE
+        sync: false
+      - key: STRIPE_PUBLIC_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+
+  - name: converto-backend
+    type: web
+    env: python
+    plan: starter
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: DATABASE_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: LOG_LEVEL
+        value: info

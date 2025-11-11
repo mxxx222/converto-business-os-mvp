@@ -1,0 +1,77 @@
+# Fastfile for Converto Android App
+# Usage:
+#   fastlane beta    # Build and upload to Play Store (Internal track)
+#   fastlane release # Promote to production
+
+default_platform(:android)
+
+platform :android do
+  desc "Build AAB and upload to Play Store (Internal track)"
+  lane :beta do
+    # Clean and build release bundle
+    gradle(
+      task: "clean bundleRelease",
+      project_dir: "app"
+    )
+
+    # Upload to Play Store Internal track
+    supply(
+      aab: "app/build/outputs/bundle/release/app-release.aab",
+      track: "internal",
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_metadata: false,
+      release_status: "draft"
+    )
+
+    # Notify success
+    slack(
+      message: "New Android build uploaded to Internal track! 🚀",
+      success: true
+    ) if ENV['SLACK_WEBHOOK_URL']
+  end
+
+  desc "Build APK for manual testing"
+  lane :apk do
+    gradle(
+      task: "clean assembleRelease",
+      project_dir: "app"
+    )
+
+    puts "✅ APK built: app/build/outputs/apk/release/app-release.apk"
+  end
+
+  desc "Promote Internal track to Production"
+  lane :release do
+    supply(
+      track: "internal",
+      track_promote_to: "production",
+      rollout: "0.2",  # 20% rollout
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_metadata: false
+    )
+
+    # Notify success
+    slack(
+      message: "Android app promoted to Production (20% rollout)! 🎉",
+      success: true
+    ) if ENV['SLACK_WEBHOOK_URL']
+  end
+
+  desc "Run tests"
+  lane :test do
+    gradle(
+      task: "test",
+      project_dir: "app"
+    )
+  end
+
+  # Error handling
+  error do |lane, exception|
+    slack(
+      message: "Error in Android lane #{lane}: #{exception}",
+      success: false
+    ) if ENV['SLACK_WEBHOOK_URL']
+  end
+end

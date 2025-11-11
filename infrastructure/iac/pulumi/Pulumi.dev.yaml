@@ -1,0 +1,4 @@
+config:
+  converto-business-os:environment: dev
+  converto-business-os:renderService: api-gateway
+

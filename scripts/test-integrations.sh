@@ -26,12 +26,12 @@ test_endpoint() {
     local name=$1
     local url=$2
     local expected_status=${3:-200}
-
+    
     TESTS=$((TESTS + 1))
     echo -n "Testing $name... "
-
+    
     response=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
-
+    
     if [ "$response" = "$expected_status" ]; then
         echo -e "${GREEN}✅ PASS${NC} (HTTP $response)"
         PASSED=$((PASSED + 1))
@@ -78,5 +78,4 @@ else
     echo -e "${GREEN}✅ All tests passed!${NC}"
     exit 0
 fi
-
 

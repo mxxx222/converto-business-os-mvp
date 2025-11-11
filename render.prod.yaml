@@ -1,0 +1,117 @@
+# Render Blueprint - Converto™ Production Environment
+
+databases:
+  - name: converto-db
+    databaseName: converto
+    user: converto
+    region: frankfurt
+    plan: starter  # $7/mo for production
+
+services:
+  # Backend API (Production)
+  - type: web
+    name: converto-api
+    env: python
+    region: frankfurt
+    plan: starter  # $7/mo, no cold starts
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT --workers 2
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: converto-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: ALLOWED_ORIGINS
+        value: https://converto.fi,https://app.converto.fi,https://converto-dashboard.vercel.app
+      - key: AI_PROVIDER
+        value: openai
+      - key: VISION_PROVIDER
+        value: openai
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_VISION_MODEL
+        value: gpt-4o-mini
+      - key: SENTRY_DSN
+        sync: false
+      - key: SENTRY_ENV
+        value: production
+      - key: SENTRY_SAMPLE_RATE
+        value: "0.2"
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: SENDER_EMAIL
+        value: noreply@converto.fi
+
+  # Frontend (Production)
+  - type: web
+    name: converto-frontend
+    env: node
+    region: frankfurt
+    plan: starter  # $7/mo
+    buildCommand: cd frontend && npm ci && npm run build
+    startCommand: cd frontend && npm start
+    healthCheckPath: /
+    autoDeploy: false
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_BASE
+        value: https://api.converto.fi
+      - key: NEXT_PUBLIC_APP_ENV
+        value: production
+      - key: NEXT_PUBLIC_PREMIUM_HOME
+        value: "1"
+      - key: NEXT_PUBLIC_SENTRY_DSN
+        sync: false
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        sync: false
+
+  # Nightly Backup (Production only)
+  - type: cron
+    name: converto-backup
+    env: python
+    region: frankfurt
+    schedule: "10 2 * * *"
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m backend.tasks.backup
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: converto-db
+          property: connectionString
+      - key: BACKUP_DIR
+        value: /var/data/backups
+      - key: BACKUP_RETENTION_DAYS
+        value: "30"
+
+  # ML Retraining (Production only)
+  - type: cron
+    name: converto-ml-retrain
+    env: python
+    region: frankfurt
+    schedule: "0 3 * * *"
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m backend.tasks.ml_retrain
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: converto-db
+          property: connectionString

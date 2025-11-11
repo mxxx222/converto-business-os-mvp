@@ -1,0 +1,5 @@
+json_key_file("play-service-account.json") # Path to the json secret file
+package_name("fi.converto.app") # e.g. com.krausefx.app
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

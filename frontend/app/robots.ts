@@ -1,7 +1,17 @@
-export default function robots() {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://converto.fi";
+import type { MetadataRoute } from 'next';
+
+const baseUrl = 'https://docflow.fi';
+
+export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/" },
-    sitemap: `${base}/sitemap.xml`,
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+      },
+    ],
+    sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }
+

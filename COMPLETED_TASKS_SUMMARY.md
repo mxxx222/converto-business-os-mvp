@@ -102,4 +102,3 @@ Dashboard ei toiminut static export-konfiguraatiossa neutral Supabase middleware
 
 **💡 Kaikki koodimuutokset valmiit! Seuraava askel: Aseta environment variables → Dashboard toimii!** 🚀
 
-

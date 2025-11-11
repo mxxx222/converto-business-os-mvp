@@ -1,0 +1,175 @@
+# 🛠️ Development Docker Compose - Converto Business OS
+version: '3.8'
+
+services:
+  # 🗄️ Tietokanta (Development)
+  postgres:
+    image: postgres:15-alpine
+    container_name: converto-postgres-dev
+    environment:
+      POSTGRES_DB: converto_dev
+      POSTGRES_USER: converto
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-converto123}
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./shared/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U converto"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 🔴 Redis (Development)
+  redis:
+    image: redis:7-alpine
+    container_name: converto-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ⚙️ Backend API (Development)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile.dev
+    container_name: converto-backend-dev
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://converto:${POSTGRES_PASSWORD:-converto123}@postgres:5432/converto_dev
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY}
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 🌐 Marketing App (Development)
+  marketing:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile.dev
+    container_name: converto-marketing-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 📊 Dashboard (Development)
+  dashboard:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile.dev
+    container_name: converto-dashboard-dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_APP_URL=http://localhost:3001
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 🛠️ Dev Panel (Development)
+  dev-panel:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile.dev
+    container_name: converto-dev-panel-dev
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_APP_URL=http://localhost:3002
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 🔧 Database Migration Tool
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile.migrate
+    container_name: converto-migrate-dev
+    environment:
+      - DATABASE_URL=postgresql://converto:${POSTGRES_PASSWORD:-converto123}@postgres:5432/converto_dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+
+networks:
+  default:
+    name: converto-dev-network
+    driver: bridge

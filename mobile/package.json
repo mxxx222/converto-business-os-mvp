@@ -1,0 +1,31 @@
+{
+  "name": "converto-mobile",
+  "version": "1.0.0",
+  "description": "Converto Business OS - Native Mobile Wrapper",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Using remote URL - no build needed'",
+    "ios": "cap open ios",
+    "android": "cap open android",
+    "sync": "cap sync",
+    "update": "cap update"
+  },
+  "keywords": [
+    "capacitor",
+    "mobile",
+    "ios",
+    "android"
+  ],
+  "author": "Converto",
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/splash-screen": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0"
+  }
+}

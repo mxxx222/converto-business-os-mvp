@@ -1,0 +1,76 @@
+# Backend (Python)
+backend/
+requirements.txt
+requirements-dev.txt
+alembic/
+alembic.ini
+pyproject.toml
+mypy.ini
+venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Documentation
+*.md
+docs/
+*.log
+
+# Infrastructure
+docker-compose*.yml
+Dockerfile
+render*.yaml
+render.yaml
+
+# Scripts
+scripts/
+*.sh
+*.py
+
+# Data
+data/
+*.db
+*.sql
+
+# Other frontends
+frontend-vite/
+
+# Config
+config/
+infrastructure/
+grafana/
+prometheus/
+promtail/
+loki/
+otel-collector/
+
+# Services
+services/
+modules/
+shared_core/
+api_gateway/
+ai_automation/
+ai_gateway/
+compliance/
+security/
+telemetry/
+
+# Tests
+tests/
+conftest.py
+
+# MCP servers
+mcp_*.js
+mcp_*.json
+
+# Other
+.env
+.env.github
+*.example
+.DS_Store
+.agent_index.json
+.cursorrules
+.kilocodemodes
+.pre-commit-config.yaml
+cursor-settings.json

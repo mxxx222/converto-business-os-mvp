@@ -243,7 +243,7 @@ Kyllä. Converto tukee multi-tenant -mallia: yksi tili, useita projekteja/bränd
 
 1. Kirjoita: "Käynnistä Pro 14 pv kokeilu"
 2. Tai pyydä esittely: "Esittely minulle torstaina klo 10"
-3. Enterprise-kyselyt: info@converto.fi
+3. Enterprise-kyselyt: hello@converto.fi
 
 ---
 

@@ -21,7 +21,6 @@ from backend.modules.email.router import router as email_router
 from backend.routes.csp import router as csp_router
 from shared_core.middleware.auth import dev_auth
 from shared_core.middleware.supabase_auth import supabase_auth
-from shared_core.modules.agent_orchestrator.router import router as agent_orchestrator_router
 from shared_core.modules.ai.router import router as ai_router
 from shared_core.modules.clients.router import router as clients_router
 from shared_core.modules.finance_agent.router import router as finance_agent_router
@@ -47,18 +46,14 @@ if sentry_dsn:
                 event_level=logging.ERROR,  # Send errors as events
             ),
         ],
-        traces_sample_rate=1.0,  # 100% of transactions for maximum observability
+        traces_sample_rate=0.2,  # 20% of transactions
         profiles_sample_rate=0.1,  # 10% of transactions
         environment=settings.environment,
         # Filter sensitive data
-        before_send=lambda event, hint: (
-            event
-            if not any(
-                secret in str(event).lower()
-                for secret in ["password", "api_key", "token", "secret"]
-            )
-            else None
-        ),
+        before_send=lambda event, hint: event if not any(
+            secret in str(event).lower()
+            for secret in ["password", "api_key", "token", "secret"]
+        ) else None,
     )
     logger.info("Sentry initialized for error tracking")
 else:
@@ -132,7 +127,6 @@ def create_app() -> FastAPI:
         return {"status": "healthy"}
 
     app.include_router(ai_router)
-    app.include_router(agent_orchestrator_router)
     app.include_router(finance_agent_router)
     app.include_router(ocr_router)
     app.include_router(receipts_router)

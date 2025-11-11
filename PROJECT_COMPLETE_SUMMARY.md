@@ -221,4 +221,3 @@ make test-dashboard
 
 © 2025 Converto Business OS - **Built with ❤️ in Finland 🇫🇮**
 
-

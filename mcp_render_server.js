@@ -261,18 +261,16 @@ async function getSSLStatus(serviceId) {
 }
 
 async function triggerDeploy(serviceId) {
-  // For Blueprint-managed services, use empty body or no body
-  // For regular services, can use { clearCache: false }
   const data = await makeRenderRequest(`/services/${serviceId}/deploys`, {
     method: 'POST',
-    body: JSON.stringify({}),
+    body: JSON.stringify({ clearCache: false }),
   });
 
   return {
     content: [
       {
         type: 'text',
-        text: `Deployment triggered: ${data.deploy?.id || data.id}\nStatus: ${data.status || data.deploy?.status}\nCommit: ${data.commit?.id || 'latest'}`,
+        text: `Deployment triggered: ${data.deploy?.id}`,
       },
     ],
   };

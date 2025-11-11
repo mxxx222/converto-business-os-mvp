@@ -1,0 +1,51 @@
+{
+  "hero": {
+    "title": "CONVERTO™ — Business OS",
+    "subtitle": "Modulaarinen, nopea ja mitattava markkinointi. Valmis kasvuun tänään.",
+    "primaryCta": { "label": "Aloita", "href": "/contact" },
+    "secondaryCta": { "label": "Hinnoittelu", "href": "/pricing" },
+    "bgImage": "/og-default.jpg",
+    "video": null
+  },
+  "valueProps": [
+    { "title": "Nopea julkaisu", "desc": "ISR/SSG, LCP < 2s." },
+    { "title": "Modulaarinen", "desc": "Lisää osioita ilman refaktorointia." },
+    { "title": "SEO-valmis", "desc": "OG, sitemap, robots." }
+  ],
+  "features": [
+    { "title": "CTA-tracking", "desc": "Mittaa polut ja paranna." },
+    { "title": "A/B-kyvykkyys", "desc": "Iteroi viestit nopeasti." },
+    { "title": "Kevyet lomakkeet", "desc": "Ilman backend-riippuvuuksia." },
+    { "title": "Nopeat kuvat", "desc": "next/image, AVIF/WebP." }
+  ],
+  "pricing": [
+    {
+      "name": "Free",
+      "price": "0 €",
+      "features": ["Perusrakenne", "Perus-SEO"],
+      "cta": { "label": "Aloita", "href": "/contact" }
+    },
+    {
+      "name": "Pro",
+      "price": "49 €",
+      "features": ["A/B", "Analytiikka", "Lisämoduulit"],
+      "cta": { "label": "Pyydä esittely", "href": "/contact" }
+    }
+  ],
+  "testimonials": [],
+  "faq": [
+    { "q": "Kuinka nopeasti julkaisemme?", "a": "Ensiversio tunneissa, parannukset sprintteinä." },
+    { "q": "Voiko osioita lisätä myöhemmin?", "a": "Kyllä, moduulit kytketään liukuhihnana." }
+  ],
+  "ctaBlock": {
+    "title": "Valmis käynnistämään?",
+    "subtitle": "Jätä viesti, palaamme saman päivän aikana.",
+    "cta": { "label": "Ota yhteyttä", "href": "/contact" }
+  },
+  "seo": {
+    "title": "CONVERTO™ — Business OS",
+    "description": "Nopea, modulaarinen ja näyttävä markkinointisivu.",
+    "ogImage": "/og-default.jpg",
+    "canonical": "https://converto.fi"
+  }
+}
