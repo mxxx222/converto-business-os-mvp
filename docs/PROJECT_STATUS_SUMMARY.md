@@ -2,6 +2,18 @@
 
 **Viimeisin päivitys:** 2025-01-XX
 
+## ✅ **Hiljattain Valmistuneet - Marraskuu 2025**
+
+### **🟢 Multi-Service Config Report - PASS Status**
+- ✅ **PASS-tilaisuus merkitty** raporttiin
+- ✅ **"Operations schedule" -osio lisätty** 
+- ✅ **"Baseline v1" freeze merkitty** rollback-referenssiksi
+- ✅ **Valmis seuraamaan** viikkoraportit ja rotaatiot aikataulun mukaan
+- 📊 **ROI:** Ennakoitava operointi ja nopea palautuminen vähentää riskiä ja ylläpitokuluja
+- 🔗 **Raportti:** [Multi-Service Config Report — DocFlow](https://www.notion.so/Multi-Service-Config-Report-DocFlow-61ba523a3894442cb5461a767ce88486?pvs=21)
+- 🔗 **Fly.io-entry:** [Fly.io](https://www.notion.so/Fly-io-7eafbb8ed04441489f44e434c4d27378?pvs=21)
+
+
 ---
 
 ## ✅ **Valmiit Komponentit**
