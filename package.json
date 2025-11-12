@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "cd frontend && npm run build",
-    "dev": "cd frontend && npm run dev", 
+    "dev": "cd frontend && npm run dev",
     "start": "cd frontend && npm run start",
     "lint": "cd frontend && npm run lint"
   },
@@ -17,5 +17,11 @@
     "frontend",
     "backend",
     "apps/*"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.4",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.9.3"
+  }
 }
