@@ -29,6 +29,10 @@
 !DEVELOPER_ARCHITECTURE.md
 !AI_ORCHESTRATOR.md
 !PRIORITIES_4-7_IMPLEMENTATION.md
+!vercel.json
+!package.json
+!support/
+!support/**
 !docs/
 !docs/**
 
