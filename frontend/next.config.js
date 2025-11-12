@@ -8,11 +8,11 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  i18n: {
-    locales: ['fi', 'en'],
-    defaultLocale: 'fi',
-    localeDetection: false,
-  },
+  // i18n: {
+  //   locales: ['fi', 'en'],
+  //   defaultLocale: 'fi',
+  //   localeDetection: false,
+  // },
   experimental: {
     optimizePackageImports: ['lucide-react']
   },
