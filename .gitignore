@@ -12,6 +12,7 @@
 !package-mcp.json
 !mcp_*.js
 !mcp_*.json
+!vercel.json
 !AUTO_DEPLOY_MCP_GUIDE.md
 !test_mcp_*.sh
 !CONVERTO_ENTERPRISE_BLUEPRINT.md
