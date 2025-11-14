@@ -20,6 +20,7 @@ from backend.app.routes.auth import router as auth_router
 from backend.app.routes.users import router as users_router
 from backend.config import get_settings
 from backend.modules.email.router import router as email_router
+from backend.modules.receipts_processor.router import router as receipts_processor_router
 from backend.routes.csp import router as csp_router
 from shared_core.middleware.auth import dev_auth
 from shared_core.middleware.supabase_auth import supabase_auth
@@ -147,6 +148,7 @@ def create_app() -> FastAPI:
     app.include_router(finance_agent_router)
     app.include_router(ocr_router)
     app.include_router(receipts_router)
+    app.include_router(receipts_processor_router)
     app.include_router(supabase_router)
     app.include_router(notion_router)
     app.include_router(linear_router)

@@ -433,3 +433,4 @@ def export_to_pdf(
 def create_finnish_filename(base_name: str, format: ExportFormat) -> str:
     """Create filename with Finnish timestamp."""
     return export_service.create_filename(base_name, format)
+

@@ -1,6 +1,11 @@
-"""Authentication routes for DocFlow Admin API."""
+"""Authentication routes for DocFlow Admin API and Supabase onboarding.
 
-from fastapi import APIRouter, HTTPException, Depends, status
+NOTE: The legacy email/password JWT endpoints are kept for backwards
+compatibility. New authentication should go through Supabase Auth, with
+this module providing lightweight onboarding helpers for the backend.
+"""
+
+from fastapi import APIRouter, HTTPException, Depends, Request, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr
 from typing import Optional
@@ -42,6 +47,17 @@ class UserResponse(BaseModel):
     company: Optional[str] = None
     plan: str = "free"
     created_at: str
+
+
+class OnboardRequest(BaseModel):
+    """Lightweight onboarding payload from the dashboard signup flow."""
+
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    company: Optional[str] = None
+    business_id: Optional[str] = None
+    plan: Optional[str] = None
+    goal: Optional[str] = None
 
 def create_access_token(user_id: str) -> str:
     """Create JWT access token."""
@@ -271,3 +287,78 @@ async def refresh_token(refresh_data: dict):
             status_code=401,
             detail="Invalid token"
         )
+
+
+@router.post("/onboard")
+async def onboard_user(request: Request, payload: OnboardRequest) -> dict:
+    """Onboard a Supabase-authenticated user into the DocFlow backend.
+
+    This endpoint is intentionally lightweight:
+      - Reads Supabase JWT claims from request.state.supabase_claims
+      - Derives a stable tenant identifier
+      - Logs the onboarding context for later analytics
+
+    It does not currently persist data to the backend database; that can be
+    added once the tenant/user schema is finalised.
+    """
+
+    claims = getattr(request.state, "supabase_claims", None)
+    if not isinstance(claims, dict):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="supabase_claims_missing",
+        )
+
+    user_id = str(claims.get("sub", ""))
+    email = claims.get("email") or payload.email
+
+    if not user_id or not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="missing_user_identity",
+        )
+
+    # Derive tenant id from Supabase claims or fallback to company / email
+    tenant_id = (
+        claims.get("tenant_id")
+        or claims.get("org_id")
+        or claims.get("app_metadata", {}).get("tenant_id")
+        or claims.get("user_metadata", {}).get("tenant_id")
+        or (payload.company or "").lower().replace(" ", "-")  # best-effort
+        or f"tenant-{user_id}"
+    )
+
+    # Mirror RBAC mapping for basic role classification
+    role_value = None
+    app_meta = claims.get("app_metadata") or {}
+    user_meta = claims.get("user_metadata") or {}
+    for key in ("role", "user_role", "user_type"):
+        if key in claims:
+            role_value = claims.get(key)
+            break
+        if key in app_meta:
+            role_value = app_meta.get(key)
+            break
+        if key in user_meta:
+            role_value = user_meta.get(key)
+            break
+    role = str(role_value or "user").lower()
+
+    # For now we simply return the derived onboarding context; persistence
+    # can be added once the multi-tenant schema is locked in.
+    return {
+        "status": "ok",
+        "user": {
+            "id": user_id,
+            "email": email,
+            "tenant_id": tenant_id,
+            "role": role,
+        },
+        "meta": {
+            "company": payload.company,
+            "business_id": payload.business_id,
+            "plan": payload.plan,
+            "goal": payload.goal,
+            "onboarded_at": datetime.utcnow().isoformat(),
+        },
+    }

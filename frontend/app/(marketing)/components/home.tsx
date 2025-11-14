@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { MarketingRoiCalculator } from '@/components/MarketingRoiCalculator';
 
 /* -------------------------------------------------------------------------- */
 /*                                FINNISH PAGE                                */
@@ -453,35 +454,8 @@ function ROIFi() {
   return (
     <section className="bg-slate-50/50">
       <div className="mx-auto max-w-7xl px-6 py-16">
-        <h2 className="text-3xl font-bold">Laske, paljonko säästät</h2>
-        <div className="mt-8 grid gap-8 md:grid-cols-2">
-          <div className="rounded-xl border border-slate-200 bg-white p-6">
-            <p className="text-slate-600">ROI-laskuri tulossa pian...</p>
-          </div>
-          <div className="rounded-xl border border-slate-200 bg-white p-6">
-            <div className="grid gap-3">
-              <div className="flex items-center justify-between rounded-md bg-slate-50 p-3">
-                <span className="text-sm">Nykyiset kulut</span>
-                <span className="text-lg font-semibold">€2,000/kk</span>
-              </div>
-              <div className="flex items-center justify-between rounded-md bg-slate-50 p-3">
-                <span className="text-sm">DocFlow‑kustannus</span>
-                <span className="text-lg font-semibold">€299/kk</span>
-              </div>
-              <div className="flex items-center justify-between rounded-md bg-emerald-50 p-3 text-emerald-700">
-                <span className="text-sm">Kuukausisäästö</span>
-                <span className="text-lg font-semibold">€1,701/kk</span>
-              </div>
-              <div className="flex items-center justify-between rounded-md bg-slate-50 p-3">
-                <span className="text-sm">Vuosisäästö</span>
-                <span className="text-lg font-semibold">€20,412/v</span>
-              </div>
-            </div>
-            <Link href="/fi/signup" className="mt-6 block rounded-md bg-blue-600 px-5 py-3 text-center text-white hover:bg-blue-700">
-              Aloita ilmainen kokeilu
-            </Link>
-          </div>
-        </div>
+        <h2 className="mb-6 text-3xl font-bold">Laske, paljonko säästät</h2>
+        <MarketingRoiCalculator />
       </div>
     </section>
   );
