@@ -79,12 +79,12 @@ class ActivityInput(BaseValidationModel):
     severity: Severity = Severity.INFO
     source: Source = Source.BACKEND
     user_id: Optional[str] = None
-    tenant_id: str = Field(..., regex=r'^[a-z0-9][a-z0-9-_]*[a-z0-9]$')
+    tenant_id: str = Field(..., pattern=r'^[a-z0-9][a-z0-9-_]*[a-z0-9]$')
     session_id: Optional[str] = Field(None, max_length=100)
     ip_address: Optional[str] = None
     user_agent: Optional[str] = Field(None, max_length=500)
     api_endpoint: Optional[str] = Field(None, max_length=200)
-    http_method: Optional[str] = Field(None, regex=r'^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)$')
+    http_method: Optional[str] = Field(None, pattern=r'^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)$')
     http_status: Optional[int] = Field(None, ge=100, le=599)
     response_time_ms: Optional[float] = Field(None, gt=0)
     error_code: Optional[str] = Field(None, max_length=50)
@@ -192,7 +192,7 @@ class WebSocketMessage(BaseValidationModel):
     message: Optional[str] = None
     code: Optional[str] = None
     
-    @root_validator
+    @root_validator(skip_on_failure=True)
     def validate_message_content(cls, values):
         msg_type = values.get('type')
         
@@ -211,9 +211,9 @@ class WebSocketMessage(BaseValidationModel):
 # Rate limiting models
 class RateLimitRequest(BaseValidationModel):
     """Rate limit request model."""
-    tenant_id: str = Field(..., regex=r'^[a-z0-9][a-z0-9-_]*[a-z0-9]$')
+    tenant_id: str = Field(..., pattern=r'^[a-z0-9][a-z0-9-_]*[a-z0-9]$')
     endpoint: str = Field(..., min_length=1, max_length=200)
-    method: str = Field(default="GET", regex=r'^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)$')
+    method: str = Field(default="GET", pattern=r'^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)$')
     user_id: Optional[str] = None
 
 
@@ -229,7 +229,7 @@ class RateLimitResponse(BaseValidationModel):
 class HealthCheck(BaseValidationModel):
     """Health check result model."""
     service: str = Field(..., min_length=1, max_length=100)
-    status: str = Field(..., regex=r'^(healthy|degraded|unhealthy)$')
+    status: str = Field(..., pattern=r'^(healthy|degraded|unhealthy)$')
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     response_time_ms: float = Field(..., gt=0)
     checks: Optional[Dict[str, Any]] = None
@@ -240,7 +240,7 @@ class HealthCheck(BaseValidationModel):
 class BusActivity(BaseValidationModel):
     """Bus activity message for Redis/Supabase."""
     id: str
-    tenant_id: str = Field(..., regex=r'^[a-z0-9][a-z0-9-_]*[a-z0-9]$')
+    tenant_id: str = Field(..., pattern=r'^[a-z0-9][a-z0-9-_]*[a-z0-9]$')
     type: str
     payload: Dict[str, Any]
     channel: str
