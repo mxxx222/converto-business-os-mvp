@@ -13,7 +13,8 @@ class Document(Base):
     __tablename__ = "documents"
 
     id: Mapped[str] = Column(UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4()))
-    tenant_id: Mapped[str] = Column(String(128), nullable=False, index=True)
+    tenant_id: Mapped[Optional[str]] = Column(String(128), nullable=True, index=True)  # Optional for multi-tenant
+    user_id: Mapped[str] = Column(UUID(as_uuid=False), nullable=False, index=True)  # Required for VEROPILOT
     
     # File information
     file_name: Mapped[str] = Column(String(255), nullable=False)
@@ -50,6 +51,9 @@ class Document(Base):
     processing_logs: Mapped[list["DocumentProcessingLog"]] = relationship(
         "DocumentProcessingLog", back_populates="document", cascade="all, delete-orphan"
     )
+    vat_analysis: Mapped[Optional["VATAnalysis"]] = relationship(
+        "VATAnalysis", back_populates="document", uselist=False, cascade="all, delete-orphan"
+    )
 
 
 class DocumentProcessingLog(Base):
@@ -77,3 +81,29 @@ class DocumentProcessingLog(Base):
     
     # Relationships
     document: Mapped["Document"] = relationship("Document", back_populates="processing_logs")
+
+
+class VATAnalysis(Base):
+    """Finnish VAT analysis for documents (VEROPILOT-AI)"""
+    __tablename__ = "vat_analysis"
+
+    id: Mapped[str] = Column(UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4()))
+    document_id: Mapped[str] = Column(UUID(as_uuid=False), ForeignKey("documents.id"), nullable=False, unique=True)
+    user_id: Mapped[str] = Column(UUID(as_uuid=False), nullable=False, index=True)
+    
+    # Company information
+    y_tunnus: Mapped[Optional[str]] = Column(String(16))  # Finnish business ID
+    company_info: Mapped[Optional[Dict[str, Any]]] = Column(JSON)  # From PRH API
+    
+    # VAT analysis results
+    line_items: Mapped[Optional[list[Dict[str, Any]]]] = Column(JSON)  # Item-level VAT breakdown
+    total_vat_deductible: Mapped[Optional[float]] = Column(Float)
+    suggested_booking: Mapped[Optional[Dict[str, Any]]] = Column(JSON)  # Accounting code suggestions
+    vat_confidence: Mapped[Optional[float]] = Column(Float)
+    
+    # Timestamps
+    created_at: Mapped[DateTime] = Column(DateTime, server_default=func.now())
+    updated_at: Mapped[DateTime] = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    
+    # Relationships
+    document: Mapped["Document"] = relationship("Document", back_populates="vat_analysis")

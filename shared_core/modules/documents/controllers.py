@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import and_, or_, desc, asc, func
 from datetime import datetime, date
 
-from .models import Document, DocumentProcessingLog
+from .models import Document, DocumentProcessingLog, VATAnalysis
 from .service import process_document, log_processing_step
 
 
@@ -396,3 +396,79 @@ class DocumentController:
         # Note: In a real implementation, this would trigger async reprocessing
         # For now, we just mark it as pending for reprocessing
         return document
+    
+    # ============================================
+    # VEROPILOT-AI Specific Methods (user_id based)
+    # ============================================
+    
+    @staticmethod
+    def create_document_record(
+        db: Session,
+        user_id: str,
+        file_name: str,
+        storage_path: str,
+        content_type: str,
+        file_size: int,
+        status: str = "uploading"
+    ) -> Document:
+        """Create a document record for VEROPILOT (user_id based)"""
+        document = Document(
+            user_id=user_id,
+            file_name=file_name,
+            storage_path=storage_path,
+            content_type=content_type,
+            file_size=file_size,
+            status=status,
+            document_type="receipt"  # Default for VEROPILOT
+        )
+        db.add(document)
+        return document
+    
+    @staticmethod
+    def update_document(
+        db: Session,
+        document_id: str,
+        user_id: str,
+        **kwargs
+    ) -> Optional[Document]:
+        """Update a document for VEROPILOT (user_id based)"""
+        document = db.query(Document).filter(
+            Document.id == document_id,
+            Document.user_id == user_id
+        ).first()
+        
+        if not document:
+            return None
+        
+        for key, value in kwargs.items():
+            if hasattr(document, key) and value is not None:
+                setattr(document, key, value)
+        
+        document.updated_at = datetime.utcnow()
+        return document
+    
+    @staticmethod
+    def create_vat_analysis_record(
+        db: Session,
+        document_id: str,
+        user_id: str,
+        y_tunnus: Optional[str] = None,
+        company_info: Optional[Dict[str, Any]] = None,
+        line_items: Optional[list] = None,
+        total_vat_deductible: Optional[float] = None,
+        suggested_booking: Optional[Dict[str, Any]] = None,
+        vat_confidence: Optional[float] = None
+    ) -> VATAnalysis:
+        """Create VAT analysis record for VEROPILOT"""
+        vat_analysis = VATAnalysis(
+            document_id=document_id,
+            user_id=user_id,
+            y_tunnus=y_tunnus,
+            company_info=company_info,
+            line_items=line_items,
+            total_vat_deductible=total_vat_deductible,
+            suggested_booking=suggested_booking,
+            vat_confidence=vat_confidence
+        )
+        db.add(vat_analysis)
+        return vat_analysis
