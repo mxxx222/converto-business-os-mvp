@@ -64,6 +64,8 @@ class SupabaseAuthMiddleware:
 
         # Attach user context
         request.state.user_id = str(claims.get("sub"))
+        # Expose full Supabase claims for downstream RBAC and admin modules
+        request.state.supabase_claims = claims
         return await call_next(request)
 
 

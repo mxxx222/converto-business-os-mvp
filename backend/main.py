@@ -23,6 +23,9 @@ from backend.modules.email.router import router as email_router
 from backend.routes.csp import router as csp_router
 from shared_core.middleware.auth import dev_auth
 from shared_core.middleware.supabase_auth import supabase_auth
+from shared_core.middleware.admin_auth import admin_auth
+from shared_core.modules.admin import router as admin_router
+from shared_core.modules.admin.bus import init_bus as init_admin_bus
 from shared_core.modules.ai.router import router as ai_router
 from shared_core.modules.clients.router import router as clients_router
 from shared_core.modules.finance_agent.router import router as finance_agent_router
@@ -82,6 +85,15 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     logger.info("Ensuring database schema is up to date")
     Base.metadata.create_all(bind=engine)
     logger.info("Database schema ready")
+
+    # Initialise admin activity bus (used by admin control plane)
+    try:
+        logger.info("Initialising admin activity bus")
+        await init_admin_bus()
+        logger.info("Admin activity bus initialised")
+    except Exception as exc:
+        logger.error(f"Failed to initialise admin activity bus: {exc}")
+
     yield
 
 
@@ -111,6 +123,9 @@ def create_app() -> FastAPI:
         app.middleware("http")(supabase_auth)
     else:
         app.middleware("http")(dev_auth)
+
+    # Admin-specific Supabase-based authentication and RBAC for /api/admin*
+    app.middleware("http")(admin_auth)
 
     @app.get("/", tags=["system"])
     async def root() -> dict[str, str]:
@@ -142,6 +157,7 @@ def create_app() -> FastAPI:
     app.include_router(leads_router)
     app.include_router(auth_router)
     app.include_router(users_router)
+    app.include_router(admin_router)
 
     # Back-compat alias: preserve body via 307 redirect
     @app.api_route("/api/v1/ocr-ai/scan", methods=["POST", "OPTIONS"], include_in_schema=False)

@@ -35,6 +35,18 @@
 !support/**
 !docs/
 !docs/**
+!.github/
+!.github/**
+!openapi.yaml
+!openapi/
+!openapi/**
+!spectral.yaml
+!spectral/
+!spectral/**
+!prometheus/
+!prometheus/**
+!tests/
+!tests/**
 
 # allow code dirs
 !backend/
@@ -51,6 +63,9 @@
 !frontend/types/
 !frontend/types/**
 !frontend/middleware.ts
+!frontend/sentry.client.config.ts
+!frontend/sentry.server.config.ts
+!frontend/vitest.config.ts
 !shared_core/
 !shared_core/**
 !scripts/
@@ -92,6 +107,7 @@ scripts/**/__pycache__/
 .env
 .env.*
 *.env
+!.env.sample
 secrets.*
 *.key
 *.pem

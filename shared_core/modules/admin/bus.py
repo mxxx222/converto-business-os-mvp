@@ -15,6 +15,8 @@ from typing import Dict, List, Optional, Any, Callable, Union
 from dataclasses import dataclass
 from enum import Enum
 
+from collections import defaultdict
+
 from .schemas import validate_bus_activity, bus_activity_schema
 
 

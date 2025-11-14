@@ -22,11 +22,19 @@ from fastapi.responses import JSONResponse
 from starlette.websockets import WebSocketState
 
 from .schemas import (
-    Activity, ActivityInput, WebSocketMessage, RateLimitRequest, RateLimitResponse,
-    HealthCheck, ActivityResponse
+    Activity,
+    ActivityInput,
+    WebSocketMessage,
+    RateLimitRequest,
+    RateLimitResponse,
+    HealthCheck,
+    ActivityResponse,
+    AdminSummary,
 )
 from .bus import get_bus, ActivityEvent
 from .rate_limit import rate_limiter, RateLimitError
+from shared_core.middleware.admin_auth import admin_auth
+from jwt import InvalidTokenError, PyJWKClientError, decode as jwt_decode
 
 
 logger = logging.getLogger("converto.admin")
@@ -61,16 +69,89 @@ class HardenedConnectionManager:
                     await websocket.close(code=1008)
                     return False
                 
-                # Validate admin token
+                # Validate admin token using the same JWKS setup as HTTP admin auth
                 token = auth_data.get("token", "")
                 if not token or len(token) < 10:
-                    await websocket.send_text(json.dumps({
-                        "type": "error", 
-                        "code": "INVALID_TOKEN",
-                        "message": "Invalid or missing admin token"
-                    }))
+                    await websocket.send_text(
+                        json.dumps(
+                            {
+                                "type": "error",
+                                "code": "INVALID_TOKEN",
+                                "message": "Invalid or missing admin token",
+                            }
+                        )
+                    )
                     await websocket.close(code=1008)
                     return False
+
+                if admin_auth.jwks_client is None:
+                    # Admin auth not configured; fail closed in production-style code
+                    await websocket.send_text(
+                        json.dumps(
+                            {
+                                "type": "error",
+                                "code": "AUTH_NOT_CONFIGURED",
+                                "message": "Admin authentication is not configured",
+                            }
+                        )
+                    )
+                    await websocket.close(code=1011)
+                    return False
+
+                try:
+                    signing_key = admin_auth.jwks_client.get_signing_key_from_jwt(token).key
+                    claims = jwt_decode(
+                        token,
+                        signing_key,
+                        algorithms=["RS256"],
+                        audience=admin_auth.audience,
+                        options={"require": ["sub", "iss", "aud"]},
+                    )
+                except (InvalidTokenError, PyJWKClientError) as exc:
+                    await websocket.send_text(
+                        json.dumps(
+                            {
+                                "type": "error",
+                                "code": "INVALID_TOKEN",
+                                "message": f"Invalid admin token: {exc}",
+                            }
+                        )
+                    )
+                    await websocket.close(code=1008)
+                    return False
+
+                if admin_auth.issuer and str(claims.get("iss")) != admin_auth.issuer:
+                    await websocket.send_text(
+                        json.dumps(
+                            {
+                                "type": "error",
+                                "code": "INVALID_ISSUER",
+                                "message": "Invalid token issuer",
+                            }
+                        )
+                    )
+                    await websocket.close(code=1008)
+                    return False
+
+                # Enforce admin privileges
+                if not admin_auth._check_admin_role(claims):
+                    await websocket.send_text(
+                        json.dumps(
+                            {
+                                "type": "error",
+                                "code": "INSUFFICIENT_PRIVILEGES",
+                                "message": "Admin privileges required",
+                            }
+                        )
+                    )
+                    await websocket.close(code=1008)
+                    return False
+
+                # Resolve tenant from claims or auth payload
+                resolved_tenant_id = (
+                    auth_data.get("tenant_id") or admin_auth._resolve_tenant_id(claims)
+                )
+                tenant_id = resolved_tenant_id or tenant_id
                 
                 # Check rate limit for WebSocket connections
                 allowed, rate_info = await rate_limiter.check_rate_limit(
@@ -78,12 +159,16 @@ class HardenedConnectionManager:
                 )
                 
                 if not allowed:
-                    await websocket.send_text(json.dumps({
-                        "type": "error",
-                        "code": "RATE_LIMITED",
-                        "message": "WebSocket rate limit exceeded",
-                        "retry_after": rate_info.get("retry_after", 60)
-                    }))
+                    await websocket.send_text(
+                        json.dumps(
+                            {
+                                "type": "error",
+                                "code": "RATE_LIMITED",
+                                "message": "WebSocket rate limit exceeded",
+                                "retry_after": rate_info.get("retry_after", 60),
+                            }
+                        )
+                    )
                     await websocket.close(code=1008)
                     return False
                 
@@ -94,13 +179,14 @@ class HardenedConnectionManager:
                 if tenant_id not in self.tenant_connections:
                     self.tenant_connections[tenant_id] = []
                 self.tenant_connections[tenant_id].append(websocket)
-                
+
                 self.authenticated_connections[websocket] = {
                     "tenant_id": tenant_id,
                     "token": token,
+                    "user_id": str(claims.get("sub")),
                     "connected_at": time.time(),
                     "last_ping": time.time(),
-                    "capabilities": auth_data.get("capabilities", [])
+                    "capabilities": auth_data.get("capabilities", []),
                 }
                 
                 self.connection_metadata[websocket] = {
@@ -247,6 +333,40 @@ async def get_activities(
     except Exception as e:
         logger.error(f"Error fetching activities: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch activities")
+
+
+@router.get("/summary", response_model=AdminSummary)
+async def get_admin_summary(
+    current_user: str = Depends(get_current_user_admin),
+    request_tenant_id: str = Depends(get_tenant_id),
+):
+    """Get high-level admin dashboard summary for a tenant."""
+    try:
+        tenant_id = request_tenant_id
+
+        # Fetch recent activities to build a simple summary
+        bus = get_bus()
+        activities = await bus.get_recent_activities(tenant_id, limit=200)
+
+        activities_by_type: Dict[str, int] = {}
+        recent_count = 0
+        now = time.time()
+
+        for event in activities:
+            activities_by_type[event.type] = activities_by_type.get(event.type, 0) + 1
+            if now - event.timestamp < 3600:  # last hour
+                recent_count += 1
+
+        return AdminSummary(
+            tenant_id=tenant_id,
+            total_activities=len(activities),
+            activities_by_type=activities_by_type,
+            recent_activity_count=recent_count,
+            timestamp=datetime.utcnow(),
+        )
+    except Exception as e:
+        logger.error(f"Error fetching admin summary: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch admin summary")
 
 
 @router.post("/activities")
