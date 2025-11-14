@@ -1,0 +1,33 @@
+extends:
+  - spectral:oas
+functionsDir: spectral/functions
+functions:
+  - uniqueOperationIds
+rules:
+  operation-summary:
+    description: Every operation should include a summary
+    severity: warn
+    given: $.paths.*.*
+    then:
+      field: summary
+      function: truthy
+  info-contact:
+    description: Provide a contact object for the API
+    severity: warn
+    given: $.info
+    then:
+      field: contact
+      function: truthy
+  oas3-api-servers:
+    description: Declare at least one server
+    severity: warn
+    given: $
+    then:
+      field: servers
+      function: truthy
+  operation-operationId-unique:
+    description: Operation Ids must be unique
+    severity: error
+    given: $
+    then:
+      function: uniqueOperationIds

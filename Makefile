@@ -221,11 +221,37 @@ lint: ## Suorita lint-tarkistukset
 # Test
 test: ## Suorita testit
 	@echo "$(BLUE)🧪 Suoritetaan testit...$(NC)"
-	@echo "$(YELLOW)Backend testit...$(NC)"
-	@cd backend && python -m pytest tests/ -v
-	@echo "$(YELLOW)Frontend testit...$(NC)"
-	@cd frontend && npm test
-	@echo "$(GREEN)✅ Testit valmiit!$(NC)"
+	@./scripts/test-suite.sh --quick
+
+# Full test suite
+test-full: ## Suorita täydellinen testisarja
+	@echo "$(BLUE)🧪 Suoritetaan täydellinen testisarja...$(NC)"
+	@./scripts/test-suite.sh --full
+
+# Integration tests
+test-integration: ## Suorita integraatiotestit
+	@echo "$(BLUE)🧪 Suoritetaan integraatiotestit...$(NC)"
+	@./scripts/test-suite.sh --integration
+
+# Performance tests
+test-performance: ## Suorita suorituskykytestit
+	@echo "$(BLUE)🧪 Suoritetaan suorituskykytestit...$(NC)"
+	@./scripts/test-suite.sh --performance
+
+# Security tests
+test-security: ## Suorita turvallisuustestit
+	@echo "$(BLUE)🧪 Suoritetaan turvallisuustestit...$(NC)"
+	@./scripts/test-suite.sh --security
+
+# System validation
+validate: ## Validoi järjestelmä
+	@echo "$(BLUE)🔍 Validoidaan järjestelmä...$(NC)"
+	@python scripts/validate.py --level standard
+
+# Comprehensive validation
+validate-full: ## Täydellinen järjestelmävalidointi
+	@echo "$(BLUE)🔍 Suoritetaan täydellinen järjestelmävalidointi...$(NC)"
+	@python scripts/validate.py --level comprehensive
 
 # Deploy
 deploy: ## Deployaa tuotantoon

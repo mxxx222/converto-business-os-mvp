@@ -248,6 +248,10 @@ class BusActivity(BaseValidationModel):
     ttl: int = Field(default=3600, ge=1, le=86400)  # 1 hour default, max 1 day
 
 
+# Pre-computed schema for bus activities (used by bus implementations)
+bus_activity_schema = BusActivity.model_json_schema()
+
+
 # Response models
 class ActivityResponse(BaseValidationModel):
     """Activity list response."""
@@ -263,6 +267,15 @@ class BusConfigResponse(BaseValidationModel):
     production_ready: bool
     backend: str
     features: List[str]
+
+
+class AdminSummary(BaseValidationModel):
+    """Admin dashboard summary for a tenant."""
+    tenant_id: str
+    total_activities: int
+    activities_by_type: Dict[str, int]
+    recent_activity_count: int
+    timestamp: datetime
 
 
 # Validation functions
@@ -307,7 +320,7 @@ __all__ = [
     "Activity", "ActivityInput", "WebSocketMessage", "WebSocketAuthMessage",
     "WebSocketSubscribeMessage", "WebSocketPingMessage", "WebSocketErrorMessage",
     "RateLimitRequest", "RateLimitResponse", "HealthCheck", "BusActivity",
-    "ActivityResponse", "BusConfigResponse",
+    "ActivityResponse", "BusConfigResponse", "AdminSummary", "BusActivity", "bus_activity_schema",
     
     # Validation functions
     "validate_activity", "validate_websocket_message", "validate_rate_limit_request",

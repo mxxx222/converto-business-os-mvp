@@ -261,6 +261,17 @@ MIT License - See [LICENSE](LICENSE) for details
 
 ---
 
+## ⚙️ Operations / Observability
+
+- `npm run openapi:export && npm run openapi:lint` regenerates and gates the DocFlow API contract (`openapi.yaml`, `spectral.yaml`)
+- `npm run build && npm run test -- --coverage` executes type-checking + Vitest coverage for the new observability utilities
+- `npm run e2e:smoke` (requires `E2E_*` variables from `.env.sample`) runs the Playwright admin dashboard login smoke scenario
+- `curl -sS localhost:3000/api/metrics` exposes Prometheus metrics (`frontend/lib/obs/metrics.ts`) and feeds `prometheus/alerts.yml`
+- `curl -sS localhost:3000/api/observability` emits the Sentry `obs_smoke_test` signal and validates OCR/HTTP histograms
+- CI now includes the `frontend-observability` job (lint → type-check → build → unit tests → OpenAPI export/lint → optional Playwright smoke test)
+
+---
+
 ## 🧱 Technical Debt / TODO
 
 - [ ] mypy cleanup across workspace
