@@ -320,3 +320,4 @@ class RateLimitPresets:
     UPLOAD = RateLimitConfig(requests=20, window=60)      # 20/min for uploads
     OCR = RateLimitConfig(requests=10, window=60)         # 10/min for OCR
     EXPORT = RateLimitConfig(requests=5, window=60)       # 5/min for exports
+

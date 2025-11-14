@@ -1,12 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from "react";
 import { Plus, RefreshCw } from 'lucide-react';
+import { useRouter } from "next/navigation";
+
 import DocumentUpload from '../../components/dashboard/DocumentUpload';
 import OCRResults from '../../components/dashboard/OCRResults';
 import DocumentList from '../../components/dashboard/DocumentList';
 import DashboardStats from '../../components/dashboard/DashboardStats';
 import { DocumentOcrResult, EditableDocument } from '../../lib/ocr-validation';
+import { createClient } from "@/lib/supabase/client";
+import { deriveUserRole, type UserRole } from "@/lib/auth";
 
 interface DashboardState {
   selectedDocument: DocumentOcrResult | null;
@@ -15,11 +19,42 @@ interface DashboardState {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const supabase = createClient();
+
   const [state, setState] = useState<DashboardState>({
     selectedDocument: null,
     showUpload: false,
     refreshTrigger: 0
   });
+  const [role, setRole] = useState<UserRole>("user");
+  const [authChecked, setAuthChecked] = useState(false);
+
+  // Require authentication for dashboard access
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+
+      if (!user && isMounted) {
+        router.push("/login");
+        return;
+      }
+
+      if (user && isMounted) {
+        setRole(deriveUserRole(user as any));
+        setAuthChecked(true);
+      }
+    };
+
+    checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router, supabase]);
 
   const handleUploadComplete = useCallback((result: any) => {
     console.log('Upload completed:', result);
@@ -117,6 +152,14 @@ export default function DashboardPage() {
   const handleRefresh = useCallback(() => {
     setState(prev => ({ ...prev, refreshTrigger: prev.refreshTrigger + 1 }));
   }, []);
+
+  if (!authChecked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <p className="text-sm text-gray-600">Ladataan dashboardia…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">

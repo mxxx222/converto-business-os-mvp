@@ -2,14 +2,16 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { Upload, X, FileText, AlertCircle, CheckCircle } from 'lucide-react';
-import { validateFile, uploadFileForOCR, formatFileSize, getFileIcon, type UploadProgressCallback } from '../../lib/upload';
+import { uploadDocument, pollDocumentStatus, type Document } from '@/lib/api/documents';
+import VATAnalysisCard from '../documents/VATAnalysisCard';
 
 interface UploadedFile {
   file: File;
   id: string;
   status: 'pending' | 'uploading' | 'processing' | 'completed' | 'error';
   progress: number;
-  result?: any;
+  document?: Document;
+  vatAnalysis?: any;
   error?: string;
 }
 
@@ -33,36 +35,55 @@ export default function DocumentUpload({
   const uploadFile = useCallback(async (uploadedFile: UploadedFile) => {
     setFiles(prev => prev.map(f => 
       f.id === uploadedFile.id 
-        ? { ...f, status: 'uploading', progress: 0 }
+        ? { ...f, status: 'uploading', progress: 50 }
         : f
     ));
 
-    const onProgress: UploadProgressCallback = (progress) => {
+    try {
+      // Upload file
+      const uploadResult = await uploadDocument(uploadedFile.file);
+      
       setFiles(prev => prev.map(f => 
         f.id === uploadedFile.id 
-          ? { ...f, progress }
+          ? { ...f, status: 'processing', progress: 75 }
           : f
       ));
-    };
-
-    try {
-      const result = await uploadFileForOCR(uploadedFile.file, onProgress);
       
-      if (result.success) {
+      // Poll for processing completion
+      const statusResult = await pollDocumentStatus(
+        uploadResult.document.id,
+        (status) => {
+          // Update progress during processing
+          setFiles(prev => prev.map(f => 
+            f.id === uploadedFile.id 
+              ? { ...f, progress: status.is_completed ? 100 : 85 }
+              : f
+          ));
+        }
+      );
+      
+      if (statusResult.is_completed) {
+        // Get full document with VAT analysis
+        const response = await fetch(`/api/documents/${uploadResult.document.id}`);
+        const data = await response.json();
+        
         setFiles(prev => prev.map(f => 
           f.id === uploadedFile.id 
-            ? { ...f, status: 'completed', progress: 100, result: result.data }
+            ? { 
+                ...f, 
+                status: 'completed', 
+                progress: 100, 
+                document: data.document,
+                vatAnalysis: data.vat_analysis 
+              }
             : f
         ));
-        onUploadComplete?.(result.data);
+        
+        onUploadComplete?.(data.document);
       } else {
-        setFiles(prev => prev.map(f => 
-          f.id === uploadedFile.id 
-            ? { ...f, status: 'error', error: result.error }
-            : f
-        ));
-        onUploadError?.(result.error || 'Lataus epäonnistui');
+        throw new Error('Processing failed');
       }
+      
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Odottamaton virhe';
       setFiles(prev => prev.map(f => 
@@ -75,9 +96,17 @@ export default function DocumentUpload({
   }, [onUploadComplete, onUploadError]);
 
   const addFile = useCallback((file: File) => {
-    const validation = validateFile(file);
-    if (!validation.isValid) {
-      onUploadError?.(validation.error || 'Tiedosto ei ole kelvollinen');
+    // Validate file
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+    const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+    
+    if (file.size > MAX_SIZE) {
+      onUploadError?.('Tiedosto on liian suuri (max 10MB)');
+      return;
+    }
+    
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      onUploadError?.('Virheellinen tiedostotyyppi. Sallitut: JPG, PNG, PDF');
       return;
     }
 
@@ -144,6 +173,20 @@ export default function DocumentUpload({
       default:
         return <FileText className="h-5 w-5 text-gray-400" />;
     }
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  const getFileIcon = (type: string): string => {
+    if (type.startsWith('image/')) return '🖼️';
+    if (type === 'application/pdf') return '📄';
+    return '📎';
   };
 
   const getStatusText = (file: UploadedFile) => {
@@ -244,6 +287,13 @@ export default function DocumentUpload({
                     <p className="mt-1 text-sm text-red-600">
                       {file.error}
                     </p>
+                  )}
+
+                  {/* VAT Analysis */}
+                  {file.status === 'completed' && file.vatAnalysis && (
+                    <div className="mt-3">
+                      <VATAnalysisCard analysis={file.vatAnalysis} />
+                    </div>
                   )}
                 </div>
               </div>

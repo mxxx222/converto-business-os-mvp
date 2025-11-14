@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { getAuthHeaders } from "./auth";
 
 // File validation constants
 export const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
@@ -31,7 +31,11 @@ export const uploadFileForOCR = async (
   file: File,
   onProgress?: UploadProgressCallback
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || process.env.NEXT_PUBLIC_API_URL || '';
+
   try {
+    const authHeaders = await getAuthHeaders();
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('tenant_id', 'default'); // TODO: Get from auth context
@@ -64,7 +68,16 @@ export const uploadFileForOCR = async (
         resolve({ success: false, error: 'Verkkovirhe' });
       });
 
-      xhr.open('POST', '/api/v1/documents/process');
+      const url = API_BASE
+        ? `${API_BASE.replace(/\/$/, '')}/api/v1/documents/process`
+        : '/api/v1/documents/process';
+
+      xhr.open('POST', url);
+
+      Object.entries(authHeaders).forEach(([key, value]) => {
+        xhr.setRequestHeader(key, value);
+      });
+
       xhr.send(formData);
     });
   } catch (error) {
