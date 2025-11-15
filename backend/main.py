@@ -7,12 +7,12 @@ import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-import sentry_sdk
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
+
+# Import Sentry initialization
+from backend.sentry_init import init_sentry, set_tenant_context
 
 from backend.app.routes.leads import router as leads_router
 from backend.app.routes.metrics import router as metrics_router
@@ -40,30 +40,9 @@ from shared_core.utils.db import Base, engine
 settings = get_settings()
 logger = logging.getLogger("converto.backend")
 
-# Initialize Sentry for error tracking
-sentry_dsn = os.getenv("SENTRY_DSN")
-if sentry_dsn:
-    sentry_sdk.init(
-        dsn=sentry_dsn,
-        integrations=[
-            FastApiIntegration(),
-            LoggingIntegration(
-                level=logging.INFO,  # Capture info and above
-                event_level=logging.ERROR,  # Send errors as events
-            ),
-        ],
-        traces_sample_rate=0.2,  # 20% of transactions
-        profiles_sample_rate=0.1,  # 10% of transactions
-        environment=settings.environment,
-        # Filter sensitive data
-        before_send=lambda event, hint: event if not any(
-            secret in str(event).lower()
-            for secret in ["password", "api_key", "token", "secret"]
-        ) else None,
-    )
-    logger.info("Sentry initialized for error tracking")
-else:
-    logger.warning("SENTRY_DSN not configured - error tracking disabled")
+# Initialize Sentry (before creating app)
+# Uses backend/sentry_init.py for proper PII scrubbing and configuration
+init_sentry()
 
 
 def configure_logging() -> None:
@@ -127,6 +106,27 @@ def create_app() -> FastAPI:
 
     # Admin-specific Supabase-based authentication and RBAC for /api/admin*
     app.middleware("http")(admin_auth)
+    
+    # Tenant context middleware for RLS (Auth MVP v0)
+    # MUST run after auth middleware to have user context
+    from shared_core.middleware.tenant_context import tenant_context_middleware
+    app.middleware("http")(tenant_context_middleware)
+    
+    # Sentry tenant context middleware
+    # Adds tenant_id and user_id tags to all Sentry events
+    @app.middleware("http")
+    async def sentry_tenant_middleware(request: Request, call_next):
+        """Add tenant context to Sentry events."""
+        user = getattr(request.state, 'user', None)
+        
+        if user and hasattr(user, 'tenant_id'):
+            set_tenant_context(
+                tenant_id=str(user.tenant_id),
+                user_id=str(user.id),
+                role=str(user.role)
+            )
+        
+        return await call_next(request)
 
     @app.get("/", tags=["system"])
     async def root() -> dict[str, str]:
