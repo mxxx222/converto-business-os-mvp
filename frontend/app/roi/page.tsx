@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import RoiCalculator from "@/components/RoiCalculator";
+// import RoiCalculator from "@/components/RoiCalculator"; // TODO: Create RoiCalculator component
 import { cfg } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -34,7 +34,10 @@ export default function Page() {
         </div>
       </section>
 
-      <RoiCalculator />
+      <div className="rounded-lg border p-8 text-center">
+        <h2 className="text-xl font-semibold">ROI Calculator</h2>
+        <p className="mt-2 text-slate-600">Coming soon - ROI calculation tool</p>
+      </div>
 
       <section className="mt-12 grid gap-6 md:grid-cols-3">
         <ValueCard
@@ -62,5 +65,6 @@ function ValueCard({ title, body }: { title: string; body: string }) {
     </div>
   );
 }
+
 
 

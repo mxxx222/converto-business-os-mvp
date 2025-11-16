@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import ClientBlock from "./ClientBlock";
 
@@ -15,7 +16,9 @@ export default function Page() {
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <p className="mb-2 text-xs text-slate-500">Converto™ · EU-hosting</p>
         <h1 className="mb-3 text-3xl font-bold tracking-tight">Kiitos – pyyntö vastaanotettu</h1>
-        <ClientBlock typeServer={typeServer} />
+        <Suspense fallback={<div>Ladataan...</div>}>
+          <ClientBlock typeServer={typeServer} />
+        </Suspense>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/roi" className="btn border border-slate-300">
             Laske ROI uudelleen
@@ -28,5 +31,6 @@ export default function Page() {
     </main>
   );
 }
+
 
 

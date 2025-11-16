@@ -4,58 +4,52 @@ import { useState } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 import { CalendlyButton } from './CalendlyButton';
 
-const faqs = [
+interface FAQItem {
+  question: string;
+  answer: string;
+  fear?: string; // Optional: what fear this addresses
+}
+
+const faqs: FAQItem[] = [
   {
-    question: 'Toimiiko Netvisorin ja Procountorin kanssa?',
-    answer: 'Kyllä! Meillä on valmiit integraatiot molempiin. Käsitellyt dokumentit siirtyvät automaattisesti oikeille tileille ja ALV-käsittelyillä. Lisäksi tuemme Holvia, Zervanttia ja muita suosittuja järjestelmiä.'
+    question: "Pelkään että integraatio on monimutkaista.",
+    answer: "15 minuuttia. API-avain + 3 klikkausta. Ei koodia, ei IT-tukea. Näytämme videolla miten käy – alle minuutti.",
+    fear: "complexity"
   },
   {
-    question: 'Kuinka tarkkaa OCR on suomalaisilla dokumenteilla?',
-    answer: 'OCR-tarkkuutemme on 98%+ suomalaisilla laskuilla ja kuiteilla. Tunnistamme Y-tunnukset, IBAN-numerot, viitenumerot, eräpäivät ja ALV-tiedot automaattisesti. Epäselvissä tapauksissa voit aina tarkistaa ja korjata tulokset ennen tallennusta.'
+    question: "Entä jos AI tekee virheitä?",
+    answer: "96-98% tarkkuus strukturoiduilla laskuilla. JA: Sinä hyväksyt jokaisen laskun ennen lähetystä. Ei robotteja ilman valvontaa. Sinä olet aina pomona.",
+    fear: "trust"
   },
   {
-    question: 'Paljonko tämä maksaa?',
-    answer: '<strong>30 päivän ilmainen kokeilu - ei luottokorttia!</strong><br/><br/>Sen jälkeen:<br/>• <strong>Starter:</strong> €149/kk (500 dokumenttia/kk)<br/>• <strong>Business:</strong> €299/kk (2,000 dokumenttia/kk)<br/>• <strong>Professional:</strong> €499/kk (5,000 dokumenttia/kk)<br/>• <strong>Enterprise:</strong> Räätälöity hinnoittelu<br/><br/>Ei setup-maksuja. Peruuta milloin vain - ei kysymyksiä.'
+    question: "Onko tämä liian kallista pienelle yritykselle?",
+    answer: "Starter 149€/kk. Jos käsittelet 80 laskua, säästät 800€/kk. Takaisinmaksu 6 päivää. Kokeilu 30pv ilmainen – ei luottokorttia.",
+    fear: "price"
   },
   {
-    question: 'Onko datani turvassa?',
-    answer: 'Kyllä. Kaikki data salataan AES-256-salauksella, tallennetaan EU:n alueelle (Supabase EU-West Frankfurt), ja noudatamme GDPR-vaatimuksia täysin. Sinulla on täysi kontrolli dataasi - voit viedä sen ulos tai poistaa milloin vain. Lisäksi teemme päivittäiset automaattiset varmuuskopiot.'
+    question: "Mitä jos DocFlow kaatuu ALV-ilmoituksen aikana?",
+    answer: "99.9% uptime. EU-palvelimet. DPA-sopimus. JA: Data on aina saatavilla – voit ladata ja jatkaa manuaalisesti jos jotain ihmeellistä tapahtuu.",
+    fear: "reliability"
   },
   {
-    question: 'Saammeko tukea ja koulutusta?',
-    answer: 'Kyllä!<br/>• <strong>Live chat:</strong> Arkisin 9-17 (vastaus alle 5 min)<br/>• <strong>Email-tuki:</strong> Vastaus alle 4 tunnissa<br/>• <strong>Henkilökohtainen onboarding:</strong> 30min kickoff-puhelu<br/>• <strong>Video-oppaat:</strong> Step-by-step tutoriaalit<br/>• <strong>Dokumentaatio:</strong> Kattava help center<br/>• <strong>Puhelintuki:</strong> Professional & Enterprise -asiakkaille'
+    question: "Pitääkö Netvisor tai Procountor vaihtaa?",
+    answer: "Ei. DocFlow toimii nykyisen taloushallintosi päällä API-integraatiolla. Kirjanpitoprosessisi pysyy ennallaan – poistat vain manuaalisen syöttötyön.",
+    fear: "change"
   },
   {
-    question: 'Voimmeko testata ennen ostopäätöstä?',
-    answer: 'Ehdottomasti! 30 päivän ilmainen kokeilu ilman luottokorttia. Saat täyden pääsyn kaikkiin ominaisuuksiin. Testaa rauhassa ja päätä sitten jatkavatko. Jos et ole tyytyväinen, peruuta yhdellä klikkauksella - ei kysymyksiä.'
+    question: "Kuinka nopeasti pääsen alkuun?",
+    answer: "15 min MVP: (1) Luo tili 5 min, (2) Yhdistä Netvisor 5 min, (3) Lähetä testilasku 5 min. Täysi tuotantokäyttö 1-2 päivää.",
+    fear: "time"
   },
   {
-    question: 'Kuinka nopeasti pääsemme alkuun?',
-    answer: 'Instant! Rekisteröityminen vie 2 minuuttia. Sen jälkeen voit heti ladata ensimmäisen dokumentin ja nähdä OCR-tulokset. Netvisor/Procountor-integraatiot konfiguroidaan 15 minuutissa henkilökohtaisessa onboarding-puhelussa. Useimmat asiakkaat käsittelevät ensimmäisen dokumentin 10 minuutissa rekisteröitymisestä.'
+    question: "Toimiiko käsinkirjoitettujen kuittien kanssa?",
+    answer: "Kyllä, rajoitetusti. Summa ja päivämäärä tunnistuvat yleensä (70-85% tarkkuus). Huono käsiala tai rypistyneet kuitit haasteellisia. Parannettu OCR tulossa Q1 2026.",
+    fear: "edge_cases"
   },
   {
-    question: 'Toimiiko käsinkirjoitetuilla kuiteilla?',
-    answer: 'Kyllä! OCR-moottori tunnistaa myös käsinkirjoitetun tekstin noin 85-90% tarkkuudella. Saatat joutua korjaamaan joitakin kenttiä, mutta se on silti paljon nopeampaa kuin syöttää kaikki manuaalisesti. Painetut kuitit tunnistuvat lähes 100% tarkkuudella.'
-  },
-  {
-    question: 'Mitä tapahtuu 30 päivän kokeilun jälkeen?',
-    answer: 'Saat muistutuksen 5 päivää ennen kokeilun päättymistä. Voit valita jatkavatko sopivalla paketilla tai peruuttaa. Jos et tee mitään, kokeilu päättyy automaattisesti - emme veloita mitään. Datasi säilyy 30 päivää jos haluat palata.'
-  },
-  {
-    question: 'Voimmeko käyttää omaa pilvipalveluamme (BYO database)?',
-    answer: 'Enterprise-tilauksella kyllä! Voit pitää datan omassa AWS/Azure/GCP-ympäristössäsi tai jopa on-premises-palvelimilla. Me tarjoamme vain käsittelylogiikan ja käyttöliittymän. Täydellinen ratkaisu suuryrityksille ja tilitoimistoille. Ota yhteyttä räätälöityyn tarjoukseen.'
-  },
-  {
-    question: 'Tukeeko järjestelmä monta käyttäjää/tiimiä?',
-    answer: 'Kyllä! Business-paketista alkaen voit lisätä useita käyttäjiä. Jokaisella on oma kirjautuminen ja näet kuka käsitteli minkäkin dokumentin. Enterprise-paketissa saat roolipohjaiset käyttöoikeudet (admin, controller, user) ja hyväksyntätyönkulut.'
-  },
-  {
-    question: 'Mitä jos OCR epäonnistuu tai tekee virheen?',
-    answer: 'Saat välittömän ilmoituksen jos OCR-varmuus on alle 90%. Voit sitten tarkistaa tulokset ja korjata virheet ennen tallennusta. Kaikki korjaukset tallentuvat ja järjestelmä oppii niistä (AI parantuu ajan kanssa). Lisäksi voit aina ladata alkuperäisen tiedoston.'
-  },
-  {
-    question: 'Onko rajoituksia dokumenttien määrässä?',
-    answer: 'Jokaisella paketilla on kuukausiraja (Starter 500, Business 2,000, Professional 5,000). Jos ylität rajan, voit joko päivittää pakettia tai maksat lisämaksun (€0.20/ylimääräinen dokumentti). Enterprise-paketissa ei ole rajoja - käsittele niin monta kuin tarvitset.'
+    question: "Mitä tapahtuu kokeilun jälkeen?",
+    answer: "30 päivän kokeilu päättyy automaattisesti – ei veloituksia. Voit jatkaa maksulliseen (data säilyy), päättää (90pv data-lataus), tai odottaa ilmaisversiota (Q1 2026).",
+    fear: "commitment"
   }
 ];
 
@@ -71,15 +65,15 @@ export function FAQ() {
       
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 px-4 py-2 rounded-full mb-4">
+        <div className="inline-flex items-center gap-2 bg-red-100 text-red-600 px-4 py-2 rounded-full mb-4">
           <HelpCircle className="w-5 h-5" />
-          <span className="font-medium">Kysymyksiä?</span>
+          <span className="font-medium">Huolia?</span>
         </div>
         <h2 className="text-4xl font-bold mb-4">
-          ❓ Usein Kysytyt Kysymykset
+          🤔 Mikä estää sinua aloittamasta?
         </h2>
         <p className="text-xl text-gray-600">
-          Vastauksia yleisimpiin kysymyksiin
+          Vastaamme yleisimpiin kysymyksiin ja huoliin
         </p>
       </div>
 
@@ -99,9 +93,14 @@ export function FAQ() {
             {/* Question Button */}
             <button
               onClick={() => toggleFAQ(index)}
-              className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+              className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+              aria-expanded={openIndex === index}
+              aria-controls={`faq-answer-${index}`}
             >
-              <span className="font-bold text-lg pr-4 text-gray-900">
+              <span 
+                id={`faq-question-${index}`}
+                className="font-bold text-lg pr-4 text-gray-900"
+              >
                 {faq.question}
               </span>
               <ChevronDown
@@ -113,11 +112,15 @@ export function FAQ() {
 
             {/* Answer */}
             {openIndex === index && (
-              <div className="px-6 pb-5 border-t border-gray-100">
-                <div 
-                  className="pt-4 text-gray-700 leading-relaxed animate-in slide-in-from-top duration-200"
-                  dangerouslySetInnerHTML={{ __html: faq.answer }}
-                />
+              <div 
+                id={`faq-answer-${index}`}
+                className="px-6 pb-5 border-t border-gray-100"
+                role="region"
+                aria-labelledby={`faq-question-${index}`}
+              >
+                <div className="pt-4 text-gray-700 leading-relaxed">
+                  {faq.answer}
+                </div>
               </div>
             )}
           </div>
@@ -125,41 +128,43 @@ export function FAQ() {
       </div>
 
       {/* Bottom CTA */}
-      <div className="mt-12 text-center bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-8">
+      <div className="mt-12 text-center bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-200 rounded-xl p-8">
         <div className="mb-6">
           <h3 className="text-2xl font-bold text-gray-900 mb-2">
-            📞 Eikö vastausta löytynyt?
+            💚 Valmis aloittamaan?
           </h3>
           <p className="text-lg text-gray-600">
-            Olemme täällä auttamassa! Vastaamme yleensä alle 4 tunnissa.
+            Useimmat huolet häviävät kun näet DocFlow:n toiminnassa.
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href="mailto:hello@docflow.fi"
-            className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition-all"
+            href="/demo"
+            className="inline-block bg-blue-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-blue-700 transition-all text-lg"
           >
-            📧 Lähetä Sähköpostia
+            📅 Varaa 15 min demo ja kysy mitä vain
           </a>
-          <CalendlyButton 
-            variant="outline" 
-            text="📅 Varaa Puhelu"
-          />
+          <a
+            href="/signup"
+            className="inline-block bg-green-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-green-700 transition-all text-lg"
+          >
+            🚀 Tai aloita suoraan ilmainen kokeilu
+          </a>
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
           <div className="flex items-center justify-center gap-2">
             <span className="text-green-600">✓</span>
-            <span>Vastaus alle 4h</span>
+            <span>30 päivää ilmaiseksi</span>
           </div>
           <div className="flex items-center justify-center gap-2">
             <span className="text-green-600">✓</span>
-            <span>Arkisin 9-17</span>
+            <span>Ei luottokorttia</span>
           </div>
           <div className="flex items-center justify-center gap-2">
             <span className="text-green-600">✓</span>
-            <span>Suomeksi & englanniksi</span>
+            <span>Tuki suomeksi</span>
           </div>
         </div>
       </div>

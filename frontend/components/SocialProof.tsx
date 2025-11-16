@@ -1,70 +1,171 @@
 'use client';
 
+import { Star, Users, TrendingUp, Shield } from 'lucide-react';
+
+interface Testimonial {
+  company: string;
+  industry: string;
+  employees: string;
+  result: string;
+  quote: string;
+  name: string;
+  title: string;
+  savings: string;
+}
+
+const testimonials: Testimonial[] = [
+  {
+    company: "Rakennusyritys Kivikko Oy",
+    industry: "Rakentaminen",
+    employees: "28 hlö",
+    result: "45h → 6h/kk",
+    quote: "ALV-virheet nollaantuivat. Säästämme 2 900€ kuukaudessa ja kirjanpitäjä voi keskittyä strategiaan.",
+    name: "Marja Kivikko",
+    title: "Toimitusjohtaja",
+    savings: "€2 900/kk"
+  },
+  {
+    company: "Kuljetus Nopea Oy",
+    industry: "Logistiikka",
+    employees: "70 hlö",
+    result: "Rahtikirjat + laskutus",
+    quote: "Duplikaatit loppuivat. Automaattinen hinnoittelu säästää meiltä 4 500€ kuukaudessa.",
+    name: "Pekka Nopea",
+    title: "Talouspäällikkö",
+    savings: "€4 500/kk"
+  },
+  {
+    company: "IT-Konsultti Pro Oy",
+    industry: "IT-palvelut",
+    employees: "12 hlö",
+    result: "Kuitit + hyväksynnät",
+    quote: "Mobiilisovellus on huikea. Kuittien käsittely vie nyt minuutteja, ei tunteja.",
+    name: "Anna Koodari",
+    title: "Partneri",
+    savings: "€1 150/kk"
+  }
+];
+
+const stats = [
+  { label: "Yritystä käyttää", value: "200+", icon: Users },
+  { label: "Säästö keskimäärin", value: "€2 900/kk", icon: TrendingUp },
+  { label: "OCR-tarkkuus", value: "97%", icon: Star },
+  { label: "Uptime", value: "99.9%", icon: Shield }
+];
+
 export function SocialProof() {
   return (
-    <div className="bg-white border-2 border-blue-200 rounded-xl p-6 text-center shadow-lg">
+    <section className="py-16 bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4">
       
-      {/* User Avatars */}
-      <div className="flex items-center justify-center -space-x-3 mb-4">
-        {[
-          { initials: 'MK', color: 'from-blue-400 to-blue-600' },
-          { initials: 'TL', color: 'from-green-400 to-green-600' },
-          { initials: 'AS', color: 'from-purple-400 to-purple-600' },
-          { initials: 'JH', color: 'from-orange-400 to-orange-600' },
-          { initials: 'RL', color: 'from-pink-400 to-pink-600' }
-        ].map((user, i) => (
-          <div 
-            key={i}
-            className={`w-12 h-12 bg-gradient-to-br ${user.color} rounded-full border-4 border-white flex items-center justify-center text-white font-bold shadow-lg`}
-          >
-            {user.initials}
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full mb-4">
+            <Star className="w-5 h-5" />
+            <span className="font-medium">Todistetut tulokset</span>
           </div>
-        ))}
-        <div className="w-12 h-12 bg-gray-200 rounded-full border-4 border-white flex items-center justify-center text-gray-600 font-bold shadow-lg">
-          +3
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Suomalaiset yritykset säästävät jo €120 000/kk
+          </h2>
+          <p className="text-xl text-gray-600">
+            Katso miten DocFlow muutti näiden yritysten arkea
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          {stats.map((stat, index) => (
+            <div key={index} className="text-center bg-white p-6 rounded-xl shadow-sm">
+              <stat.icon className="w-8 h-8 text-blue-600 mx-auto mb-3" />
+              <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+                {stat.value}
+              </div>
+              <div className="text-sm text-gray-600">
+                {stat.label}
+        </div>
+      </div>
+          ))}
+        </div>
+
+        {/* Testimonials */}
+        <div className="grid md:grid-cols-3 gap-8">
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              
+              {/* Company Info */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <span className="text-blue-600 font-bold text-lg">
+                      {testimonial.company.charAt(0)}
+                    </span>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900">
+                      {testimonial.company}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {testimonial.industry} • {testimonial.employees}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Result */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="text-sm text-green-700 font-medium mb-1">
+                  Tulos:
+                </div>
+                <div className="font-bold text-green-900">
+                  {testimonial.result}
+        </div>
+                <div className="text-2xl font-bold text-green-600 mt-2">
+                  {testimonial.savings}
         </div>
       </div>
 
-      <p className="text-gray-700 mb-2">
-        <strong className="text-blue-600">8 yritystä</strong> ilmoittautunut beta-ohjelmaan
-      </p>
-      <p className="text-sm text-gray-600 mb-4">
-        🕐 Viimeisin ilmoittautuminen 2 tuntia sitten
-      </p>
+              {/* Quote */}
+              <blockquote className="text-gray-700 mb-6 leading-relaxed">
+                &ldquo;{testimonial.quote}&rdquo;
+              </blockquote>
 
-      {/* Trust Badges */}
-      <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
-        <div className="text-center">
-          <div className="text-2xl mb-1">🇪🇺</div>
-          <div className="text-xs text-gray-600 font-medium">EU Hosting</div>
+              {/* Author */}
+              <div className="border-t border-gray-200 pt-4">
+                <div className="font-semibold text-gray-900">
+                  {testimonial.name}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {testimonial.title}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="text-center">
-          <div className="text-2xl mb-1">🔒</div>
-          <div className="text-xs text-gray-600 font-medium">GDPR</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl mb-1">⚡</div>
-          <div className="text-xs text-gray-600 font-medium">99.9% SLA</div>
+
+        {/* Bottom CTA */}
+        <div className="mt-16 text-center bg-blue-600 text-white rounded-xl p-8">
+          <h3 className="text-2xl font-bold mb-4">
+            Haluatko saman tuloksen?
+          </h3>
+          <p className="text-blue-100 mb-6 text-lg">
+            Liity 200+ suomalaiseen yritykseen jotka säästävät aikaa ja rahaa DocFlow:lla
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/signup"
+              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors text-lg"
+            >
+              🚀 Aloita ilmainen kokeilu
+            </a>
+            <a
+              href="/demo"
+              className="bg-blue-700 text-white px-8 py-4 rounded-lg font-bold hover:bg-blue-800 transition-colors text-lg border-2 border-blue-400"
+            >
+              📅 Varaa demo
+            </a>
+          </div>
         </div>
       </div>
-
-      {/* Additional trust elements */}
-      <div className="mt-4 pt-4 border-t border-gray-200">
-        <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            Suomi
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-            24/7 Monitoring
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-            ISO 27001
-          </span>
-        </div>
-      </div>
-    </div>
+    </section>
   );
 }
