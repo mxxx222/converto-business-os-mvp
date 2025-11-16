@@ -34,10 +34,11 @@ export async function createDemoLead(
 
   const page = await notion.pages.create({
     parent: { database_id: dbId },
-    properties: props,
+    properties: props as any, // Type assertion for Notion API compatibility
   });
 
   return { ok: true, id: (page as any).id };
 }
+
 
 

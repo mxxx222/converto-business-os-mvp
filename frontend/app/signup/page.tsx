@@ -1,10 +1,7 @@
-export const metadata = {
-  title: "Aloita ilmainen kokeilu – DocFlow by Converto",
-  description:
-    "Rekisteröidy DocFlow'n 30 päivän ilmaiseen kokeiluun. Ei luottokorttia, ei sitoutumista. Käyttöönotto 15 minuutissa.",
-};
-
 "use client";
+
+// Note: metadata export is not allowed in client components
+// This would need to be moved to a layout or parent server component
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
