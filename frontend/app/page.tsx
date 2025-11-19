@@ -1,4 +1,5 @@
 import { HeroStoryBrand } from '@/components/HeroStoryBrand';
+import { LandingSnippet } from '@/components/LandingSnippet';
 import { SocialProof } from '@/components/SocialProof';
 import { EnhancedROICalculator } from '@/components/EnhancedROICalculator';
 import { FAQ } from '@/components/FAQ';
@@ -36,6 +37,11 @@ export default function HomePage() {
 
       {/* Hero Section with StoryBrand Framework */}
       <HeroStoryBrand />
+
+      {/* Landing Snippet - Deployment CTA */}
+      <section className="py-12 bg-gradient-to-b from-gray-50 to-white">
+        <LandingSnippet />
+      </section>
 
       {/* Social Proof Section */}
       <SocialProof />

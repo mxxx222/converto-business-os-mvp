@@ -54,10 +54,12 @@ Learn what you can{
     "auto-deploy": "node mcp_auto_deploy_server.js",
     "notion": "node mcp_notion_server.js",
     "openai": "node mcp_openai_server.js",
+    "deepseek": "node mcp_deepseek_server.js",
     "resend": "node mcp_resend_server.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.5.0"
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "dotenv": "^16.4.5"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -101,6 +103,14 @@ Learn what you can{
         "OPENAI_API_BASE": "${OPENAI_API_BASE}",
         "OPENAI_ORG": "${OPENAI_ORG}",
         "OPENAI_PROJECT": "${OPENAI_PROJECT}"
+      }
+    },
+    "deepseek-tools": {
+      "command": "node",
+      "args": ["mcp_deepseek_server.js"],
+      "env": {
+        "DEEPSEEK_API_KEY": "${DEEPSEEK_API_KEY}",
+        "DEEPSEEK_API_BASE": "${DEEPSEEK_API_BASE}"
       }
     },
     "resend-tools": {
