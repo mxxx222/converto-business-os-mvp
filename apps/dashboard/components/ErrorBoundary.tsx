@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 import { getUserFriendlyError, logError, isRecoverableError } from '@/lib/errors'
+import * as Sentry from '@sentry/nextjs'
 
 interface Props {
   children: ReactNode
@@ -39,6 +40,18 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error
     logError(error, 'ErrorBoundary')
+    
+    // Send to Sentry with React component stack
+    Sentry.captureException(error, {
+      contexts: {
+        react: {
+          componentStack: errorInfo.componentStack,
+        }
+      },
+      tags: {
+        errorBoundary: true,
+      }
+    })
     
     // Call custom error handler if provided
     if (this.props.onError) {
