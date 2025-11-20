@@ -18,6 +18,9 @@ Sentry.init({
   // Environment
   environment: process.env.NEXT_PUBLIC_ENV || "development",
 
+  // Enable logging
+  enableLogs: true,
+
   // Server-side sampling (can be different from client)
   tracesSampleRate: parseFloat(
     process.env.SENTRY_SERVER_TRACES_SAMPLE_RATE || 
@@ -26,6 +29,11 @@ Sentry.init({
   ),
 
   // Integrations
+  integrations: [
+    // Send console.log, console.warn, and console.error calls as logs to Sentry
+    Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
+  ],
+
   // HTTP integration is automatically enabled in Sentry 8.x
 
   // Release tracking

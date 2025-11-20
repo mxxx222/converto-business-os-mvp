@@ -181,11 +181,12 @@ export function logError(error: unknown, context?: string): void {
     error: error instanceof Error ? error : String(error)
   })
 
-  // Integrate with Sentry
+  // Integrate with Sentry - use captureException for exceptions
   if (typeof window !== 'undefined') {
     try {
       // Dynamic import to avoid SSR issues
       import('@sentry/nextjs').then((Sentry) => {
+        // Use captureException for proper exception tracking
         Sentry.captureException(error, {
           contexts: {
             custom: {

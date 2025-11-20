@@ -19,6 +19,9 @@ Sentry.init({
   // Environment
   environment: process.env.NEXT_PUBLIC_ENV || "development",
 
+  // Enable logging
+  enableLogs: true,
+
   // Sampling - ENV-controlled (default 0.1 = 10%)
   tracesSampleRate: parseFloat(
     process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE || "0.1"
@@ -27,6 +30,12 @@ Sentry.init({
   // Replay - disabled initially (expensive on quota)
   replaysSessionSampleRate: 0.0,
   replaysOnErrorSampleRate: 0.0,
+
+  // Integrations
+  integrations: [
+    // Send console.log, console.warn, and console.error calls as logs to Sentry
+    Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
+  ],
 
   // Performance monitoring
   // BrowserTracing is automatically enabled in Sentry 8.x
