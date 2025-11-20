@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react'
 import { Toaster } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import { useRouter, usePathname } from 'next/navigation'
+import { WebSocketProvider } from '@/lib/websocket'
+import { ConnectionStatus } from '@/components/ConnectionStatus'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -38,11 +40,30 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
   }, [router, pathname])
 
+  const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws'
+
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <WebSocketProvider url={wsUrl}>
+        <div className="flex min-h-screen flex-col">
+          {/* Header with connection status */}
+          <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container flex h-14 items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h1 className="text-xl font-bold">DocFlow Dashboard</h1>
+              </div>
+              <ConnectionStatus />
+            </div>
+          </header>
+          
+          {/* Main content */}
+          <main className="flex-1">
+            {children}
+          </main>
+        </div>
+        <Toaster position="bottom-right" richColors />
+      </WebSocketProvider>
       <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster position="top-right" />
     </QueryClientProvider>
   )
 }
