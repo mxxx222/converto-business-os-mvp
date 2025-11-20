@@ -7,6 +7,7 @@ import DocumentQueueManager from '@/components/DocumentQueueManager'
 import { DocumentsTable } from '@/components/dashboard/documents-table'
 import OCRErrorTriage from '@/components/OCRErrorTriage'
 import Customers from '@/components/Customers'
+import CustomersPage from '@/app/customers/page'
 import Analytics from '@/components/Analytics'
 import Billing from '@/components/Billing'
 import APIMonitoring from '@/components/APIMonitoring'
@@ -44,7 +45,7 @@ const moduleConfig = {
   customers: { 
     title: 'Customers', 
     icon: '👥', 
-    component: Customers,
+    component: CustomersPage,
     description: 'Customer management and statistics'
   },
   analytics: { 

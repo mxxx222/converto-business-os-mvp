@@ -235,6 +235,12 @@ class DocFlowAPI {
     })
   }
 
+  async deleteCustomer(id: string): Promise<void> {
+    return this.request(`/admin/customers/${id}`, {
+      method: 'DELETE'
+    })
+  }
+
   // Analytics endpoints
   async getAnalytics(timeRange: string = '30d'): Promise<AnalyticsData> {
     return this.request(`/admin/analytics?range=${timeRange}`)
