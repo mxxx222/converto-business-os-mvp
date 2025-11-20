@@ -40,7 +40,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
   }, [router, pathname])
 
-  const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws'
+  // Use Fly.io backend WebSocket in production, localhost for local development
+  const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'wss://docflow-admin-api.fly.dev/ws'
 
   return (
     <QueryClientProvider client={queryClient}>
