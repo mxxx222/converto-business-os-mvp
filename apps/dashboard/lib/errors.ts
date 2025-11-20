@@ -181,10 +181,31 @@ export function logError(error: unknown, context?: string): void {
     error: error instanceof Error ? error : String(error)
   })
 
-  // TODO: Integrate with Sentry or other error tracking service
-  // if (typeof window !== 'undefined' && window.Sentry) {
-  //   window.Sentry.captureException(error, { contexts: { custom: { context } } })
-  // }
+  // Integrate with Sentry
+  if (typeof window !== 'undefined') {
+    try {
+      // Dynamic import to avoid SSR issues
+      import('@sentry/nextjs').then((Sentry) => {
+        Sentry.captureException(error, {
+          contexts: {
+            custom: {
+              context,
+              errorType: errorInfo.type,
+              statusCode: errorInfo.statusCode,
+            }
+          },
+          tags: {
+            errorType: errorInfo.type,
+            context: context || 'unknown',
+          }
+        })
+      }).catch(() => {
+        // Sentry not available, skip
+      })
+    } catch {
+      // Sentry not available, skip
+    }
+  }
 }
 
 /**
