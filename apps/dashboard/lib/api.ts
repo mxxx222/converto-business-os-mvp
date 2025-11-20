@@ -134,6 +134,44 @@ export interface ApiError {
   details?: any
 }
 
+// Analytics interfaces
+export interface AnalyticsOverview {
+  totalRevenue: number
+  revenueGrowth: number
+  totalDocuments: number
+  documentsGrowth: number
+  avgProcessingTime: number
+  processingTimeChange: number
+  successRate: number
+  successRateChange: number
+}
+
+export interface RevenueData {
+  date: string
+  revenue: number
+  mrr: number
+}
+
+export interface ProcessingData {
+  date: string
+  total: number
+  success: number
+  failed: number
+}
+
+export interface CustomerGrowthData {
+  date: string
+  total: number
+  active: number
+  trial: number
+}
+
+export interface StatusDistribution {
+  status: string
+  count: number
+  percentage: number
+}
+
 // Enhanced API Client
 class DocFlowAPI {
   private baseURL: string
@@ -246,8 +284,24 @@ class DocFlowAPI {
     return this.request(`/admin/analytics?range=${timeRange}`)
   }
 
-  async getRevenueAnalytics(timeRange: string = '30d'): Promise<TimeSeriesData[]> {
+  async getAnalyticsOverview(timeRange: string = '30d'): Promise<AnalyticsOverview> {
+    return this.request(`/admin/analytics/overview?range=${timeRange}`)
+  }
+
+  async getRevenueAnalytics(timeRange: string = '30d'): Promise<RevenueData[]> {
     return this.request(`/admin/analytics/revenue?range=${timeRange}`)
+  }
+
+  async getProcessingAnalytics(timeRange: string = '30d'): Promise<ProcessingData[]> {
+    return this.request(`/admin/analytics/processing?range=${timeRange}`)
+  }
+
+  async getCustomerGrowth(timeRange: string = '30d'): Promise<CustomerGrowthData[]> {
+    return this.request(`/admin/analytics/customer-growth?range=${timeRange}`)
+  }
+
+  async getStatusDistribution(): Promise<StatusDistribution[]> {
+    return this.request('/admin/analytics/status-distribution')
   }
 
   // System endpoints
@@ -372,6 +426,10 @@ export const queryKeys = {
   },
   analytics: {
     all: ['analytics'],
-    revenue: (range: string) => ['analytics', 'revenue', range]
+    overview: (range: string) => ['analytics', 'overview', range],
+    revenue: (range: string) => ['analytics', 'revenue', range],
+    processing: (range: string) => ['analytics', 'processing', range],
+    customerGrowth: (range: string) => ['analytics', 'customer-growth', range],
+    statusDistribution: ['analytics', 'status-distribution']
   }
 }
