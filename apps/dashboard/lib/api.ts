@@ -179,7 +179,8 @@ class DocFlowAPI {
   private baseURL: string
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    // Use Fly.io backend in production, localhost for local development
+    this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'https://docflow-admin-api.fly.dev'
   }
 
   // Token management using Supabase session
