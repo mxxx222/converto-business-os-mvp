@@ -3,6 +3,7 @@
 
 import { toast } from 'sonner'
 import { supabase } from './supabase'
+import { getUserFriendlyError, logError, classifyError } from './errors'
 
 // Type definitions for API responses
 export interface DashboardMetrics {
@@ -381,24 +382,46 @@ class DocFlowAPI {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `API Error: ${response.status} ${response.statusText}`)
+        const error = new Error(errorData.message || `API Error: ${response.status} ${response.statusText}`)
+        ;(error as any).statusCode = response.status
+        ;(error as any).status = response.status
+        throw error
       }
 
       return await response.json()
     } catch (error) {
-      console.error(`API request failed for ${endpoint}:`, error)
+      // Log error with context
+      logError(error, `API request to ${endpoint}`)
       
-      if (error instanceof Error) {
-        // Show user-friendly error messages
-        if (error.message.includes('Network') || error.message.includes('Failed to fetch')) {
-          toast.error('Network error: Unable to connect to server')
-        } else if (error.message.includes('401')) {
-          toast.error('Session expired. Please log in again.')
-          this.clearTokens()
-          window.location.href = '/login'
-        } else {
-          toast.error(`Operation failed: ${error.message}`)
-        }
+      // Get user-friendly error info
+      const errorInfo = getUserFriendlyError(error)
+      const errorType = classifyError(error)
+      
+      // Show appropriate toast notification
+      if (errorType === 'auth') {
+        toast.error(errorInfo.userMessage.fi, {
+          description: errorInfo.recovery?.fi,
+          action: {
+            label: 'Kirjaudu sisään',
+            onClick: () => {
+              this.clearTokens()
+              window.location.href = '/login'
+            }
+          }
+        })
+        // Don't redirect immediately, let user click the button
+      } else if (errorType === 'network') {
+        toast.error(errorInfo.userMessage.fi, {
+          description: errorInfo.recovery?.fi
+        })
+      } else if (errorType === 'validation') {
+        toast.error(errorInfo.userMessage.fi, {
+          description: errorInfo.recovery?.fi
+        })
+      } else {
+        toast.error(errorInfo.userMessage.fi, {
+          description: errorInfo.recovery?.fi
+        })
       }
       
       throw error
