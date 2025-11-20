@@ -1,4 +1,7 @@
-// Simple admin authentication utilities
+// Supabase-based authentication utilities
+import { supabase } from './supabase'
+import type { User } from '@supabase/supabase-js'
+
 export interface AdminUser {
   id: string
   email: string
@@ -13,50 +16,84 @@ export interface AuthState {
   isLoading: boolean
 }
 
-// Mock admin users for demo purposes
-const mockUsers: AdminUser[] = [
-  {
-    id: 'admin_001',
-    email: 'admin@docflow.fi',
-    name: 'System Administrator',
-    role: 'super_admin',
-    permissions: ['all']
-  },
-  {
-    id: 'admin_002',
-    email: 'support@docflow.fi',
-    name: 'Support Agent',
-    role: 'admin',
-    permissions: ['read', 'write', 'customers', 'analytics']
+// Convert Supabase User to AdminUser
+function mapSupabaseUserToAdminUser(supabaseUser: User | null): AdminUser | null {
+  if (!supabaseUser) return null
+  
+  // Extract role from user metadata or default to admin
+  const userMetadata = supabaseUser.user_metadata || {}
+  const role = userMetadata.role || 'admin'
+  const permissions = role === 'super_admin' 
+    ? ['all'] 
+    : ['read', 'write', 'customers', 'analytics']
+  
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email || '',
+    name: userMetadata.name || userMetadata.full_name || supabaseUser.email?.split('@')[0] || 'Admin User',
+    role: role as 'admin' | 'super_admin',
+    permissions
   }
-]
+}
 
+export class AuthManager {
+  async getSession() {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session
+  }
+
+  async getUser(): Promise<User | null> {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user
+  }
+
+  async getAdminUser(): Promise<AdminUser | null> {
+    const user = await this.getUser()
+    return mapSupabaseUserToAdminUser(user)
+  }
+
+  async isAuthenticated(): Promise<boolean> {
+    const session = await this.getSession()
+    return !!session
+  }
+
+  async logout() {
+    await supabase.auth.signOut()
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login'
+    }
+  }
+
+  // Listen to auth state changes
+  onAuthStateChange(callback: (event: string, session: any) => void) {
+    return supabase.auth.onAuthStateChange(callback)
+  }
+}
+
+export const authManager = new AuthManager()
+
+// Legacy functions for backward compatibility
 export async function validateAdminToken(token: string): Promise<AdminUser | null> {
-  // In production, this would validate against a real JWT token
-  // For demo purposes, we'll use a simple check
-  if (token === 'demo_admin_token') {
-    return mockUsers[0] // Return first admin
+  // Validate token via Supabase session
+  const session = await authManager.getSession()
+  if (session?.access_token === token) {
+    return await authManager.getAdminUser()
   }
-  
-  if (token === 'demo_support_token') {
-    return mockUsers[1] // Return support agent
-  }
-  
   return null
 }
 
 export async function authenticateAdmin(email: string, password: string): Promise<AdminUser | null> {
-  // In production, this would verify against a real user database
-  // For demo purposes, accept any email with password 'admin123'
-  if (password === 'admin123') {
-    return mockUsers[0] // Return first admin
+  // Use Supabase password authentication
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  })
+  
+  if (error || !data.user) {
+    return null
   }
   
-  if (email === 'support@docflow.fi' && password === 'support123') {
-    return mockUsers[1] // Return support agent
-  }
-  
-  return null
+  return mapSupabaseUserToAdminUser(data.user)
 }
 
 export function hasPermission(user: AdminUser | null, permission: string): boolean {

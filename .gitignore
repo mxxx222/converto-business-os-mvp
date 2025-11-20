@@ -123,3 +123,5 @@ secrets.*
 *.ed25519
 *.ed448
 *.x509
+.cursor/
+.cursor/mcp.json
