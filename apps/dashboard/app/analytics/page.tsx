@@ -187,6 +187,7 @@ export default function AnalyticsPage() {
             {revenueLoading ? (
               <Skeleton className="h-[300px] w-full" />
             ) : (
+              // @ts-expect-error - Recharts type definition compatibility issue
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={revenueData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -212,6 +213,7 @@ export default function AnalyticsPage() {
             {processingLoading ? (
               <Skeleton className="h-[300px] w-full" />
             ) : (
+              // @ts-expect-error - Recharts type definition compatibility issue
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={processingData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -237,6 +239,7 @@ export default function AnalyticsPage() {
             {customerLoading ? (
               <Skeleton className="h-[300px] w-full" />
             ) : (
+              // @ts-expect-error - Recharts type definition compatibility issue
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={customerGrowth}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -262,6 +265,7 @@ export default function AnalyticsPage() {
             {statusLoading ? (
               <Skeleton className="h-[300px] w-full" />
             ) : (
+              // @ts-expect-error - Recharts type definition compatibility issue
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
