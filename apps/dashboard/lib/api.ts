@@ -4,6 +4,7 @@
 import { toast } from 'sonner'
 import { supabase } from './supabase'
 import { getUserFriendlyError, logError, classifyError } from './errors'
+import * as Sentry from '@sentry/nextjs'
 
 // Type definitions for API responses
 export interface DashboardMetrics {
@@ -377,55 +378,87 @@ class DocFlowAPI {
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    try {
-      const response = await this.fetchWithAuth(`${this.baseURL}${endpoint}`, options)
+    const method = options.method || 'GET'
+    
+    return Sentry.startSpan(
+      {
+        op: 'http.client',
+        name: `${method} ${endpoint}`,
+      },
+      async (span) => {
+        try {
+          span.setAttribute('http.method', method)
+          span.setAttribute('http.url', `${this.baseURL}${endpoint}`)
+          
+          const response = await this.fetchWithAuth(`${this.baseURL}${endpoint}`, options)
+          
+          span.setAttribute('http.status_code', response.status)
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        const error = new Error(errorData.message || `API Error: ${response.status} ${response.statusText}`)
-        ;(error as any).statusCode = response.status
-        ;(error as any).status = response.status
-        throw error
-      }
-
-      return await response.json()
-    } catch (error) {
-      // Log error with context
-      logError(error, `API request to ${endpoint}`)
-      
-      // Get user-friendly error info
-      const errorInfo = getUserFriendlyError(error)
-      const errorType = classifyError(error)
-      
-      // Show appropriate toast notification
-      if (errorType === 'auth') {
-        toast.error(errorInfo.userMessage.fi, {
-          description: errorInfo.recovery?.fi,
-          action: {
-            label: 'Kirjaudu sisään',
-            onClick: () => {
-              this.clearTokens()
-              window.location.href = '/login'
-            }
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            const error = new Error(errorData.message || `API Error: ${response.status} ${response.statusText}`)
+            ;(error as any).statusCode = response.status
+            ;(error as any).status = response.status
+            
+            // Capture exception in Sentry
+            Sentry.captureException(error, {
+              contexts: {
+                http: {
+                  method,
+                  url: `${this.baseURL}${endpoint}`,
+                  status_code: response.status,
+                }
+              },
+              tags: {
+                endpoint,
+                httpStatus: response.status.toString(),
+              }
+            })
+            
+            throw error
           }
-        })
-        // Don't redirect immediately, let user click the button
-      } else if (errorType === 'network') {
-        toast.error(errorInfo.userMessage.fi, {
-          description: errorInfo.recovery?.fi
-        })
-      } else if (errorType === 'validation') {
-        toast.error(errorInfo.userMessage.fi, {
-          description: errorInfo.recovery?.fi
-        })
-      } else {
-        toast.error(errorInfo.userMessage.fi, {
-          description: errorInfo.recovery?.fi
-        })
+
+          const data = await response.json()
+          return data
+        } catch (error) {
+          // Log error with context
+          logError(error, `API request to ${endpoint}`)
+          
+          // Get user-friendly error info
+          const errorInfo = getUserFriendlyError(error)
+          const errorType = classifyError(error)
+          
+          // Show appropriate toast notification
+          if (errorType === 'auth') {
+            toast.error(errorInfo.userMessage.fi, {
+              description: errorInfo.recovery?.fi,
+              action: {
+                label: 'Kirjaudu sisään',
+                onClick: () => {
+                  this.clearTokens()
+                  window.location.href = '/login'
+                }
+              }
+            })
+            // Don't redirect immediately, let user click the button
+          } else if (errorType === 'network') {
+            toast.error(errorInfo.userMessage.fi, {
+              description: errorInfo.recovery?.fi
+            })
+          } else if (errorType === 'validation') {
+            toast.error(errorInfo.userMessage.fi, {
+              description: errorInfo.recovery?.fi
+            })
+          } else {
+            toast.error(errorInfo.userMessage.fi, {
+              description: errorInfo.recovery?.fi
+            })
+          }
+          
+          throw error
+        }
       }
-      
-      throw error
-    }
+    )
   }
 }
 
