@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import RealTimeActivity from '@/components/RealTimeActivity'
 import DocumentQueueManager from '@/components/DocumentQueueManager'
+import { DocumentsTable } from '@/components/dashboard/documents-table'
 import OCRErrorTriage from '@/components/OCRErrorTriage'
 import Customers from '@/components/Customers'
 import Analytics from '@/components/Analytics'
 import Billing from '@/components/Billing'
 import APIMonitoring from '@/components/APIMonitoring'
 import type { AdminUser } from '@/lib/auth'
-import { canAccessModule } from '@/lib/auth'
+import { authManager, canAccessModule } from '@/lib/auth'
 
 type DashboardModule = 
   | 'activity'
@@ -31,7 +32,7 @@ const moduleConfig = {
   queue: { 
     title: 'Document Queue Manager', 
     icon: '📄', 
-    component: DocumentQueueManager,
+    component: DocumentsTable,
     description: 'Manage pending documents and bulk operations'
   },
   ocr: { 
@@ -73,31 +74,36 @@ export default function AdminDashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    // Check authentication on component mount
-    const token = localStorage.getItem('admin_token')
-    const userData = localStorage.getItem('admin_user')
-    
-    if (!token || !userData) {
-      router.push('/login')
-      return
+    // Check authentication on component mount using Supabase
+    const checkAuth = async () => {
+      try {
+        const isAuthenticated = await authManager.isAuthenticated()
+        if (!isAuthenticated) {
+          router.push('/login')
+          return
+        }
+        
+        const adminUser = await authManager.getAdminUser()
+        if (!adminUser) {
+          router.push('/login')
+          return
+        }
+        
+        setUser(adminUser)
+      } catch (error) {
+        console.error('Failed to check authentication:', error)
+        router.push('/login')
+      } finally {
+        setIsLoading(false)
+      }
     }
     
-    try {
-      const parsedUser = JSON.parse(userData)
-      setUser(parsedUser)
-    } catch (error) {
-      console.error('Failed to parse user data:', error)
-      router.push('/login')
-      return
-    }
-    
-    setIsLoading(false)
+    checkAuth()
   }, [router])
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    localStorage.removeItem('admin_user')
-    router.push('/login')
+  const handleLogout = async () => {
+    await authManager.logout()
+    // authManager.logout() already redirects to /login
   }
 
   // Filter modules based on user permissions

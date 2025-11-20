@@ -2,124 +2,159 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { authenticateAdmin } from '@/lib/auth'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { toast } from 'sonner'
+import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [magicLinkEmail, setMagicLinkEmail] = useState('')
+  const [passwordEmail, setPasswordEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Magic link tab
+  const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    if (!magicLinkEmail) {
+      toast.error('Please enter your email address')
+      return
+    }
 
+    setLoading(true)
     try {
-      const user = await authenticateAdmin(email, password)
-      if (user) {
-        // Store auth token in localStorage for demo
-        localStorage.setItem('admin_token', 'demo_admin_token')
-        localStorage.setItem('admin_user', JSON.stringify(user))
-        router.push('/')
-      } else {
-        setError('Invalid credentials')
-      }
-    } catch (err) {
-      setError('Login failed. Please try again.')
+      const { error } = await supabase.auth.signInWithOtp({
+        email: magicLinkEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`
+        }
+      })
+
+      if (error) throw error
+
+      toast.success('Magic link sent! Check your email.')
+      setMagicLinkEmail('')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to send magic link')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
+    }
+  }
+
+  // Password tab
+  const handlePasswordLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!passwordEmail || !password) {
+      toast.error('Please enter both email and password')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: passwordEmail,
+        password
+      })
+
+      if (error) throw error
+
+      toast.success('Login successful!')
+      router.push('/dashboard')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Login failed')
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center">
-          <div className="text-4xl mb-4">📋</div>
-          <h2 className="text-3xl font-bold text-gray-900">DocFlow Admin</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to access the admin dashboard
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-                {error}
-              </div>
-            )}
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="input"
-                  placeholder="admin@docflow.fi"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input"
-                  placeholder="admin123"
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="btn btn-primary w-full"
-              >
-                {isLoading ? 'Signing in...' : 'Sign in'}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Demo Credentials</span>
-              </div>
-            </div>
-
-            <div className="mt-4 text-xs text-gray-600 space-y-1">
-              <div><strong>Admin:</strong> admin@docflow.fi / admin123</div>
-              <div><strong>Support:</strong> support@docflow.fi / support123</div>
-            </div>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <div className="flex items-center justify-center mb-2">
+            <div className="text-4xl">📋</div>
           </div>
-        </div>
-      </div>
+          <CardTitle className="text-center">DocFlow Admin</CardTitle>
+          <CardDescription className="text-center">
+            Sign in to access the dashboard
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="magic" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="magic">Magic Link</TabsTrigger>
+              <TabsTrigger value="password">Password</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="magic" className="space-y-4 mt-4">
+              <form onSubmit={handleMagicLink} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="magic-email">Email address</Label>
+                  <Input
+                    id="magic-email"
+                    type="email"
+                    placeholder="admin@docflow.fi"
+                    value={magicLinkEmail}
+                    onChange={(e) => setMagicLinkEmail(e.target.value)}
+                    disabled={loading}
+                    required
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading || !magicLinkEmail}
+                >
+                  {loading ? 'Sending...' : 'Send Magic Link'}
+                </Button>
+              </form>
+              <p className="text-xs text-muted-foreground text-center">
+                We'll send you a secure link to sign in without a password
+              </p>
+            </TabsContent>
+            
+            <TabsContent value="password" className="space-y-4 mt-4">
+              <form onSubmit={handlePasswordLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password-email">Email address</Label>
+                  <Input
+                    id="password-email"
+                    type="email"
+                    placeholder="admin@docflow.fi"
+                    value={passwordEmail}
+                    onChange={(e) => setPasswordEmail(e.target.value)}
+                    disabled={loading}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    required
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading || !passwordEmail || !password}
+                >
+                  {loading ? 'Signing in...' : 'Sign In'}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   )
 }

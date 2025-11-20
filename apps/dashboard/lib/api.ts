@@ -2,6 +2,7 @@
 // Production-ready with real-time data, JWT authentication, and comprehensive error handling
 
 import { toast } from 'sonner'
+import { supabase } from './supabase'
 
 // Type definitions for API responses
 export interface DashboardMetrics {
@@ -136,115 +137,42 @@ export interface ApiError {
 // Enhanced API Client
 class DocFlowAPI {
   private baseURL: string
-  private token: string | null = null
-  private refreshToken: string | null = null
-  private isRefreshing = false
-  private refreshSubscribers: ((token: string) => void)[] = []
 
   constructor() {
     this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-    this.loadTokens()
   }
 
-  // Token management
-  private loadTokens(): void {
-    if (typeof window !== 'undefined') {
-      this.token = localStorage.getItem('docflow_admin_token')
-      this.refreshToken = localStorage.getItem('docflow_refresh_token')
+  // Token management using Supabase session
+  private async getAuthToken(): Promise<string> {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.access_token) {
+      throw new Error('No authentication token available. Please log in.')
     }
-  }
-
-  private saveTokens(token: string, refreshToken: string): void {
-    this.token = token
-    this.refreshToken = refreshToken
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('docflow_admin_token', token)
-      localStorage.setItem('docflow_refresh_token', refreshToken)
-    }
+    return session.access_token
   }
 
   clearTokens(): void {
-    this.token = null
-    this.refreshToken = null
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('docflow_admin_token')
-      localStorage.removeItem('docflow_refresh_token')
-    }
+    // Tokens are managed by Supabase, no manual clearing needed
+    // This method is kept for backward compatibility
   }
 
-  // Authentication
+  // Authentication - handled by Supabase, kept for backward compatibility
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    try {
-      const response = await fetch(`${this.baseURL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials)
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || 'Login failed')
-      }
-
-      const data: AuthResponse = await response.json()
-      this.saveTokens(data.access_token, data.refresh_token)
-      return data
-    } catch (error) {
-      console.error('Login error:', error)
-      throw error
-    }
+    // Login is now handled directly via Supabase in login page
+    // This method is kept for backward compatibility but should not be used
+    throw new Error('Please use Supabase auth.signInWithPassword() directly')
   }
 
   async logout(): Promise<void> {
-    try {
-      if (this.token) {
-        await this.request('/auth/logout', { method: 'POST' })
-      }
-    } catch (error) {
-      console.error('Logout error:', error)
-    } finally {
-      this.clearTokens()
-    }
+    // Logout is handled by Supabase auth.signOut()
+    // This method is kept for backward compatibility
+    await supabase.auth.signOut()
   }
 
   async refreshAuthToken(): Promise<string> {
-    if (this.isRefreshing) {
-      return new Promise((resolve) => {
-        this.refreshSubscribers.push(resolve)
-      })
-    }
-
-    this.isRefreshing = true
-
-    try {
-      const response = await fetch(`${this.baseURL}/auth/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: this.refreshToken })
-      })
-
-      if (!response.ok) {
-        throw new Error('Token refresh failed')
-      }
-
-      const data: { access_token: string } = await response.json()
-      this.token = data.access_token
-      
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('docflow_admin_token', data.access_token)
-      }
-
-      // Notify all subscribers
-      this.refreshSubscribers.forEach(subscriber => subscriber(data.access_token))
-      this.refreshSubscribers = []
-
-      return data.access_token
-    } catch (error) {
-      this.clearTokens()
-      throw error
-    } finally {
-      this.isRefreshing = false
-    }
+    // Token refresh is handled automatically by Supabase
+    // This method is kept for backward compatibility
+    return await this.getAuthToken()
   }
 
   // Dashboard endpoints
@@ -359,8 +287,13 @@ class DocFlowAPI {
       ...options.headers
     }
 
-    if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`
+    // Get token from Supabase session
+    try {
+      const token = await this.getAuthToken()
+      headers['Authorization'] = `Bearer ${token}`
+    } catch (error) {
+      // If no token, continue without auth header (will fail with 401)
+      console.warn('No auth token available for request')
     }
 
     let response = await fetch(url, {
@@ -368,22 +301,15 @@ class DocFlowAPI {
       headers
     })
 
-    // Handle token expiration
-    if (response.status === 401 && this.refreshToken) {
-      try {
-        const newToken = await this.refreshAuthToken()
-        headers['Authorization'] = `Bearer ${newToken}`
-        
-        // Retry the original request with new token
-        response = await fetch(url, {
-          ...options,
-          headers
-        })
-      } catch (refreshError) {
-        this.clearTokens()
+    // Handle token expiration - Supabase handles refresh automatically
+    // But if we get 401, redirect to login
+    if (response.status === 401) {
+      // Supabase will handle token refresh automatically
+      // If still 401 after refresh, user needs to re-authenticate
+      if (typeof window !== 'undefined') {
         window.location.href = '/login'
-        throw new Error('Authentication required')
       }
+      throw new Error('Authentication required')
     }
 
     return response
