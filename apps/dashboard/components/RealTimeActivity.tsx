@@ -1,222 +1,221 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { useWebSocket } from '@/lib/websocket'
+import { FileText, User, CheckCircle, XCircle, Clock, ArrowUpCircle } from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
+import { fi } from 'date-fns/locale'
+import { toast } from 'sonner'
 
 interface Activity {
   id: string
-  type: 'document_processed' | 'ocr_completed' | 'error' | 'customer_added' | 'payment_received'
+  type: string
   message: string
   timestamp: string
-  metadata: {
-    documentId?: string
-    customerName?: string
-    amount?: number
-    errorMessage?: string
-  }
-  severity: 'info' | 'warning' | 'error' | 'success'
+  status?: 'success' | 'error' | 'info' | 'warning'
+  metadata?: any
 }
 
-const mockActivities: Activity[] = [
-  {
-    id: '1',
-    type: 'document_processed',
-    message: 'Invoice from Acme Corp processed successfully',
-    timestamp: '2 minutes ago',
-    metadata: { documentId: 'doc_123', customerName: 'Acme Corp' },
-    severity: 'success'
-  },
-  {
-    id: '2',
-    type: 'ocr_completed',
-    message: 'OCR processing completed for receipt #456',
-    timestamp: '5 minutes ago',
-    metadata: { documentId: 'doc_456' },
-    severity: 'info'
-  },
-  {
-    id: '3',
-    type: 'error',
-    message: 'OCR failed for document - low quality image',
-    timestamp: '8 minutes ago',
-    metadata: { documentId: 'doc_789', errorMessage: 'Image quality too low' },
-    severity: 'error'
-  },
-  {
-    id: '4',
-    type: 'customer_added',
-    message: 'New customer registered: Tech Solutions Oy',
-    timestamp: '12 minutes ago',
-    metadata: { customerName: 'Tech Solutions Oy' },
-    severity: 'success'
-  },
-  {
-    id: '5',
-    type: 'payment_received',
-    message: 'Monthly subscription payment received',
-    timestamp: '15 minutes ago',
-    metadata: { amount: 299 },
-    severity: 'success'
-  }
-]
-
 export default function RealTimeActivity() {
-  const [activities, setActivities] = useState<Activity[]>(mockActivities)
-  const [isConnected, setIsConnected] = useState(false)
-  const [lastUpdate, setLastUpdate] = useState(new Date())
+  const { lastMessage } = useWebSocket()
+  const [activities, setActivities] = useState<Activity[]>([])
 
   useEffect(() => {
-    // Simulate WebSocket connection
-    setIsConnected(true)
-    
-    // Simulate real-time updates every 10 seconds
-    const interval = setInterval(() => {
-      setLastUpdate(new Date())
-      // In real implementation, this would be WebSocket data
-      const newActivity: Activity = {
-        id: Date.now().toString(),
-        type: 'document_processed',
-        message: 'New document processed automatically',
-        timestamp: 'Just now',
-        metadata: { documentId: `doc_${Date.now()}` },
-        severity: 'info'
+    if (!lastMessage) return
+
+    // Convert WebSocket message to activity
+    const activity = messageToActivity(lastMessage)
+    if (activity) {
+      setActivities(prev => [activity, ...prev].slice(0, 50)) // Keep last 50
+      
+      // Show toast for important events
+      if (shouldShowToast(lastMessage.type)) {
+        showNotificationToast(activity)
       }
-      setActivities(prev => [newActivity, ...prev.slice(0, 19)]) // Keep last 20 activities
-    }, 10000)
+    }
+  }, [lastMessage])
 
-    return () => clearInterval(interval)
-  }, [])
+  const messageToActivity = (message: any): Activity | null => {
+    const { type, data, timestamp } = message
 
-  const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
-      case 'document_processed':
-        return '📄'
-      case 'ocr_completed':
-        return '🔍'
-      case 'error':
-        return '❌'
-      case 'customer_added':
-        return '👤'
-      case 'payment_received':
-        return '💳'
+      case 'document.created':
+        return {
+          id: data.id,
+          type: 'document',
+          message: `New document uploaded: ${data.filename}`,
+          timestamp,
+          status: 'info',
+          metadata: data
+        }
+
+      case 'document.processing':
+        return {
+          id: data.id,
+          type: 'document',
+          message: `Processing document: ${data.filename}`,
+          timestamp,
+          status: 'warning',
+          metadata: data
+        }
+
+      case 'document.completed':
+        return {
+          id: data.id,
+          type: 'document',
+          message: `Document processed successfully: ${data.filename}`,
+          timestamp,
+          status: 'success',
+          metadata: data
+        }
+
+      case 'document.failed':
+        return {
+          id: data.id,
+          type: 'document',
+          message: `Failed to process: ${data.filename}`,
+          timestamp,
+          status: 'error',
+          metadata: data
+        }
+
+      case 'customer.created':
+        return {
+          id: data.id,
+          type: 'customer',
+          message: `New customer: ${data.email}`,
+          timestamp,
+          status: 'success',
+          metadata: data
+        }
+
+      case 'customer.subscription_changed':
+        return {
+          id: data.id,
+          type: 'customer',
+          message: `${data.email} upgraded to ${data.plan}`,
+          timestamp,
+          status: 'success',
+          metadata: data
+        }
+
       default:
-        return '📋'
+        return null
     }
   }
 
-  const getSeverityColor = (severity: Activity['severity']) => {
-    switch (severity) {
-      case 'success':
-        return 'text-green-600 bg-green-50'
-      case 'error':
-        return 'text-red-600 bg-red-50'
-      case 'warning':
-        return 'text-yellow-600 bg-yellow-50'
-      default:
-        return 'text-blue-600 bg-blue-50'
+  const shouldShowToast = (type: string) => {
+    return ['document.completed', 'document.failed', 'customer.created'].includes(type)
+  }
+
+  const showNotificationToast = (activity: Activity) => {
+    const icons = {
+      success: '✅',
+      error: '❌',
+      warning: '⚠️',
+      info: 'ℹ️'
     }
+
+    const toastFn = activity.status === 'error' ? toast.error : 
+                    activity.status === 'warning' ? toast.warning : 
+                    toast.success
+
+    toastFn(activity.message, {
+      icon: icons[activity.status || 'info'],
+      duration: 4000
+    })
   }
 
-  const filterActivities = (type?: Activity['type']) => {
-    if (!type) return activities
-    return activities.filter(activity => activity.type === type)
+  const getActivityIcon = (type: string, status?: string) => {
+    if (type === 'document') {
+      if (status === 'success') return <CheckCircle className="h-4 w-4 text-green-600" />
+      if (status === 'error') return <XCircle className="h-4 w-4 text-red-600" />
+      if (status === 'warning') return <Clock className="h-4 w-4 text-yellow-600" />
+      return <FileText className="h-4 w-4 text-blue-600" />
+    }
+    if (type === 'customer') {
+      return <User className="h-4 w-4 text-purple-600" />
+    }
+    return <FileText className="h-4 w-4 text-gray-600" />
   }
 
-  const [filter, setFilter] = useState<Activity['type'] | 'all'>('all')
+  const getStatusBadge = (status?: string) => {
+    const variants = {
+      success: 'default',
+      error: 'destructive',
+      warning: 'secondary',
+      info: 'outline'
+    }
 
-  const filteredActivities = filterActivities(filter === 'all' ? undefined : filter)
+    return (
+      <Badge variant={variants[status || 'info'] as any} className="text-xs">
+        {status || 'info'}
+      </Badge>
+    )
+  }
+
+  if (activities.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Real-Time Activity</CardTitle>
+          <CardDescription>Live updates from your system</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <Clock className="h-12 w-12 text-muted-foreground mb-4" />
+            <p className="text-sm text-muted-foreground">Waiting for activity...</p>
+            <p className="text-xs text-muted-foreground mt-1">Events will appear here in real-time</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
-    <div className="p-6">
-      {/* Connection Status */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className={`status-indicator ${isConnected ? 'status-online' : 'status-offline'}`}></div>
-          <span className="text-sm font-medium">
-            {isConnected ? 'Live' : 'Disconnected'}
-          </span>
-          <span className="text-xs text-gray-500">
-            Last update: {lastUpdate.toLocaleTimeString('fi-FI')}
-          </span>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value as Activity['type'] | 'all')}
-            className="input text-sm"
-          >
-            <option value="all">All Activities</option>
-            <option value="document_processed">Documents</option>
-            <option value="ocr_completed">OCR</option>
-            <option value="error">Errors</option>
-            <option value="customer_added">Customers</option>
-            <option value="payment_received">Payments</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Activity Feed */}
-      <div className="space-y-3">
-        {filteredActivities.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            No activities to display
-          </div>
-        ) : (
-          filteredActivities.map((activity) => (
-            <div
-              key={activity.id}
-              className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="text-lg">{getActivityIcon(activity.type)}</div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-sm text-gray-600">{activity.message}</span>
-                  <span className={`px-2 py-0.5 text-xs rounded-full ${getSeverityColor(activity.severity)}`}>
-                    {activity.severity}
-                  </span>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          Real-Time Activity
+          <Badge variant="outline" className="ml-2">
+            {activities.length} events
+          </Badge>
+        </CardTitle>
+        <CardDescription>Live updates from your system</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-[400px] pr-4">
+          <div className="space-y-3">
+            {activities.map((activity) => (
+              <div
+                key={activity.id}
+                className="flex items-start gap-3 rounded-lg border p-3 hover:bg-accent transition-colors"
+              >
+                <div className="mt-0.5">
+                  {getActivityIcon(activity.type, activity.status)}
                 </div>
-                <div className="text-xs text-gray-500">
-                  {activity.timestamp}
-                  {activity.metadata.documentId && (
-                    <span className="ml-2">• Document: {activity.metadata.documentId}</span>
-                  )}
-                  {activity.metadata.customerName && (
-                    <span className="ml-2">• Customer: {activity.metadata.customerName}</span>
-                  )}
-                  {activity.metadata.amount && (
-                    <span className="ml-2">• Amount: €{activity.metadata.amount}</span>
-                  )}
-                  {activity.metadata.errorMessage && (
-                    <span className="ml-2 text-red-600">• Error: {activity.metadata.errorMessage}</span>
-                  )}
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {activity.message}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    {getStatusBadge(activity.status)}
+                    <span className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(activity.timestamp), {
+                        addSuffix: true,
+                        locale: fi
+                      })}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Connection Stats */}
-      <div className="mt-6 pt-6 border-t">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-lg font-semibold text-green-600">247</div>
-            <div className="text-xs text-gray-500">Today</div>
+            ))}
           </div>
-          <div className="text-center">
-            <div className="text-lg font-semibold text-blue-600">1,523</div>
-            <div className="text-xs text-gray-500">This Week</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-semibold text-purple-600">89%</div>
-            <div className="text-xs text-gray-500">Success Rate</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-semibold text-orange-600">12</div>
-            <div className="text-xs text-gray-500">Active Errors</div>
-          </div>
-        </div>
-      </div>
-    </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
   )
 }

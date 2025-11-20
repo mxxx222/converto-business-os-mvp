@@ -7,7 +7,7 @@ import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
@@ -36,6 +36,8 @@ from shared_core.modules.ocr.router import router as ocr_router
 from shared_core.modules.receipts.router import router as receipts_router
 from shared_core.modules.supabase.router import router as supabase_router
 from shared_core.utils.db import Base, engine
+from backend.app.websocket import manager
+from datetime import datetime
 
 settings = get_settings()
 logger = logging.getLogger("converto.backend")
@@ -165,6 +167,30 @@ def create_app() -> FastAPI:
     @app.api_route("/api/v1/ocr-ai/scan", methods=["POST", "OPTIONS"], include_in_schema=False)
     async def ocr_ai_scan_alias() -> RedirectResponse:
         return RedirectResponse(url="/api/v1/ocr/power", status_code=307)
+
+    # WebSocket endpoint for real-time notifications
+    @app.websocket("/ws")
+    async def websocket_endpoint(websocket: WebSocket):
+        await manager.connect(websocket)
+        try:
+            # Send initial connection message
+            await manager.send_personal_message({
+                "type": "connection.established",
+                "data": {"message": "Connected to DocFlow real-time updates"},
+                "timestamp": datetime.utcnow().isoformat()
+            }, websocket)
+            
+            # Keep connection alive and handle incoming messages
+            while True:
+                data = await websocket.receive_text()
+                logger.info(f"Received message: {data}")
+                # Handle client messages if needed
+                
+        except WebSocketDisconnect:
+            manager.disconnect(websocket)
+        except Exception as e:
+            logger.error(f"WebSocket error: {e}")
+            manager.disconnect(websocket)
 
     return app
 
