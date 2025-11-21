@@ -3,6 +3,7 @@ import { LandingSnippet } from '@/components/LandingSnippet';
 import { SocialProof } from '@/components/SocialProof';
 import { EnhancedROICalculator } from '@/components/EnhancedROICalculator';
 import { FAQ } from '@/components/FAQ';
+import { BetaSignupForm } from '@/components/BetaSignupForm';
 import { generateMetadata as generateSEOMetadata, generateStructuredData, pageSEO } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata(pageSEO.home);
@@ -160,6 +161,24 @@ export default function HomePage() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
           <FAQ />
+        </div>
+      </section>
+
+      {/* Beta Signup Section */}
+      <section className="py-16 bg-gradient-to-b from-white to-blue-50">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              🎉 Beta-ohjelma: 6 kuukautta ilmaiseksi
+            </h2>
+            <p className="text-xl text-gray-600 mb-2">
+              Vain 8 paikkaa jäljellä. Hae nyt ja vaikuta tuotteen kehitykseen.
+            </p>
+            <p className="text-sm text-gray-500">
+              Arvo: €1 794 • Prioriteettituki • Ensimmäisenä uudet ominaisuudet
+            </p>
+          </div>
+          <BetaSignupForm />
         </div>
       </section>
 

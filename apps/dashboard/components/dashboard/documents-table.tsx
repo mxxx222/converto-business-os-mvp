@@ -29,67 +29,61 @@ import {
   RefreshCwIcon,
   FilterIcon
 } from 'lucide-react'
-import { api, queryKeys, type Document, type DocumentFilters } from '@/lib/api'
+import { useDocuments, useDocumentsMutation, useDeleteDocument } from '@/hooks/useDocuments'
+import { useDocumentsRealtime } from '@/hooks/useDocuments'
+import type { Document as APIDocument } from '@/lib/api-client'
 import { toast } from 'sonner'
 
-export function DocumentsTable() {
-  const queryClient = useQueryClient()
-  const [filters, setFilters] = useState<DocumentFilters>({
-    page: 1,
-    limit: 20
-  })
+// Map API document to component document format
+function mapAPIDocumentToComponent(doc: APIDocument): Document {
+  return {
+    id: doc.id,
+    filename: doc.filename,
+    customerName: doc.customer_name || doc.customer_id || 'Unknown',
+    status: doc.status,
+    ocrConfidence: doc.ocr_confidence,
+    fileSize: doc.size ? parseInt(doc.size) : 0,
+    uploadedAt: doc.upload_date || doc.created_at,
+    fileType: doc.type || 'other',
+    fileUrl: doc.file_url
+  }
+}
 
+type Document = {
+  id: string
+  filename: string
+  customerName: string
+  status: 'pending' | 'processing' | 'completed' | 'error'
+  ocrConfidence?: number
+  fileSize: number
+  uploadedAt: string
+  fileType: string
+  fileUrl?: string
+}
+
+export function DocumentsTable() {
+  const [filterStatus, setFilterStatus] = useState<'pending' | 'processing' | 'completed' | 'error' | undefined>(undefined)
+
+  // Use Supabase hooks
+  const filters = filterStatus ? { status: filterStatus } : undefined
   const { 
-    data: documentsData, 
+    data: apiDocuments, 
     isLoading, 
     error, 
     refetch 
-  } = useQuery({
-    queryKey: queryKeys.documents.list(filters),
-    queryFn: () => api.getDocuments(filters),
-    refetchInterval: 10000, // Auto-refresh every 10 seconds
-    staleTime: 5000, // Consider data fresh for 5 seconds
-  })
+  } = useDocuments(filters)
+  
+  const updateDocument = useDocumentsMutation()
+  const deleteDocument = useDeleteDocument()
+  
+  // Enable real-time updates
+  useDocumentsRealtime()
 
-  const reprocessMutation = useMutation({
-    mutationFn: (id: string) => api.reprocessDocument(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.documents.all })
-      toast.success('Document queued for reprocessing')
-    },
-    onError: (error: Error) => {
-      toast.error(`Failed to reprocess: ${error.message}`)
-    }
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.deleteDocument(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.documents.all })
-      toast.success('Document deleted')
-    },
-    onError: (error: Error) => {
-      toast.error(`Failed to delete: ${error.message}`)
-    }
-  })
-
-  const downloadMutation = useMutation({
-    mutationFn: (id: string) => api.downloadDocument(id),
-    onSuccess: (blob, id) => {
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `document-${id}.pdf`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
-      toast.success('Document downloaded')
-    },
-    onError: (error: Error) => {
-      toast.error(`Failed to download: ${error.message}`)
-    }
-  })
+  // Map API documents to component format
+  const documents = (apiDocuments || []).map(mapAPIDocumentToComponent)
+  const total = documents.length
+  const currentPage = 1
+  const totalPages = 1
 
   const handleRefresh = async () => {
     try {
@@ -101,17 +95,41 @@ export function DocumentsTable() {
   }
 
   const handleReprocess = (id: string) => {
-    reprocessMutation.mutate(id)
+    // Update document status to pending for reprocessing
+    updateDocument.mutate(
+      { id, updates: { status: 'pending' } },
+      {
+        onSuccess: () => {
+          toast.success('Document queued for reprocessing')
+        },
+        onError: (error: Error) => {
+          toast.error(`Failed to reprocess: ${error.message}`)
+        }
+      }
+    )
   }
 
   const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this document?')) {
-      deleteMutation.mutate(id)
+      deleteDocument.mutate(id, {
+        onSuccess: () => {
+          toast.success('Document deleted')
+        },
+        onError: (error: Error) => {
+          toast.error(`Failed to delete: ${error.message}`)
+        }
+      })
     }
   }
 
   const handleDownload = (id: string) => {
-    downloadMutation.mutate(id)
+    const doc = documents.find(d => d.id === id)
+    if (doc?.fileUrl) {
+      window.open(doc.fileUrl, '_blank')
+      toast.success('Opening document')
+    } else {
+      toast.error('Document file URL not available')
+    }
   }
 
   const getStatusBadge = (status: Document['status']) => {
@@ -178,10 +196,7 @@ export function DocumentsTable() {
     )
   }
 
-  const documents = documentsData?.data || []
-  const total = documentsData?.total || 0
-  const currentPage = documentsData?.page || 1
-  const totalPages = documentsData?.totalPages || 1
+  // Documents already mapped above
 
   return (
     <Card>

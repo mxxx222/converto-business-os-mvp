@@ -4,6 +4,7 @@ import HeroAB from '@/components/HeroAB';
 import TrustBadges from '@/components/TrustBadges';
 import { ROIForm } from '@/components/ROIForm';
 import { PricingPlans } from '@/components/PricingPlans';
+import { BetaSignupForm } from '@/components/BetaSignupForm';
 
 export const revalidate = 3600;
 
@@ -22,6 +23,7 @@ export default function HomePage() {
       <Tech />
       <FAQ />
       <ROIForm />
+      <BetaSignupSection />
       <CTA />
       <Footer />
     </main>
@@ -309,6 +311,16 @@ function FAQ() {
             </details>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function BetaSignupSection() {
+  return (
+    <section className="py-16 bg-gray-50">
+      <div className="mx-auto max-w-2xl px-6">
+        <BetaSignupForm />
       </div>
     </section>
   );

@@ -1,6 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
+import { useDocuments, useDocumentsMutation, useDocumentsRealtime, useDeleteDocument } from '@/hooks/useDocuments'
+import type { Document as APIDocument } from '@/lib/api-client'
+import { LoadingState } from './LoadingState'
+import { ErrorState } from './ErrorState'
+import { EmptyState } from './EmptyState'
 
 interface Document {
   id: string
@@ -14,65 +19,39 @@ interface Document {
   errorMessage?: string
 }
 
-const mockDocuments: Document[] = [
-  {
-    id: 'doc_001',
-    filename: 'invoice_acme_jan2025.pdf',
-    customer: 'Acme Corporation',
-    status: 'pending',
-    uploadDate: '2025-11-11T10:30:00Z',
-    priority: 'high',
-    size: '2.1 MB',
-    type: 'invoice'
-  },
-  {
-    id: 'doc_002',
-    filename: 'receipt_techsolutions_123.pdf',
-    customer: 'Tech Solutions Oy',
-    status: 'processing',
-    uploadDate: '2025-11-11T09:15:00Z',
-    priority: 'medium',
-    size: '1.2 MB',
-    type: 'receipt'
-  },
-  {
-    id: 'doc_003',
-    filename: 'contract_globex_2025.pdf',
-    customer: 'Globex Corporation',
-    status: 'error',
-    uploadDate: '2025-11-11T08:45:00Z',
-    priority: 'high',
-    size: '3.4 MB',
-    type: 'contract',
-    errorMessage: 'OCR failed - poor image quality'
-  },
-  {
-    id: 'doc_004',
-    filename: 'invoice_initech_q1.pdf',
-    customer: 'Initech',
-    status: 'completed',
-    uploadDate: '2025-11-11T07:20:00Z',
-    priority: 'low',
-    size: '1.8 MB',
-    type: 'invoice'
-  },
-  {
-    id: 'doc_005',
-    filename: 'receipt_officedepot_456.pdf',
-    customer: 'Office Solutions Ltd',
-    status: 'pending',
-    uploadDate: '2025-11-11T06:55:00Z',
-    priority: 'medium',
-    size: '950 KB',
-    type: 'receipt'
+// Map API document to component document
+function mapAPIDocumentToComponent(doc: APIDocument): Document {
+  return {
+    id: doc.id,
+    filename: doc.filename,
+    customer: doc.customer_name || doc.customer_id || 'Unknown',
+    status: doc.status,
+    uploadDate: doc.upload_date || doc.created_at,
+    priority: doc.priority || 'medium',
+    size: doc.size || 'Unknown',
+    type: doc.type || 'other',
+    errorMessage: doc.error_message
   }
-]
+}
 
 export default function DocumentQueueManager() {
-  const [documents, setDocuments] = useState<Document[]>(mockDocuments)
   const [selectedDocs, setSelectedDocs] = useState<string[]>([])
-  const [filterStatus, setFilterStatus] = useState<Document['status'] | 'all'>('all')
+  const [filterStatus, setFilterStatus] = useState<'pending' | 'processing' | 'completed' | 'error' | 'all'>('all')
   const [sortBy, setSortBy] = useState<'uploadDate' | 'priority' | 'customer'>('uploadDate')
+
+  // Fetch documents with filters
+  const filters = filterStatus !== 'all' ? { status: filterStatus } : undefined
+  const { data: apiDocuments, isLoading, error } = useDocuments(filters)
+  const updateDocument = useDocumentsMutation()
+  const deleteDocument = useDeleteDocument()
+
+  // Enable real-time updates
+  useDocumentsRealtime()
+
+  // Map API documents to component format
+  const documents = useMemo(() => {
+    return (apiDocuments || []).map(mapAPIDocumentToComponent)
+  }, [apiDocuments])
 
   const filteredDocuments = documents
     .filter(doc => filterStatus === 'all' || doc.status === filterStatus)
@@ -103,27 +82,50 @@ export default function DocumentQueueManager() {
     }
   }
 
-  const handleBulkAction = (action: 'requeue' | 'delete' | 'priority_high' | 'priority_low') => {
+  const handleBulkAction = async (action: 'requeue' | 'delete' | 'priority_high' | 'priority_low') => {
     if (selectedDocs.length === 0) return
 
-    setDocuments(prev => prev.map(doc => {
-      if (selectedDocs.includes(doc.id)) {
+    try {
+      for (const docId of selectedDocs) {
         switch (action) {
           case 'requeue':
-            return { ...doc, status: 'pending' as const, errorMessage: undefined }
+            await updateDocument.mutateAsync({
+              id: docId,
+              updates: { status: 'pending', error_message: null }
+            })
+            break
           case 'delete':
-            return { ...doc, status: 'error' as const, errorMessage: 'Deleted by admin' }
+            await deleteDocument.mutateAsync(docId)
+            break
           case 'priority_high':
-            return { ...doc, priority: 'high' as const }
+            await updateDocument.mutateAsync({
+              id: docId,
+              updates: { priority: 'high' }
+            })
+            break
           case 'priority_low':
-            return { ...doc, priority: 'low' as const }
-          default:
-            return doc
+            await updateDocument.mutateAsync({
+              id: docId,
+              updates: { priority: 'low' }
+            })
+            break
         }
       }
-      return doc
-    }))
-    setSelectedDocs([])
+      setSelectedDocs([])
+    } catch (error) {
+      console.error('Error performing bulk action:', error)
+    }
+  }
+
+  const handleReprocess = async (docId: string) => {
+    try {
+      await updateDocument.mutateAsync({
+        id: docId,
+        updates: { status: 'pending' }
+      })
+    } catch (error) {
+      console.error('Error reprocessing document:', error)
+    }
   }
 
   const getStatusBadge = (status: Document['status']) => {
@@ -159,6 +161,33 @@ export default function DocumentQueueManager() {
     return icons[type]
   }
 
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <LoadingState message="Loading documents..." />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <ErrorState 
+          message="Failed to load documents" 
+          error={error instanceof Error ? error : new Error('Unknown error')}
+        />
+      </div>
+    )
+  }
+
+  if (documents.length === 0) {
+    return (
+      <div className="p-6">
+        <EmptyState message="No documents found" />
+      </div>
+    )
+  }
+
   return (
     <div className="p-6">
       {/* Header Controls */}
@@ -175,7 +204,7 @@ export default function DocumentQueueManager() {
         <div className="flex items-center space-x-2">
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as Document['status'] | 'all')}
+            onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)}
             className="input text-sm"
           >
             <option value="all">All Status</option>
@@ -187,7 +216,7 @@ export default function DocumentQueueManager() {
           
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as 'uploadDate' | 'priority' | 'customer')}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             className="input text-sm"
           >
             <option value="uploadDate">Sort by Date</option>
@@ -297,11 +326,19 @@ export default function DocumentQueueManager() {
                     <button className="text-blue-600 hover:text-blue-800 text-sm">
                       View
                     </button>
-                    <button className="text-green-600 hover:text-green-800 text-sm">
-                      Process
+                    <button 
+                      onClick={() => handleReprocess(doc.id)}
+                      className="text-green-600 hover:text-green-800 text-sm"
+                      disabled={updateDocument.isPending}
+                    >
+                      {updateDocument.isPending ? 'Processing...' : 'Process'}
                     </button>
                     {doc.status === 'error' && (
-                      <button className="text-orange-600 hover:text-orange-800 text-sm">
+                      <button 
+                        onClick={() => handleReprocess(doc.id)}
+                        className="text-orange-600 hover:text-orange-800 text-sm"
+                        disabled={updateDocument.isPending}
+                      >
                         Retry
                       </button>
                     )}
