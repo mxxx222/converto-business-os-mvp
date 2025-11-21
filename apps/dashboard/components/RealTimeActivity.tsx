@@ -1,14 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useWebSocket } from '@/lib/websocket'
-import { FileText, User, CheckCircle, XCircle, Clock, ArrowUpCircle } from 'lucide-react'
+import { useActivities, useActivitiesRealtime } from '@/hooks/useActivities'
+import { FileText, User, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { fi } from 'date-fns/locale'
 import { toast } from 'sonner'
+import { LoadingState } from './LoadingState'
+import { ErrorState } from './ErrorState'
+import { EmptyState } from './EmptyState'
+import type { Activity as APIActivity } from '@/lib/api-client'
 
 interface Activity {
   id: string
@@ -19,115 +23,42 @@ interface Activity {
   metadata?: any
 }
 
+// Map API activity to component activity
+function mapAPIActivityToComponent(activity: APIActivity): Activity {
+  // Parse activity type and message to determine status
+  let status: 'success' | 'error' | 'info' | 'warning' = 'info'
+  
+  if (activity.type.includes('error') || activity.type.includes('failed')) {
+    status = 'error'
+  } else if (activity.type.includes('completed') || activity.type.includes('success')) {
+    status = 'success'
+  } else if (activity.type.includes('processing') || activity.type.includes('warning')) {
+    status = 'warning'
+  }
+
+  return {
+    id: activity.id,
+    type: activity.type,
+    message: activity.message,
+    timestamp: activity.created_at,
+    status,
+    metadata: activity.metadata
+  }
+}
+
 export default function RealTimeActivity() {
-  const { lastMessage } = useWebSocket()
-  const [activities, setActivities] = useState<Activity[]>([])
+  const { data: apiActivities, isLoading, error } = useActivities(50)
+  
+  // Enable real-time updates
+  useActivitiesRealtime()
 
-  useEffect(() => {
-    if (!lastMessage) return
+  // Map API activities to component format and keep last 50
+  const activities = useMemo(() => {
+    return (apiActivities || []).map(mapAPIActivityToComponent).slice(0, 50)
+  }, [apiActivities])
 
-    // Convert WebSocket message to activity
-    const activity = messageToActivity(lastMessage)
-    if (activity) {
-      setActivities(prev => [activity, ...prev].slice(0, 50)) // Keep last 50
-      
-      // Show toast for important events
-      if (shouldShowToast(lastMessage.type)) {
-        showNotificationToast(activity)
-      }
-    }
-  }, [lastMessage])
-
-  const messageToActivity = (message: any): Activity | null => {
-    const { type, data, timestamp } = message
-
-    switch (type) {
-      case 'document.created':
-        return {
-          id: data.id,
-          type: 'document',
-          message: `New document uploaded: ${data.filename}`,
-          timestamp,
-          status: 'info',
-          metadata: data
-        }
-
-      case 'document.processing':
-        return {
-          id: data.id,
-          type: 'document',
-          message: `Processing document: ${data.filename}`,
-          timestamp,
-          status: 'warning',
-          metadata: data
-        }
-
-      case 'document.completed':
-        return {
-          id: data.id,
-          type: 'document',
-          message: `Document processed successfully: ${data.filename}`,
-          timestamp,
-          status: 'success',
-          metadata: data
-        }
-
-      case 'document.failed':
-        return {
-          id: data.id,
-          type: 'document',
-          message: `Failed to process: ${data.filename}`,
-          timestamp,
-          status: 'error',
-          metadata: data
-        }
-
-      case 'customer.created':
-        return {
-          id: data.id,
-          type: 'customer',
-          message: `New customer: ${data.email}`,
-          timestamp,
-          status: 'success',
-          metadata: data
-        }
-
-      case 'customer.subscription_changed':
-        return {
-          id: data.id,
-          type: 'customer',
-          message: `${data.email} upgraded to ${data.plan}`,
-          timestamp,
-          status: 'success',
-          metadata: data
-        }
-
-      default:
-        return null
-    }
-  }
-
-  const shouldShowToast = (type: string) => {
-    return ['document.completed', 'document.failed', 'customer.created'].includes(type)
-  }
-
-  const showNotificationToast = (activity: Activity) => {
-    const icons = {
-      success: '✅',
-      error: '❌',
-      warning: '⚠️',
-      info: 'ℹ️'
-    }
-
-    const toastFn = activity.status === 'error' ? toast.error : 
-                    activity.status === 'warning' ? toast.warning : 
-                    toast.success
-
-    toastFn(activity.message, {
-      icon: icons[activity.status || 'info'],
-      duration: 4000
-    })
-  }
+  // Show toast for important events (only on new activities via real-time)
+  // This is handled by the real-time subscription in the hook
 
   const getActivityIcon = (type: string, status?: string) => {
     if (type === 'document') {
@@ -157,6 +88,37 @@ export default function RealTimeActivity() {
     )
   }
 
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Real-Time Activity</CardTitle>
+          <CardDescription>Live updates from your system</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LoadingState message="Loading activities..." />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Real-Time Activity</CardTitle>
+          <CardDescription>Live updates from your system</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ErrorState 
+            message="Failed to load activities" 
+            error={error instanceof Error ? error : new Error('Unknown error')}
+          />
+        </CardContent>
+      </Card>
+    )
+  }
+
   if (activities.length === 0) {
     return (
       <Card>
@@ -165,11 +127,7 @@ export default function RealTimeActivity() {
           <CardDescription>Live updates from your system</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <Clock className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-sm text-muted-foreground">Waiting for activity...</p>
-            <p className="text-xs text-muted-foreground mt-1">Events will appear here in real-time</p>
-          </div>
+          <EmptyState message="No activities yet" />
         </CardContent>
       </Card>
     )

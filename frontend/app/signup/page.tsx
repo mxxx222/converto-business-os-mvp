@@ -9,6 +9,7 @@ import { useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
 import { getAuthHeaders } from "@/lib/auth";
+import { BetaSignupForm } from "@/components/BetaSignupForm";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -284,6 +285,24 @@ export default function SignupPage() {
               .
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Beta Signup Section */}
+      <section className="py-16 bg-gradient-to-b from-slate-50 to-white">
+        <div className="mx-auto max-w-2xl px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-extrabold tracking-tight mb-4">
+              🎉 Tai hae beta-ohjelmaan
+            </h2>
+            <p className="text-lg text-slate-600 mb-2">
+              6 kuukautta ilmaiseksi (arvo €1 794). Vain 8 paikkaa jäljellä.
+            </p>
+            <p className="text-sm text-slate-500">
+              Prioriteettituki • Vaikuta tuotteen kehitykseen • Ensimmäisenä uudet ominaisuudet
+            </p>
+          </div>
+          <BetaSignupForm />
         </div>
       </section>
     </main>

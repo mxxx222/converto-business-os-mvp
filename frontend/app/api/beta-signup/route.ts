@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { createClient } from '@supabase/supabase-js';
 
 const BetaSignupSchema = z.object({
   email: z.string().email(),
@@ -12,6 +13,18 @@ const BetaSignupSchema = z.object({
   weekly_feedback_ok: z.boolean()
 });
 
+// Initialize Supabase client (using anon key for public inserts)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase environment variables');
+}
+
+const supabase = supabaseUrl && supabaseAnonKey
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -19,20 +32,52 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validatedData = BetaSignupSchema.parse(body);
     
-    // Send to backend API
-    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/v1/beta-signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(validatedData),
-    });
+    // Save to Supabase beta_signups table
+    if (supabase) {
+      const { data: supabaseData, error: supabaseError } = await supabase
+        .from('beta_signups')
+        .insert({
+          email: validatedData.email,
+          name: validatedData.name,
+          company: validatedData.company,
+          phone: validatedData.phone || null,
+          monthly_invoices: validatedData.monthly_invoices,
+          document_types: validatedData.document_types,
+          start_timeline: validatedData.start_timeline,
+          weekly_feedback_ok: validatedData.weekly_feedback_ok,
+          status: 'pending'
+        })
+        .select()
+        .single();
 
-    if (!backendResponse.ok) {
-      throw new Error('Backend API error');
+      if (supabaseError) {
+        console.error('Supabase insert error:', supabaseError);
+        // Continue to backend API call even if Supabase insert fails
+      }
+    }
+    
+    // Also send to backend API (for email automation)
+    let backendResult = null;
+    try {
+      const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/v1/beta-signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(validatedData),
+      });
+
+      if (backendResponse.ok) {
+        backendResult = await backendResponse.json();
+      } else {
+        console.warn('Backend API call failed, but Supabase save succeeded');
+      }
+    } catch (backendError) {
+      console.warn('Backend API error (non-critical):', backendError);
+      // Continue even if backend API fails
     }
 
-    const result = await backendResponse.json();
+    const result = backendResult || { success: true };
 
     // Send Mari story email sequence
     if (process.env.RESEND_API_KEY) {

@@ -1,18 +1,42 @@
 'use client'
 
-import { useWebSocket } from '@/lib/websocket'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Wifi, WifiOff, RefreshCw } from 'lucide-react'
+import { Wifi, WifiOff } from 'lucide-react'
+
+type ConnectionStatus = 'connected' | 'disconnected' | 'checking'
 
 export function ConnectionStatus() {
-  const { status, reconnect } = useWebSocket()
+  const [status, setStatus] = useState<ConnectionStatus>('checking')
+
+  useEffect(() => {
+    // Check Supabase connection status
+    const checkConnection = async () => {
+      try {
+        const { data, error } = await supabase.from('activities').select('id').limit(1)
+        if (error && error.code !== 'PGRST116') {
+          // PGRST116 is "no rows returned" which is fine
+          setStatus('disconnected')
+        } else {
+          setStatus('connected')
+        }
+      } catch {
+        setStatus('disconnected')
+      }
+    }
+
+    checkConnection()
+    const interval = setInterval(checkConnection, 30000) // Check every 30s
+
+    return () => clearInterval(interval)
+  }, [])
 
   const statusConfig = {
-    connecting: {
-      label: 'Connecting...',
+    checking: {
+      label: 'Checking...',
       color: 'bg-yellow-500',
-      icon: RefreshCw,
+      icon: WifiOff,
       variant: 'secondary' as const
     },
     connected: {
@@ -26,12 +50,6 @@ export function ConnectionStatus() {
       color: 'bg-gray-500',
       icon: WifiOff,
       variant: 'secondary' as const
-    },
-    error: {
-      label: 'Error',
-      color: 'bg-red-500',
-      icon: WifiOff,
-      variant: 'destructive' as const
     }
   }
 
@@ -41,20 +59,10 @@ export function ConnectionStatus() {
   return (
     <div className="flex items-center gap-2">
       <Badge variant={config.variant} className="flex items-center gap-1.5">
-        <span className={`h-2 w-2 rounded-full ${config.color} animate-pulse`} />
+        <span className={`h-2 w-2 rounded-full ${config.color} ${status === 'connected' ? 'animate-pulse' : ''}`} />
         <Icon className="h-3 w-3" />
         {config.label}
       </Badge>
-      {(status === 'disconnected' || status === 'error') && (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={reconnect}
-          className="h-7 px-2"
-        >
-          <RefreshCw className="h-3 w-3" />
-        </Button>
-      )}
     </div>
   )
 }

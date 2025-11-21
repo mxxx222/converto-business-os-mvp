@@ -55,7 +55,8 @@ Learn what you can{
     "notion": "node mcp_notion_server.js",
     "openai": "node mcp_openai_server.js",
     "deepseek": "node mcp_deepseek_server.js",
-    "resend": "node mcp_resend_server.js"
+    "resend": "node mcp_resend_server.js",
+    "supabase": "node mcp_supabase_server.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.5.0",
@@ -126,6 +127,15 @@ Learn what you can{
       "env": {
         "VERCEL_API_TOKEN": "${VERCEL_API_TOKEN}",
         "VERCEL_TEAM_ID": "${VERCEL_TEAM_ID}"
+      }
+    },
+    "supabase-tools": {
+      "command": "node",
+      "args": ["mcp_supabase_server.js"],
+      "env": {
+        "SUPABASE_URL": "${SUPABASE_URL}",
+        "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_SERVICE_ROLE_KEY}",
+        "SUPABASE_ANON_KEY": "${SUPABASE_ANON_KEY}"
       }
     }
   }

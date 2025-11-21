@@ -174,6 +174,78 @@ class VercelMCPServer {
               },
             },
           },
+          {
+            name: 'vercel_set_environment_variable',
+            description: 'Set or update an environment variable for a Vercel project',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                projectId: {
+                  type: 'string',
+                  description: 'Vercel project ID',
+                },
+                key: {
+                  type: 'string',
+                  description: 'Environment variable name',
+                },
+                value: {
+                  type: 'string',
+                  description: 'Environment variable value',
+                },
+                target: {
+                  type: 'string',
+                  description: 'Target environment: production, preview, or development',
+                  enum: ['production', 'preview', 'development'],
+                  default: 'production',
+                },
+                teamId: {
+                  type: 'string',
+                  description: 'Optional Vercel team ID',
+                },
+              },
+              required: ['projectId', 'key', 'value'],
+            },
+          },
+          {
+            name: 'vercel_list_environment_variables',
+            description: 'List all environment variables for a Vercel project',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                projectId: {
+                  type: 'string',
+                  description: 'Vercel project ID',
+                },
+                teamId: {
+                  type: 'string',
+                  description: 'Optional Vercel team ID',
+                },
+              },
+              required: ['projectId'],
+            },
+          },
+          {
+            name: 'vercel_delete_environment_variable',
+            description: 'Delete an environment variable from a Vercel project',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                projectId: {
+                  type: 'string',
+                  description: 'Vercel project ID',
+                },
+                envId: {
+                  type: 'string',
+                  description: 'Environment variable ID (from list_environment_variables)',
+                },
+                teamId: {
+                  type: 'string',
+                  description: 'Optional Vercel team ID',
+                },
+              },
+              required: ['projectId', 'envId'],
+            },
+          },
         ],
       };
     });
@@ -195,6 +267,12 @@ class VercelMCPServer {
             return await this.listDeployments(args);
           case 'vercel_list_projects':
             return await this.listProjects(args);
+          case 'vercel_set_environment_variable':
+            return await this.setEnvironmentVariable(args);
+          case 'vercel_list_environment_variables':
+            return await this.listEnvironmentVariables(args);
+          case 'vercel_delete_environment_variable':
+            return await this.deleteEnvironmentVariable(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -288,12 +366,12 @@ class VercelMCPServer {
     const { deploymentId, teamId } = args;
     const token = this.resolveToken(args.token);
 
-    const url = new URL(`https://api.vercel.com/v13/deployments/${deploymentId}`);
+    const apiUrl = new URL(`https://api.vercel.com/v13/deployments/${deploymentId}`);
     if (teamId) {
-      url.searchParams.set('teamId', teamId);
+      apiUrl.searchParams.set('teamId', teamId);
     }
 
-    const response = await fetch(url, {
+    const response = await fetch(apiUrl, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -306,7 +384,7 @@ class VercelMCPServer {
     }
 
     const status = result.status;
-    const url = result.url;
+    const deploymentUrl = result.url;
     const errorCode = result.errorCode;
     const errorMessage = result.errorMessage;
 
@@ -314,7 +392,7 @@ class VercelMCPServer {
     if (status === 'ERROR') {
       statusText += `\nError Code: ${errorCode}\nError Message: ${errorMessage}`;
     } else if (status === 'READY') {
-      statusText += `\n✅ Deployment successful!\nURL: ${url}`;
+      statusText += `\n✅ Deployment successful!\nURL: ${deploymentUrl}`;
     }
 
     return {
@@ -502,6 +580,157 @@ class VercelMCPServer {
         {
           type: 'text',
           text: output,
+        },
+      ],
+    };
+  }
+
+  async setEnvironmentVariable(args) {
+    const { projectId, key, value, target = 'production', teamId } = args;
+    const token = this.resolveToken(args.token);
+
+    if (!projectId) {
+      throw new Error('projectId is required');
+    }
+    if (!key) {
+      throw new Error('key is required');
+    }
+    if (value === undefined || value === null) {
+      throw new Error('value is required');
+    }
+
+    // Validate target
+    const validTargets = ['production', 'preview', 'development'];
+    if (!validTargets.includes(target)) {
+      throw new Error(`Invalid target. Must be one of: ${validTargets.join(', ')}`);
+    }
+
+    const url = new URL(`https://api.vercel.com/v10/projects/${projectId}/env`);
+    if (teamId) {
+      url.searchParams.set('teamId', teamId);
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        key,
+        value,
+        target: [target],
+        type: 'encrypted', // Vercel encrypts env vars by default
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
+    }
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Environment variable set successfully!\n\nKey: ${key}\nTarget: ${target}\nID: ${result.id || result.env?.id || 'N/A'}\n\nNote: The value is encrypted and stored securely.`,
+        },
+      ],
+    };
+  }
+
+  async listEnvironmentVariables(args) {
+    const { projectId, teamId } = args;
+    const token = this.resolveToken(args.token);
+
+    if (!projectId) {
+      throw new Error('projectId is required');
+    }
+
+    const url = new URL(`https://api.vercel.com/v10/projects/${projectId}/env`);
+    if (teamId) {
+      url.searchParams.set('teamId', teamId);
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
+    }
+
+    const envVars = result.envs || [];
+    if (envVars.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: 'No environment variables found for this project.',
+          },
+        ],
+      };
+    }
+
+    let output = 'Environment Variables:\n\n';
+    envVars.forEach((env, index) => {
+      output += `${index + 1}. Key: ${env.key}\n`;
+      output += `   ID: ${env.id}\n`;
+      output += `   Targets: ${env.target?.join(', ') || 'N/A'}\n`;
+      output += `   Type: ${env.type || 'encrypted'}\n`;
+      output += `   Created: ${env.createdAt ? new Date(env.createdAt).toLocaleString() : 'N/A'}\n`;
+      output += `   Updated: ${env.updatedAt ? new Date(env.updatedAt).toLocaleString() : 'N/A'}\n`;
+      output += '\n';
+    });
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: output,
+        },
+      ],
+    };
+  }
+
+  async deleteEnvironmentVariable(args) {
+    const { projectId, envId, teamId } = args;
+    const token = this.resolveToken(args.token);
+
+    if (!projectId) {
+      throw new Error('projectId is required');
+    }
+    if (!envId) {
+      throw new Error('envId is required');
+    }
+
+    const url = new URL(`https://api.vercel.com/v10/projects/${projectId}/env/${envId}`);
+    if (teamId) {
+      url.searchParams.set('teamId', teamId);
+    }
+
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
+    }
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Environment variable deleted successfully!\n\nEnv ID: ${envId}\nProject ID: ${projectId}`,
         },
       ],
     };
