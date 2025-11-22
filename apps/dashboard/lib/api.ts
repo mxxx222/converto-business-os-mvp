@@ -184,12 +184,14 @@ class DocFlowAPI {
   }
 
   // Token management using Supabase session
+  // SSO protection removed - using dummy token for public access
   private async getAuthToken(): Promise<string> {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.access_token) {
-      throw new Error('No authentication token available. Please log in.')
-    }
-    return session.access_token
+    // const { data: { session } } = await supabase.auth.getSession()
+    // if (!session?.access_token) {
+    //   throw new Error('No authentication token available. Please log in.')
+    // }
+    // return session.access_token
+    return 'dummy-token-for-public-access'
   }
 
   clearTokens(): void {

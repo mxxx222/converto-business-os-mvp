@@ -58,10 +58,10 @@ export async function middleware(request: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
-  // Protect /dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard') && !session) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
+  // SSO protection removed - dashboard routes are now public
+  // if (request.nextUrl.pathname.startsWith('/dashboard') && !session) {
+  //   return NextResponse.redirect(new URL('/login', request.url))
+  // }
 
   // Redirect to dashboard if already logged in and trying to access login
   if (request.nextUrl.pathname === '/login' && session) {
