@@ -18,12 +18,24 @@ export async function POST(request: NextRequest) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     
     if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase env vars', { hasUrl: !!supabaseUrl, hasKey: !!supabaseKey });
+      console.error('Missing Supabase env vars', { 
+        hasUrl: !!supabaseUrl, 
+        hasKey: !!supabaseKey,
+        urlLength: supabaseUrl?.length || 0,
+        keyLength: supabaseKey?.length || 0
+      });
       return NextResponse.json(
         { error: 'Database not configured' },
         { status: 500 }
       );
     }
+    
+    // Log key prefix for debugging (first 20 chars only)
+    console.log('Using Supabase config:', {
+      url: supabaseUrl,
+      keyPrefix: supabaseKey.substring(0, 20) + '...',
+      keyLength: supabaseKey.length
+    });
 
     const body = await request.json();
     
@@ -55,8 +67,25 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Supabase API error:', response.status, errorText);
+      
+      // Parse error to provide better message
+      let errorMessage = 'Failed to save signup. Please try again.';
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.message?.includes('API key') || errorJson.message?.includes('Invalid')) {
+          errorMessage = 'Invalid API key. Please contact support.';
+        } else if (errorJson.message) {
+          errorMessage = errorJson.message;
+        }
+      } catch {
+        // If errorText is not JSON, use it as is if it contains useful info
+        if (errorText.includes('API key') || errorText.includes('Invalid')) {
+          errorMessage = 'Invalid API key. Please contact support.';
+        }
+      }
+      
       return NextResponse.json(
-        { error: 'Failed to save signup. Please try again.', details: errorText },
+        { error: errorMessage, details: errorText },
         { status: 500 }
       );
     }
