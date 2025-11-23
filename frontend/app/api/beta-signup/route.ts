@@ -26,17 +26,26 @@ const getSupabaseClient = () => {
     auth: {
       autoRefreshToken: false,
       persistSession: false
+    },
+    global: {
+      fetch: fetch
     }
   });
 };
 
 export async function POST(request: NextRequest) {
   try {
+    // Log env vars for debugging (without exposing secrets)
+    const hasUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const hasKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+    console.log('Env vars check:', { hasUrl, hasKey: !!hasKey });
+    
     const supabase = getSupabaseClient();
     
     if (!supabase) {
+      console.error('Supabase client not initialized', { hasUrl, hasKey });
       return NextResponse.json(
-        { error: 'Database not configured' },
+        { error: 'Database not configured', details: { hasUrl, hasKey } },
         { status: 500 }
       );
     }
@@ -64,8 +73,9 @@ export async function POST(request: NextRequest) {
 
     if (dbError) {
       console.error('Database error:', dbError);
+      console.error('Error details:', JSON.stringify(dbError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to save signup. Please try again.' },
+        { error: 'Failed to save signup. Please try again.', details: dbError.message },
         { status: 500 }
       );
     }
