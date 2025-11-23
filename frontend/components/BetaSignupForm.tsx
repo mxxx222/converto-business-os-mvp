@@ -128,12 +128,12 @@ export function BetaSignupForm() {
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="beta-name" className="block text-sm font-medium text-gray-700 mb-1">
               Nimi *
             </label>
             <input
               type="text"
-              id="name"
+              id="beta-name"
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -142,12 +142,12 @@ export function BetaSignupForm() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="beta-email" className="block text-sm font-medium text-gray-700 mb-1">
               Sähköposti *
             </label>
             <input
               type="email"
-              id="email"
+              id="beta-email"
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -158,12 +158,12 @@ export function BetaSignupForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="beta-company" className="block text-sm font-medium text-gray-700 mb-1">
               Yritys *
             </label>
             <input
               type="text"
-              id="company"
+              id="beta-company"
               required
               value={formData.company}
               onChange={(e) => setFormData({ ...formData, company: e.target.value })}
@@ -172,12 +172,12 @@ export function BetaSignupForm() {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="beta-phone" className="block text-sm font-medium text-gray-700 mb-1">
               Puhelin (valinnainen)
             </label>
             <input
               type="tel"
-              id="phone"
+              id="beta-phone"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -256,14 +256,14 @@ export function BetaSignupForm() {
         <div className="flex items-start gap-2">
           <input
             type="checkbox"
-            id="weekly_feedback_ok"
+            id="beta-weekly-feedback-ok"
             checked={formData.weekly_feedback_ok}
             onChange={(e) =>
               setFormData({ ...formData, weekly_feedback_ok: e.target.checked })
             }
             className="w-4 h-4 text-blue-600 focus:ring-blue-500 mt-1"
           />
-          <label htmlFor="weekly_feedback_ok" className="text-sm text-gray-700">
+          <label htmlFor="beta-weekly-feedback-ok" className="text-sm text-gray-700">
             Haluan antaa viikoittaisen palautteen beta-ohjelman aikana (auttaa tuotteen kehityksessä)
           </label>
         </div>
