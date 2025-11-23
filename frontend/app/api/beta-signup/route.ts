@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@supabase/supabase-js';
 
 const BetaSignupSchema = z.object({
   email: z.string().email(),
@@ -13,39 +12,15 @@ const BetaSignupSchema = z.object({
   weekly_feedback_ok: z.boolean()
 });
 
-// Initialize Supabase client only if env vars are available (not during build)
-const getSupabaseClient = () => {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!url || !key) {
-    return null;
-  }
-  
-  return createClient(url, key, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    },
-    global: {
-      fetch: fetch
-    }
-  });
-};
-
 export async function POST(request: NextRequest) {
   try {
-    // Log env vars for debugging (without exposing secrets)
-    const hasUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const hasKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
-    console.log('Env vars check:', { hasUrl, hasKey: !!hasKey });
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     
-    const supabase = getSupabaseClient();
-    
-    if (!supabase) {
-      console.error('Supabase client not initialized', { hasUrl, hasKey });
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase env vars', { hasUrl: !!supabaseUrl, hasKey: !!supabaseKey });
       return NextResponse.json(
-        { error: 'Database not configured', details: { hasUrl, hasKey } },
+        { error: 'Database not configured' },
         { status: 500 }
       );
     }
@@ -55,10 +30,16 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validatedData = BetaSignupSchema.parse(body);
     
-    // Save to Supabase beta_signups table
-    const { error: dbError } = await supabase
-      .from('beta_signups')
-      .insert([{
+    // Save to Supabase using REST API directly
+    const response = await fetch(`${supabaseUrl}/rest/v1/beta_signups`, {
+      method: 'POST',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({
         email: validatedData.email,
         name: validatedData.name,
         company: validatedData.company,
@@ -67,18 +48,21 @@ export async function POST(request: NextRequest) {
         document_types: validatedData.document_types,
         start_timeline: validatedData.start_timeline,
         weekly_feedback_ok: validatedData.weekly_feedback_ok,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      }]);
+        status: 'pending'
+      })
+    });
 
-    if (dbError) {
-      console.error('Database error:', dbError);
-      console.error('Error details:', JSON.stringify(dbError, null, 2));
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Supabase API error:', response.status, errorText);
       return NextResponse.json(
-        { error: 'Failed to save signup. Please try again.', details: dbError.message },
+        { error: 'Failed to save signup. Please try again.', details: errorText },
         { status: 500 }
       );
     }
+
+    const result = await response.json();
+    console.log('Signup saved successfully:', result);
 
     return NextResponse.json({ 
       success: true, 
