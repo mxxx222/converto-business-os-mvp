@@ -27,7 +27,7 @@ export function UrgencyBanner() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/signup"
+            href="/beta"
             className="bg-white text-red-600 px-4 py-2 rounded-lg font-bold text-sm hover:shadow-lg transition-all flex-shrink-0"
           >
             Hae Nyt →
