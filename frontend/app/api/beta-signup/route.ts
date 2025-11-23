@@ -43,6 +43,24 @@ export async function POST(request: NextRequest) {
     const validatedData = BetaSignupSchema.parse(body);
     
     // Save to Supabase using REST API directly
+    const insertData = {
+      email: validatedData.email,
+      name: validatedData.name,
+      company: validatedData.company,
+      phone: validatedData.phone || null,
+      monthly_invoices: validatedData.monthly_invoices,
+      document_types: validatedData.document_types,
+      start_timeline: validatedData.start_timeline,
+      weekly_feedback_ok: validatedData.weekly_feedback_ok,
+      status: 'pending'
+    };
+    
+    console.log('Inserting to Supabase:', { 
+      url: supabaseUrl, 
+      table: 'beta_signups',
+      dataKeys: Object.keys(insertData)
+    });
+    
     const response = await fetch(`${supabaseUrl}/rest/v1/beta_signups`, {
       method: 'POST',
       headers: {
@@ -51,17 +69,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
-      body: JSON.stringify({
-        email: validatedData.email,
-        name: validatedData.name,
-        company: validatedData.company,
-        phone: validatedData.phone || null,
-        monthly_invoices: validatedData.monthly_invoices,
-        document_types: validatedData.document_types,
-        start_timeline: validatedData.start_timeline,
-        weekly_feedback_ok: validatedData.weekly_feedback_ok,
-        status: 'pending'
-      })
+      body: JSON.stringify(insertData)
     });
 
     if (!response.ok) {
