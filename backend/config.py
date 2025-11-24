@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://demo:demo@demo.supabase.co:5432/demo"
     
     # CORS
-    cors_origins_str: str = "http://localhost:3000,http://localhost:8080"
-    allowed_origin_regex: str = r".*"
+    cors_origins_str: str = "http://localhost:3000,http://localhost:8080,http://localhost:3001,https://dashboard-mdjsk9dmg-maxs-projects-149851b4.vercel.app"
+    allowed_origin_regex: str = r"https://dashboard-.*\.vercel\.app|https://.*\.vercel\.app"
     
     # Supabase
     supabase_url: str = ""

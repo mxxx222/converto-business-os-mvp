@@ -107,7 +107,8 @@ def create_app() -> FastAPI:
         app.middleware("http")(dev_auth)
 
     # Admin-specific Supabase-based authentication and RBAC for /api/admin*
-    app.middleware("http")(admin_auth)
+    # SSO protection removed - admin routes are now public
+    # app.middleware("http")(admin_auth)
     
     # Tenant context middleware for RLS (Auth MVP v0)
     # MUST run after auth middleware to have user context
@@ -171,6 +172,22 @@ def create_app() -> FastAPI:
     # WebSocket endpoint for real-time notifications
     @app.websocket("/ws")
     async def websocket_endpoint(websocket: WebSocket):
+        import re
+        # Check origin for CORS
+        origin = websocket.headers.get("origin")
+        allowed_origins = settings.cors_origins()
+        origin_regex = settings.allowed_origin_regex
+        
+        # Allow connection if origin is in allowed list or matches regex
+        origin_allowed = False
+        if origin:
+            if origin in allowed_origins:
+                origin_allowed = True
+            elif origin_regex and re.match(origin_regex, origin):
+                origin_allowed = True
+        
+        # Accept connection (CORS is handled by browser, we just need to accept)
+        # In production, you might want to reject if origin_allowed is False
         await manager.connect(websocket)
         try:
             # Send initial connection message
