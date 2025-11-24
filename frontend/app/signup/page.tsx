@@ -52,7 +52,15 @@ export default function SignupPage() {
         return;
       }
 
+      // Check if signup was successful
+      if (!data?.user) {
+        setError("Käyttäjän luominen epäonnistui. Yritä uudelleen.");
+        setLoading(false);
+        return;
+      }
+
       // 2) Call backend onboarding endpoint to create tenant + role context
+      // This is non-blocking - we redirect even if it fails
       try {
         const headers = await getAuthHeaders();
         const apiBase =
@@ -61,7 +69,7 @@ export default function SignupPage() {
           ? `${apiBase.replace(/\/$/, "")}/api/auth/onboard`
           : "/api/auth/onboard";
 
-        await fetch(url, {
+        const onboardResponse = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -76,16 +84,21 @@ export default function SignupPage() {
             goal,
           }),
         });
+
+        if (!onboardResponse.ok) {
+          console.warn("Onboarding call failed:", onboardResponse.status, onboardResponse.statusText);
+        }
       } catch (onboardError) {
         // Onboarding failure should not block login; log to console for now.
         console.warn("Onboarding call failed", onboardError);
       }
 
       // 3) Redirect to dashboard after successful sign up
-      router.push("/dashboard");
+      // Use replace to prevent back button from going back to signup
+      router.replace("/dashboard");
     } catch (e: any) {
+      console.error("Signup error:", e);
       setError(e?.message || "Rekisteröityminen epäonnistui");
-    } finally {
       setLoading(false);
     }
   };
