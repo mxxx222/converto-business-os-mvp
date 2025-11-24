@@ -1,7 +1,8 @@
 app = "docflow-admin-api"
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = "backend/Dockerfile"
+  docker_build_context = "."
 
 [env]
   PORT = "8080"
