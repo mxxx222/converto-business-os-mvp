@@ -3,6 +3,14 @@
 
 from fastapi import FastAPI
 
+# Test basic backend imports
+try:
+    from backend.config import get_settings
+    settings = get_settings()
+    print("✅ backend.config imported successfully")
+except ImportError as e:
+    print(f"❌ Failed to import backend.config: {e}")
+
 app = FastAPI(title="DocFlow Test API", version="0.1.0")
 
 @app.get("/")
