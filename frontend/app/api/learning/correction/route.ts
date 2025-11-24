@@ -4,10 +4,10 @@
  */
 
 import { NextRequest } from 'next/server';
-import { requireAuth } from '../_lib/auth';
-import { setTenantContext } from '../_lib/tenant';
-import { successResponse, handleAPIError } from '../_lib/response';
-import { captureAPIError } from '../_lib/sentry';
+import { requireAuth } from '../../_lib/auth';
+import { setTenantContext } from '../../_lib/tenant';
+import { successResponse, handleAPIError } from '../../_lib/response';
+import { captureAPIError } from '../../_lib/sentry';
 
 export const runtime = 'nodejs';
 
