@@ -125,7 +125,8 @@ Learn what you can{
       "command": "node",
       "args": ["mcp_vercel_server.js"],
       "env": {
-        "VERCEL_API_TOKEN": "${VERCEL_API_TOKEN}",
+        "VERCEL_API_TOKEN": "Wcq3lfQ65gUGQ5UouzffVom726EgtxYjDC1S5R43H2Ey9VRdl3O",
+        "VERCEL_TOKEN": "Wcq3lfQ65gUGQ5UouzffVom726EgtxYjDC1S5R43H2Ey9VRdl3O",
         "VERCEL_TEAM_ID": "${VERCEL_TEAM_ID}"
       }
     },

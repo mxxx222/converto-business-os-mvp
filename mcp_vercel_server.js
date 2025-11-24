@@ -300,7 +300,11 @@ class VercelMCPServer {
       (token.startsWith('${') && token.endsWith('}'))
     ) {
       throw new Error(
-        'Vercel API token is required. Provide via arguments or set VERCEL_API_TOKEN / VERCEL_TOKEN environment variable.'
+        'Vercel API token is required. Provide via arguments or set VERCEL_API_TOKEN / VERCEL_TOKEN environment variable.\n\n' +
+        'To get a new token:\n' +
+        '1. Go to: https://vercel.com/account/tokens\n' +
+        '2. Create a new token with "Full Access"\n' +
+        '3. Set it in package-mcp.json or as environment variable'
       );
     }
 
@@ -349,6 +353,17 @@ class VercelMCPServer {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 403 && result.error?.invalidToken) {
+        throw new Error(
+          `Vercel API token is invalid or expired (403 Forbidden).\n\n` +
+          `To fix:\n` +
+          `1. Go to: https://vercel.com/account/tokens\n` +
+          `2. Create a new token with "Full Access"\n` +
+          `3. Update package-mcp.json with the new token\n` +
+          `4. Restart MCP server\n\n` +
+          `Alternative: Use Vercel CLI directly: npx vercel env add <KEY> <ENV>`
+        );
+      }
       throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
     }
 
@@ -380,6 +395,17 @@ class VercelMCPServer {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 403 && result.error?.invalidToken) {
+        throw new Error(
+          `Vercel API token is invalid or expired (403 Forbidden).\n\n` +
+          `To fix:\n` +
+          `1. Go to: https://vercel.com/account/tokens\n` +
+          `2. Create a new token with "Full Access"\n` +
+          `3. Update package-mcp.json with the new token\n` +
+          `4. Restart MCP server\n\n` +
+          `Alternative: Use Vercel CLI directly: npx vercel env add <KEY> <ENV>`
+        );
+      }
       throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
     }
 
@@ -440,6 +466,17 @@ class VercelMCPServer {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 403 && result.error?.invalidToken) {
+        throw new Error(
+          `Vercel API token is invalid or expired (403 Forbidden).\n\n` +
+          `To fix:\n` +
+          `1. Go to: https://vercel.com/account/tokens\n` +
+          `2. Create a new token with "Full Access"\n` +
+          `3. Update package-mcp.json with the new token\n` +
+          `4. Restart MCP server\n\n` +
+          `Alternative: Use Vercel CLI directly: npx vercel env add <KEY> <ENV>`
+        );
+      }
       throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
     }
 
@@ -471,6 +508,17 @@ class VercelMCPServer {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 403 && result.error?.invalidToken) {
+        throw new Error(
+          `Vercel API token is invalid or expired (403 Forbidden).\n\n` +
+          `To fix:\n` +
+          `1. Go to: https://vercel.com/account/tokens\n` +
+          `2. Create a new token with "Full Access"\n` +
+          `3. Update package-mcp.json with the new token\n` +
+          `4. Restart MCP server\n\n` +
+          `Alternative: Use Vercel CLI directly: npx vercel env add <KEY> <ENV>`
+        );
+      }
       throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
     }
 
@@ -504,6 +552,17 @@ class VercelMCPServer {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 403 && result.error?.invalidToken) {
+        throw new Error(
+          `Vercel API token is invalid or expired (403 Forbidden).\n\n` +
+          `To fix:\n` +
+          `1. Go to: https://vercel.com/account/tokens\n` +
+          `2. Create a new token with "Full Access"\n` +
+          `3. Update package-mcp.json with the new token\n` +
+          `4. Restart MCP server\n\n` +
+          `Alternative: Use Vercel CLI directly: npx vercel env add <KEY> <ENV>`
+        );
+      }
       throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
     }
 
@@ -550,6 +609,17 @@ class VercelMCPServer {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 403 && result.error?.invalidToken) {
+        throw new Error(
+          `Vercel API token is invalid or expired (403 Forbidden).\n\n` +
+          `To fix:\n` +
+          `1. Go to: https://vercel.com/account/tokens\n` +
+          `2. Create a new token with "Full Access"\n` +
+          `3. Update package-mcp.json with the new token\n` +
+          `4. Restart MCP server\n\n` +
+          `Alternative: Use Vercel CLI directly: npx vercel env add <KEY> <ENV>`
+        );
+      }
       throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
     }
 
@@ -627,6 +697,17 @@ class VercelMCPServer {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 403 && result.error?.invalidToken) {
+        throw new Error(
+          `Vercel API token is invalid or expired (403 Forbidden).\n\n` +
+          `To fix:\n` +
+          `1. Go to: https://vercel.com/account/tokens\n` +
+          `2. Create a new token with "Full Access"\n` +
+          `3. Update package-mcp.json with the new token\n` +
+          `4. Restart MCP server\n\n` +
+          `Alternative: Use Vercel CLI directly: npx vercel env add <KEY> <ENV>`
+        );
+      }
       throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
     }
 
@@ -662,6 +743,17 @@ class VercelMCPServer {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 403 && result.error?.invalidToken) {
+        throw new Error(
+          `Vercel API token is invalid or expired (403 Forbidden).\n\n` +
+          `To fix:\n` +
+          `1. Go to: https://vercel.com/account/tokens\n` +
+          `2. Create a new token with "Full Access"\n` +
+          `3. Update package-mcp.json with the new token\n` +
+          `4. Restart MCP server\n\n` +
+          `Alternative: Use Vercel CLI directly: npx vercel env add <KEY> <ENV>`
+        );
+      }
       throw new Error(`Vercel API error: ${result.error?.message || 'Unknown error'}`);
     }
 

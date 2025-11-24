@@ -147,48 +147,52 @@ def init_sentry() -> None:
     traces_sample_rate = float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.1"))
     profiles_sample_rate = float(os.getenv("SENTRY_PROFILES_SAMPLE_RATE", "0.1"))
     
-    # Initialize Sentry
-    sentry_sdk.init(
-        dsn=dsn,
-        environment=environment,
-        
-        # Integrations
-        integrations=[
-            FastApiIntegration(
-                transaction_style="endpoint",  # Group by endpoint, not full URL
-            ),
-            SqlalchemyIntegration(),
-            LoggingIntegration(
-                level=logging.INFO,  # Capture INFO and above
-                event_level=logging.ERROR,  # Only send ERROR and above as events
-            ),
-        ],
-        
-        # Sampling
-        traces_sample_rate=traces_sample_rate,
-        profiles_sample_rate=profiles_sample_rate,
-        
-        # PII
-        send_default_pii=False,
-        before_send=scrub_event,
-        
-        # Release tracking
-        release=os.getenv("SENTRY_RELEASE", os.getenv("GIT_COMMIT_SHA")),
-        
-        # Performance profiling (Sentry Team feature)
-        _experiments={
-            "profiles_sample_rate": profiles_sample_rate,
-        },
-        
-        # Additional options
-        attach_stacktrace=True,
-        max_breadcrumbs=50,
-    )
-    
-    logger.info(
-        f"Sentry initialized: env={environment}, "
-        f"traces={traces_sample_rate}, profiles={profiles_sample_rate}"
-    )
+    # Initialize Sentry with error handling
+    try:
+        sentry_sdk.init(
+            dsn=dsn,
+            environment=environment,
+
+            # Integrations
+            integrations=[
+                FastApiIntegration(
+                    transaction_style="endpoint",  # Group by endpoint, not full URL
+                ),
+                SqlalchemyIntegration(),
+                LoggingIntegration(
+                    level=logging.INFO,  # Capture INFO and above
+                    event_level=logging.ERROR,  # Only send ERROR and above as events
+                ),
+            ],
+
+            # Sampling
+            traces_sample_rate=traces_sample_rate,
+            profiles_sample_rate=profiles_sample_rate,
+
+            # PII
+            send_default_pii=False,
+            before_send=scrub_event,
+
+            # Release tracking
+            release=os.getenv("SENTRY_RELEASE", os.getenv("GIT_COMMIT_SHA")),
+
+            # Performance profiling (Sentry Team feature)
+            _experiments={
+                "profiles_sample_rate": profiles_sample_rate,
+            },
+
+            # Additional options
+            attach_stacktrace=True,
+            max_breadcrumbs=50,
+        )
+
+        logger.info(
+            f"Sentry initialized: env={environment}, "
+            f"traces={traces_sample_rate}, profiles={profiles_sample_rate}"
+        )
+    except Exception as e:
+        logger.warning(f"Failed to initialize Sentry with DSN {dsn[:20]}...: {e} - Sentry disabled")
+        return
 
 
 def set_tenant_context(tenant_id: str, user_id: str, role: str) -> None:
