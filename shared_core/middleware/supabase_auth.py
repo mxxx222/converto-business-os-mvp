@@ -25,6 +25,8 @@ class SupabaseAuthMiddleware:
             "/health",
             "/docs",
             "/openapi.json",
+            "/api/beta-signup",
+            "/api/beta-status",
         }
         if not self.issuer:
             # If missing configuration, treat as pass-through
