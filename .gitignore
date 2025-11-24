@@ -38,6 +38,8 @@
 !frontend/
 !frontend/app/
 !frontend/app/**
+!frontend/components/
+!frontend/components/**
 !frontend/lib/
 !frontend/lib/**
 !frontend/hooks/
