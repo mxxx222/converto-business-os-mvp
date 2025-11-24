@@ -35,5 +35,6 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
   CMD curl -f http://localhost:8080/health || exit 1
 
 # Start production server
-WORKDIR /app/backend
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Keep working directory at /app for PYTHONPATH
+WORKDIR /app
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
