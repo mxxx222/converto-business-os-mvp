@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import UserMenu from '@/components/dashboard/UserMenu';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -68,14 +69,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </button>
               </div>
               
-              <div className="ml-3 relative">
-                <div className="flex items-center space-x-3">
-                  <span className="text-sm text-gray-700">Käyttäjä</span>
-                  <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span className="text-sm font-medium text-white">K</span>
-                  </div>
-                </div>
-              </div>
+              <UserMenu />
             </div>
           </div>
         </div>
