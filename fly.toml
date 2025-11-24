@@ -6,11 +6,12 @@ app = "docflow-admin-api"
 
 [env]
   PORT = "8080"
-  PYTHONPATH = "/app"
+  PYTHONPATH = "/app:/app/backend"
   PYTHONUNBUFFERED = "1"
   ADMIN_BUS_TYPE = "redis"
   OPENAI_API_KEY = "dummy-key-for-deployment-test"
   VISION_MODEL = "gpt-4o-mini"
+  # SENTRY_DSN disabled for deployment testing
 
 [processes]
   web = "uvicorn backend.main:app --host 0.0.0.0 --port 8080"

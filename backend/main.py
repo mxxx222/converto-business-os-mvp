@@ -107,8 +107,8 @@ def create_app() -> FastAPI:
         app.middleware("http")(dev_auth)
 
     # Admin-specific Supabase-based authentication and RBAC for /api/admin*
-    # SSO protection removed - admin routes are now public
-    # app.middleware("http")(admin_auth)
+    # Re-enabled for production security (PR2 hardening)
+    app.middleware("http")(admin_auth)
     
     # Tenant context middleware for RLS (Auth MVP v0)
     # MUST run after auth middleware to have user context

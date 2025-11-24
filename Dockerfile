@@ -28,7 +28,7 @@ COPY backend /app/backend
 COPY test_entry.py /app/test_entry.py
 
 # Set environment variables
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app:/app/backend
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8080
 
