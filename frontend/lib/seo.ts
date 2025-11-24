@@ -24,7 +24,7 @@ const defaultSEO: SEOConfig = {
     'digitalisaatio',
     'tekoäly taloushallinto'
   ],
-  ogImage: '/og-image.png'
+  ogImage: '/api/og?title=DocFlow%20-%20Automaatio,%20joka%20kasvattaa%20kassavirtaa'
 };
 
 export function generateMetadata(config: Partial<SEOConfig> = {}): Metadata {

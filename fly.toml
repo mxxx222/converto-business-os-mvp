@@ -11,8 +11,8 @@ app = "docflow-admin-api"
   ADMIN_BUS_TYPE = "redis"
 
 [processes]
-  web = "uvicorn backend.main:app --host 0.0.0.0 --port 8080"
-  app = "uvicorn backend.main:app --host 0.0.0.0 --port 8080"
+  web = "python test_entry.py"
+  app = "python test_entry.py"
 
 [[services]]
   internal_port = 8080

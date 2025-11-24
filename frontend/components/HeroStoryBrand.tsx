@@ -9,7 +9,7 @@ export function HeroStoryBrand() {
         {/* Problem (Mari's story) */}
         <div className="max-w-4xl mx-auto text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight text-gray-900">
-            Lopeta laskujen kanssa tappelu.
+            Poista toistotyö. Saat laskut ulos ajallaan.
           </h1>
           
           {/* Mari's Problem */}
@@ -56,39 +56,42 @@ export function HeroStoryBrand() {
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="text-4xl mb-4">1️⃣</div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Yhdistä Netvisor</h3>
-              <p className="text-gray-600">5 minuuttia, ei koodia</p>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">Kytke sähköposti ja palvelut</h3>
+              <p className="text-gray-600">Yhdistä sähköpostisi ja kirjanpitopalvelut</p>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="text-4xl mb-4">2️⃣</div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Lähetä testilasku</h3>
-              <p className="text-gray-600">30 sekuntia, OCR + AI</p>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">Valitse automaatiot</h3>
+              <p className="text-gray-600">Aktivoi kuitti- ja laskuautomaatio</p>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="text-4xl mb-4">3️⃣</div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Hyväksy ja lähetä</h3>
-              <p className="text-gray-600">1 klikkaus, valmis</p>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">Seuraa tuloksia hallintapaneelissa</h3>
+              <p className="text-gray-600">Näe reaaliaikaiset mittarit ja säästöt</p>
             </div>
           </div>
           
           {/* Call to Action (dual CTA) */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Link
-              href="/signup"
+              href="/demo"
+              data-event="cta_demo_click"
+              data-payload='{"source":"hero","position":"primary"}'
               className="bg-blue-600 hover:bg-blue-700 text-white text-xl py-5 px-10 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              🚀 Aloita ilmainen kokeilu
+              Varaa 20 min demo
             </Link>
             <Link
-              href="/demo"
+              href="#how-it-works"
+              data-event="cta_how_it_works_click"
               className="bg-white hover:bg-gray-50 text-blue-600 text-xl py-5 px-10 rounded-xl font-bold border-2 border-blue-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              📅 Varaa 15 min demo
+              Katso miten se toimii
             </Link>
           </div>
           
           <p className="text-sm text-gray-600 mb-12">
-            30 päivää ilmaiseksi • Ei luottokorttia • Peru milloin tahansa
+            Käyttöönotto 3–7 arkipäivässä. Ilman pitkiä projekteja.
           </p>
           
           {/* Social Proof */}

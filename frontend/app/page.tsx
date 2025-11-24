@@ -4,6 +4,9 @@ import { SocialProof } from '@/components/SocialProof';
 import { EnhancedROICalculator } from '@/components/EnhancedROICalculator';
 import { FAQ } from '@/components/FAQ';
 import { BetaSignupForm } from '@/components/BetaSignupForm';
+import { BenefitMetrics } from '@/components/BenefitMetrics';
+import { OfferStack } from '@/components/OfferStack';
+import { LeadMagnet } from '@/components/LeadMagnet';
 import { generateMetadata as generateSEOMetadata, generateStructuredData, pageSEO } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata(pageSEO.home);
@@ -16,8 +19,8 @@ export default function HomePage() {
         answer: "15 minuuttia. API-avain + 3 klikkausta. Ei koodia, ei IT-tukea. Näytämme videolla miten käy – alle minuutti."
       },
       {
-        question: "Entä jos AI tekee virheitä?",
-        answer: "96-98% tarkkuus strukturoiduilla laskuilla. JA: Sinä hyväksyt jokaisen laskun ennen lähetystä. Ei robotteja ilman valvontaa. Sinä olet aina pomona."
+        question: "Entä jos järjestelmä tekee virheitä?",
+        answer: "96-98% tarkkuus strukturoiduilla laskuilla. JA: Sinä hyväksyt jokaisen laskun ennen lähetystä. Ei automaatiota ilman valvontaa. Sinä olet aina pomona."
       },
       {
         question: "Onko tämä liian kallista pienelle yritykselle?",
@@ -47,6 +50,12 @@ export default function HomePage() {
       {/* Social Proof Section */}
       <SocialProof />
 
+      {/* Benefit Metrics Section */}
+      <BenefitMetrics />
+
+      {/* Lead Magnet Section */}
+      <LeadMagnet />
+
       {/* ROI Calculator Section */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
@@ -55,8 +64,8 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="section-padding bg-gray-50">
+        <div className="container-section max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Kaikki mitä tarvitset – ilman monimutkaisuutta
@@ -70,7 +79,7 @@ export default function HomePage() {
             {[
               {
                 icon: '🤖',
-                title: 'AI + OCR Tunnistus',
+                title: 'Automaattinen Tunnistus',
                 description: 'Tunnistaa toimittajan, Y-tunnuksen, summan, ALV:n ja eräpäivän 3-5 sekunnissa. 96-98% tarkkuus.'
               },
               {
@@ -110,8 +119,8 @@ export default function HomePage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="section-padding bg-white" id="how-it-works">
+        <div className="container-section max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Kolme askelta, valmis
@@ -131,8 +140,8 @@ export default function HomePage() {
               },
               {
                 step: '2',
-                title: 'AI käsittelee',
-                description: 'OCR + tietotarkistus (Y-tunnus, viite, IBAN). Automaattinen kategorisointi.',
+                title: 'Automaattinen käsittely',
+                description: 'Tunnistus + tietotarkistus (Y-tunnus, viite, IBAN). Automaattinen kategorisointi.',
                 image: '🤖'
               },
               {
@@ -164,6 +173,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Offer Stack Section */}
+      <OfferStack />
+
       {/* Beta Signup Section */}
       <section className="py-16 bg-gradient-to-b from-white to-blue-50">
         <div className="max-w-4xl mx-auto px-4">
@@ -192,18 +204,27 @@ export default function HomePage() {
             Varaa 15 min demo tai aloita ilmainen kokeilu. Saat käyttöönoton 15 minuutissa ja tuen suomeksi.
           </p>
           
+          {/* Bridge Copy */}
+          <p className="text-lg text-blue-100 mb-6 font-medium">
+            Miltä tämä näyttää yrityksessäsi 14 päivän päästä?
+          </p>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <a
-              href="/signup"
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors"
+              href="/demo"
+              data-event="cta_book_demo_click"
+              data-payload='{"source":"final_cta","position":"primary"}'
+              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              🚀 Aloita ilmainen kokeilu
+              Varaa 20 min demo
             </a>
             <a
-              href="/demo"
-              className="bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg border-2 border-blue-400 hover:bg-blue-800 transition-colors"
+              href="/signup"
+              data-event="cta_trial_click"
+              data-payload='{"source":"final_cta","position":"secondary"}'
+              className="bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg border-2 border-blue-400 hover:bg-blue-800 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              📅 Varaa demo
+              🚀 Aloita ilmainen kokeilu
             </a>
           </div>
 

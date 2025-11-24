@@ -157,6 +157,51 @@ export default function RootLayout({
             )}
           </>
         )}
+
+        {/* CTA Event Tracking */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                document.addEventListener('click', function(e) {
+                  const target = e.target.closest('[data-event]');
+                  if (!target) return;
+                  
+                  const eventName = target.getAttribute('data-event');
+                  const payloadAttr = target.getAttribute('data-payload');
+                  let payload = {};
+                  
+                  try {
+                    if (payloadAttr) {
+                      payload = JSON.parse(payloadAttr);
+                    }
+                  } catch (e) {
+                    console.warn('Invalid payload JSON:', payloadAttr);
+                  }
+                  
+                  // Track with PostHog if available
+                  if (typeof window.posthog !== 'undefined') {
+                    window.posthog.capture(eventName, payload);
+                  }
+                  
+                  // Track with Google Analytics if available
+                  if (typeof window.gtag !== 'undefined') {
+                    window.gtag('event', eventName, {
+                      event_category: 'CTA',
+                      event_label: payload.source || 'unknown',
+                      ...payload
+                    });
+                  }
+                  
+                  // Console log for debugging
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log('CTA clicked:', eventName, payload);
+                  }
+                });
+              })();
+            `
+          }}
+        />
       </body>
     </html>
   );

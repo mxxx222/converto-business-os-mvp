@@ -9,24 +9,26 @@ export default function HeroAB() {
             Kotimainen automaatio
           </span>
           <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl">
-            Automatisoi dokumenttisi DocFlow’n avulla
+            Poista toistotyö. Saat laskut ulos ajallaan.
           </h1>
           <p className="mt-6 text-lg text-white/80">
-            Tuo kuitit ja ostolaskut järjestelmiin sekunneissa – ilman manuaalista työtä. DocFlow yhdistää
-            AI:n, automaation ja integraatiot yhdeksi sujuvaksi prosessiksi.
+            Vähennä manuaalityötä, nopeuta laskutusta ja seuraa tuloksia hallintapaneelissa. Käyttöönotto 3–7 arkipäivässä. Ilman pitkiä projekteja.
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
             <Link
-              href="/fi/contact"
+              href="/fi/demo"
+              data-event="cta_demo_click"
+              data-payload='{"source":"hero","position":"primary"}'
               className="inline-flex items-center justify-center rounded-md bg-blue-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-400"
             >
-              Varaa demo
+              Varaa 20 min demo
             </Link>
             <Link
-              href="/fi/pricing"
+              href="#how-it-works"
+              data-event="cta_how_it_works_click"
               className="inline-flex items-center justify-center rounded-md border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/60"
             >
-              Tutustu hintoihin
+              Katso miten se toimii
             </Link>
           </div>
         </div>

@@ -47,7 +47,7 @@ const testimonials: Testimonial[] = [
 ];
 
 const stats = [
-  { label: "Yritystä käyttää", value: "200+", icon: Users },
+  { label: "Yritystä käyttää", value: "50+", icon: Users },
   { label: "Säästö keskimäärin", value: "€2 900/kk", icon: TrendingUp },
   { label: "OCR-tarkkuus", value: "97%", icon: Star },
   { label: "Uptime", value: "99.9%", icon: Shield }
@@ -57,6 +57,43 @@ export function SocialProof() {
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-6xl mx-auto px-4">
+      
+        {/* Trust Logos */}
+        <div className="text-center mb-12">
+          <p className="text-sm font-semibold text-gray-600 mb-4">
+            Luottanut jo 50+ yritystä Suomessa
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-8 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
+            {/* Placeholder logos - replace with actual company logos */}
+            <div className="text-2xl font-bold text-gray-400">Netvisor</div>
+            <div className="text-2xl font-bold text-gray-400">Procountor</div>
+            <div className="text-2xl font-bold text-gray-400">Holvi</div>
+            <div className="text-2xl font-bold text-gray-400">Zervant</div>
+            <div className="text-2xl font-bold text-gray-400">Vero.fi</div>
+          </div>
+        </div>
+
+        {/* Why Us Section */}
+        <div className="bg-white rounded-xl p-8 mb-12 border border-gray-200">
+          <h3 className="text-2xl font-bold text-center mb-6">Miksi me?</h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="text-4xl mb-3">⚡</div>
+              <h4 className="font-bold text-lg mb-2">3-7 arkipäivää tuotantoon</h4>
+              <p className="text-gray-600 text-sm">Nopea käyttöönotto ilman pitkiä projekteja</p>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl mb-3">📊</div>
+              <h4 className="font-bold text-lg mb-2">Netvisor/Procountor-osaaminen</h4>
+              <p className="text-gray-600 text-sm">Syvä integraatio-osaaminen suomalaisiin järjestelmiin</p>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl mb-3">✅</div>
+              <h4 className="font-bold text-lg mb-2">ROI-takuu</h4>
+              <p className="text-gray-600 text-sm">Jos et säästä, palautamme rahat 30 päivän sisällä</p>
+            </div>
+          </div>
+        </div>
       
         {/* Header */}
         <div className="text-center mb-12">
@@ -148,7 +185,7 @@ export function SocialProof() {
             Haluatko saman tuloksen?
           </h3>
           <p className="text-blue-100 mb-6 text-lg">
-            Liity 200+ suomalaiseen yritykseen jotka säästävät aikaa ja rahaa DocFlow:lla
+            Liity 50+ suomalaiseen yritykseen jotka säästävät aikaa ja rahaa DocFlow:lla
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a

@@ -69,22 +69,22 @@ function HowItWorks() {
   const steps = [
     {
       step: '1',
-      title: 'Ota kuva tai lähetä PDF',
-      desc: 'Mobiiliapp, sähköpostiohjaus, drag & drop tai API.',
+      title: 'Kytke sähköposti ja palvelut',
+      desc: 'Yhdistä sähköpostisi ja kirjanpitopalvelut',
     },
     {
       step: '2',
-      title: 'AI käsittelee',
-      desc: 'OCR + tietotarkistus (Y-tunnus, viite, IBAN). Automaattinen kategorisointi ja hyväksyntäsäännöt.',
+      title: 'Valitse automaatiot',
+      desc: 'Aktivoi kuitti- ja laskuautomaatio',
     },
     {
       step: '3',
-      title: 'Lähetä minne haluat',
-      desc: 'Netvisor/Procountor/ERP - tai suoraan Vero.fi:hin ALV-ilmoituksena.',
+      title: 'Seuraa tuloksia hallintapaneelissa',
+      desc: 'Näe reaaliaikaiset mittarit ja säästöt',
     },
   ];
   return (
-    <section>
+    <section id="how-it-works">
       <div className="mx-auto max-w-7xl px-6 py-16">
         <h2 className="text-3xl font-bold text-slate-900">Kolme askelta, valmis</h2>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
@@ -331,22 +331,28 @@ function CTA() {
     <section className="border-t border-slate-100">
       <div className="mx-auto max-w-7xl px-6 py-16 text-center">
         <h2 className="text-3xl font-bold text-slate-900">Valmis siirtymään automaatioon?</h2>
-        <p className="mt-3 text-slate-600">
-          Varaa 15 min demo tai aloita ilmainen kokeilu. Saat käyttöönoton 15 minuutissa ja tuen
-          suomeksi.
+        <p className="mt-3 text-slate-600 mb-4">
+          Miltä tämä näyttää yrityksessäsi 14 päivän päästä?
+        </p>
+        <p className="text-slate-600">
+          Varaa 20 min demo tai aloita ilmainen kokeilu. Käyttöönotto 3-7 arkipäivässä.
         </p>
         <div className="mt-7 flex justify-center gap-4">
           <Link
-            href="/signup"
-            className="rounded-md bg-blue-600 px-5 py-3 text-white hover:bg-blue-700"
+            href="/demo"
+            data-event="cta_book_demo_click"
+            data-payload='{"source":"final_cta","position":"primary"}'
+            className="rounded-md bg-blue-600 px-5 py-3 text-white hover:bg-blue-700 font-semibold"
           >
-            Aloita ilmainen kokeilu
+            Varaa 20 min demo
           </Link>
           <Link
-            href="/demo"
-            className="rounded-md border border-slate-300 px-5 py-3 hover:bg-slate-50"
+            href="/signup"
+            data-event="cta_trial_click"
+            data-payload='{"source":"final_cta","position":"secondary"}'
+            className="rounded-md border border-slate-300 px-5 py-3 hover:bg-slate-50 font-semibold"
           >
-            Varaa demo
+            Aloita ilmainen kokeilu
           </Link>
         </div>
       </div>

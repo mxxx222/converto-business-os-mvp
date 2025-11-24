@@ -74,17 +74,25 @@ function HeroFi() {
     <section className="relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:flex lg:items-center lg:gap-12">
         <div className="max-w-2xl">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Vähemmän manuaalia. Enemmän liiketoimintaa.</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Poista toistotyö. Saat laskut ulos ajallaan.</h1>
           <p className="mt-5 text-lg text-slate-600">
-            DocFlow automatisoi kuittien ja ostolaskujen käsittelyn. Integraatiot Netvisoriin, Procountoriin ja
-            Vero.fi‑lähetys – ilman järjestelmävaihtoa.
+            Vähennä manuaalityötä, nopeuta laskutusta ja seuraa tuloksia hallintapaneelissa. Käyttöönotto 3–7 arkipäivässä. Ilman pitkiä projekteja.
           </p>
           <div className="mt-8 flex gap-4">
-            <Link href="/fi/signup" className="rounded-md bg-blue-600 px-5 py-3 text-white shadow hover:bg-blue-700">
-              Aloita ilmainen 30 päivän kokeilu
+            <Link 
+              href="/fi/demo" 
+              data-event="cta_demo_click"
+              data-payload='{"source":"hero","position":"primary"}'
+              className="rounded-md bg-blue-600 px-5 py-3 text-white shadow hover:bg-blue-700"
+            >
+              Varaa 20 min demo
             </Link>
-            <Link href="/fi/demo" className="rounded-md border border-slate-300 px-5 py-3 text-slate-800 hover:bg-slate-50">
-              Varaa 15 min demo
+            <Link 
+              href="#how-it-works" 
+              data-event="cta_how_it_works_click"
+              className="rounded-md border border-slate-300 px-5 py-3 text-slate-800 hover:bg-slate-50"
+            >
+              Katso miten se toimii
             </Link>
           </div>
           <p className="mt-4 text-sm text-slate-500">Ei luottokorttia. Peru milloin tahansa. EU‑palvelimet. GDPR‑yhteensopiva.</p>
@@ -130,7 +138,7 @@ function TrustBadgesFi() {
 function WhyFi() {
   const items = [
     {
-      title: 'Automaattinen OCR + AI',
+      title: 'Automaattinen tunnistus',
       desc: 'Tunnistaa toimittajan, Y‑tunnuksen, summan, ALV:n, viitenumeron ja eräpäivän. Oppii korjauksista – tarkkuus paranee joka päivä.',
     },
     {
@@ -164,23 +172,23 @@ function HowItWorksFi() {
   const steps = [
     {
       step: '1',
-      title: 'Ota kuva tai lähetä PDF',
-      desc: 'Mobiiliapp, sähköpostiohjaus, drag&drop tai API.',
+      title: 'Kytke sähköposti ja palvelut',
+      desc: 'Yhdistä sähköpostisi ja kirjanpitopalvelut',
     },
     {
       step: '2',
-      title: 'AI käsittelee',
-      desc: 'OCR + tietotarkistus (Y‑tunnus, viite, IBAN). Automaattinen kategorisointi ja hyväksyntäsäännöt.',
+      title: 'Valitse automaatiot',
+      desc: 'Aktivoi kuitti- ja laskuautomaatio',
     },
     {
       step: '3',
-      title: 'Lähetä minne haluat',
-      desc: 'Netvisor/Procountor/ERP – tai suoraan Vero.fi:hin ALV‑ilmoituksena.',
+      title: 'Seuraa tuloksia hallintapaneelissa',
+      desc: 'Näe reaaliaikaiset mittarit ja säästöt',
     },
   ];
 
   return (
-    <section>
+    <section id="how-it-works">
       <div className="mx-auto max-w-7xl px-6 py-16">
         <h2 className="text-3xl font-bold">Kolme askelta, valmis</h2>
         <div className="mt-8 grid gap-6 md:grid-cols-3">

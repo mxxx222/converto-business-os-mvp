@@ -8,7 +8,8 @@ const nextConfig = {
     localeDetection: false,
   },
   experimental: {
-    optimizePackageImports: ['lucide-react']
+    optimizePackageImports: ['lucide-react'],
+    isrMemoryCacheSize: 0,
   },
   images: {
     formats: ['image/avif', 'image/webp']

@@ -22,6 +22,9 @@ COPY shared_core /app/shared_core
 # Copy backend code
 COPY backend /app/backend
 
+# Copy test script
+COPY test_entry.py /app/test_entry.py
+
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
