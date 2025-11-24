@@ -39,8 +39,8 @@ EXPOSE 8080
 HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
   CMD curl -f http://localhost:8080/health || exit 1
 
-# Set working directory to backend directory
-WORKDIR /app/backend
+# Keep working directory at /app for PYTHONPATH
+WORKDIR /app
 
-# Start production server
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Start production server with backend.main:app entry point
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
