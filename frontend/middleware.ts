@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { scrub } from '@/lib/obs/pii';
+import { createMiddlewareClient } from '@/lib/supabase/middleware';
 
 /**
  * DocFlow Security Middleware
@@ -19,7 +20,7 @@ import { scrub } from '@/lib/obs/pii';
  * - Protects /dashboard/* routes
  * - Redirects to /login if no session found
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes that don't require authentication
@@ -44,22 +45,7 @@ export function middleware(request: NextRequest) {
                         pathname.startsWith('/_next/') ||
                         pathname.startsWith('/favicon');
 
-  // Protect dashboard routes
-  if (isProtectedRoute && !isPublicRoute) {
-    // Check for Supabase session cookie
-    // Supabase stores session in cookies with pattern: sb-<project-ref>-auth-token
-    const cookies = request.cookies.getAll();
-    const hasSession = cookies.some(cookie => 
-      cookie.name.includes('sb-') && cookie.name.includes('-auth-token')
-    );
-
-    // If no session found, redirect to login
-    if (!hasSession) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
+  // Prepare headers
   const headers = new Headers(request.headers);
 
   // Request ID for tracing
@@ -83,12 +69,40 @@ export function middleware(request: NextRequest) {
     console.debug('[observability] incoming request', safe);
   }
 
-  // Create response with security headers
-  const response = NextResponse.next({
+  // Create response for auth check and security headers
+  let response = NextResponse.next({
     request: {
       headers
     }
   });
+
+  // Protect dashboard routes
+  if (isProtectedRoute && !isPublicRoute) {
+    // Use Supabase SSR client to check session
+    const supabase = createMiddlewareClient(request, response);
+    
+    if (supabase) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        // If no session found, redirect to login
+        if (!session || error) {
+          const loginUrl = new URL('/login', request.url);
+          loginUrl.searchParams.set('redirect', pathname);
+          return NextResponse.redirect(loginUrl);
+        }
+      } catch (error) {
+        // If error checking session, redirect to login for safety
+        console.error('Middleware auth check error:', error);
+        const loginUrl = new URL('/login', request.url);
+        loginUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+    } else {
+      // Supabase not configured, allow access but log warning
+      console.warn('Supabase not configured in middleware');
+    }
+  }
 
   // =============================================================================
   // SECURITY HEADERS
