@@ -9,9 +9,12 @@ app = "docflow-admin-api"
   PYTHONUNBUFFERED = "1"
   ADMIN_BUS_TYPE = "redis"
 
+[build]
+  builder = "paketobuildpacks/builder:base"
+
 [processes]
-  web = "uvicorn main:app --host 0.0.0.0 --port 8080"
-  app = "uvicorn main:app --host 0.0.0.0 --port 8080"
+  web = "cd /app && uvicorn backend.main:app --host 0.0.0.0 --port 8080"
+  app = "cd /app && uvicorn backend.main:app --host 0.0.0.0 --port 8080"
 
 [[services]]
   internal_port = 8080
