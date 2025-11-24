@@ -76,29 +76,29 @@ export async function POST(request: NextRequest) {
     };
 
     // Transform the result to match the expected AIResult format
-    const receiptData = scanResult.data || scanResult;
+    const receiptData = (scanResult as any).data || scanResult;
     
     // Calculate confidence and auto-approve threshold
-    const confidence = receiptData.confidence || 0.85;
+    const confidence = (receiptData as any).confidence || 0.85;
     const auto_approve_threshold = 85; // Default threshold
 
     // Transform to AIResult format
     const aiResult = {
-      id: receiptData.id || scanResult.receipt_id || `rcpt_${Date.now()}`,
-      vendor_name: receiptData.vendor || 'Tuntematon',
-      business_id: receiptData.business_id,
-      date: receiptData.receipt_date || new Date().toISOString().split('T')[0],
-      total_amount: receiptData.total_amount || 0,
-      vat_rate: receiptData.vat_rate || 24,
-      vat_amount: receiptData.vat_amount || 0,
-      net_amount: receiptData.net_amount || 0,
-      category: receiptData.category || 'other',
+      id: (receiptData as any).id || (scanResult as any).receipt_id || `rcpt_${Date.now()}`,
+      vendor_name: (receiptData as any).vendor || 'Tuntematon',
+      business_id: (receiptData as any).business_id,
+      date: (receiptData as any).receipt_date || new Date().toISOString().split('T')[0],
+      total_amount: (receiptData as any).total_amount || 0,
+      vat_rate: (receiptData as any).vat_rate || 24,
+      vat_amount: (receiptData as any).vat_amount || 0,
+      net_amount: (receiptData as any).net_amount || 0,
+      category: (receiptData as any).category || 'other',
       confidence: confidence * 100, // Convert to percentage
       auto_approve_threshold,
       is_known_vendor: false, // TODO: Implement vendor recognition
       pattern_matches: 0,
       explanation: `Kuitti käsitelty ${language === 'fi' ? 'onnistuneesti' : 'successfully'}. ${confidence >= 0.85 ? 'Korkea luottamus' : 'Tarkista tiedot'}.`,
-      predicted_category: receiptData.category,
+      predicted_category: (receiptData as any).category,
     };
 
     return successResponse(aiResult);
