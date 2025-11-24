@@ -13,8 +13,10 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements from project root
 COPY requirements.txt /app/requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r /app/requirements.txt
+# Install Python dependencies with better error handling
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r /app/requirements.txt && \
+    python -c "import fastapi, uvicorn; print('✅ Dependencies installed successfully')"
 
 # Copy shared_core (needed by backend)
 COPY shared_core /app/shared_core
@@ -41,4 +43,4 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
 # Ensure working directory is /app and PYTHONPATH is set
 WORKDIR /app
 ENV PYTHONPATH=/app
-CMD ["sh", "-c", "cd /app && uvicorn backend.main:app --host 0.0.0.0 --port 8080"]
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
