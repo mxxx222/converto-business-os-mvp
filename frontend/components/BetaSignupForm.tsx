@@ -50,29 +50,40 @@ export function BetaSignupForm() {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Beta signup failed');
+        throw new Error(data.error || data.message || 'Beta signup failed');
       }
 
-      setStatus('success');
-      // Reset form after success
-      setTimeout(() => {
-        setFormData({
-          email: '',
-          name: '',
-          company: '',
-          phone: '',
-          monthly_invoices: '1-50',
-          document_types: [],
-          start_timeline: 'Within 1 month',
-          weekly_feedback_ok: false,
-        });
-        setStatus('idle');
-      }, 5000);
+      // Check if response indicates success
+      if (data.success || response.status === 200) {
+        setStatus('success');
+        // Scroll to top to show success message
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Reset form after success (longer timeout for better UX)
+        setTimeout(() => {
+          setFormData({
+            email: '',
+            name: '',
+            company: '',
+            phone: '',
+            monthly_invoices: '1-50',
+            document_types: [],
+            start_timeline: 'Within 1 month',
+            weekly_feedback_ok: false,
+          });
+          setStatus('idle');
+        }, 10000); // 10 seconds instead of 5
+      } else {
+        throw new Error(data.error || 'Beta signup failed');
+      }
     } catch (error) {
+      console.error('Beta signup error:', error);
       setStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : 'An error occurred');
+      setErrorMessage(error instanceof Error ? error.message : 'An error occurred. Please try again.');
+      // Scroll to error message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -87,17 +98,27 @@ export function BetaSignupForm() {
 
   if (status === 'success') {
     return (
-      <div className="bg-white rounded-xl border-2 border-green-500 p-8 shadow-lg">
+      <div className="bg-white rounded-xl border-2 border-green-500 p-8 shadow-lg animate-in fade-in duration-500">
         <div className="text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4 animate-in zoom-in duration-300" />
           <h3 className="text-2xl font-bold text-gray-900 mb-2">
             Kiitos ilmoittautumisesta! 🎉
           </h3>
-          <p className="text-gray-600 mb-4">
-            Olemme lähettäneet sinulle sähköpostin Mari-tarinalla ja seuraavilla askeleilla.
+          <p className="text-gray-600 mb-4 text-lg">
+            Ilmoittautumisesi on vastaanotettu onnistuneesti.
           </p>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-gray-700 mb-2">
+              <strong>Seuraavat askeleet:</strong>
+            </p>
+            <ul className="text-sm text-gray-600 text-left max-w-md mx-auto space-y-1">
+              <li>✅ Tarkistamme ilmoittautumisesi 1-2 arkipäivän sisällä</li>
+              <li>✅ Lähetämme sinulle henkilökohtaiset kirjautumistunnukset</li>
+              <li>✅ Sovimme 15 min kickoff-puhelun, jossa pääset alkuun</li>
+            </ul>
+          </div>
           <p className="text-sm text-gray-500">
-            Ota yhteyttä 1-2 viikon sisällä, kun beta-ohjelma alkaa.
+            Otamme sinuun yhteyttä sähköpostitse pian.
           </p>
         </div>
       </div>
@@ -116,11 +137,20 @@ export function BetaSignupForm() {
       </div>
 
       {status === 'error' && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+        <div className="mb-6 p-4 bg-red-50 border-2 border-red-300 rounded-lg flex items-start gap-3 animate-in fade-in duration-300">
           <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium text-red-800">Virhe</p>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-red-800 mb-1">Virhe ilmoittautumisessa</p>
             <p className="text-sm text-red-600">{errorMessage}</p>
+            <button
+              onClick={() => {
+                setStatus('idle');
+                setErrorMessage('');
+              }}
+              className="mt-2 text-xs text-red-700 hover:text-red-900 underline"
+            >
+              Sulje
+            </button>
           </div>
         </div>
       )}
