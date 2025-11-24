@@ -7,6 +7,7 @@ import { BetaSignupForm } from '@/components/BetaSignupForm';
 import { BenefitMetrics } from '@/components/BenefitMetrics';
 import { OfferStack } from '@/components/OfferStack';
 import { LeadMagnet } from '@/components/LeadMagnet';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { generateMetadata as generateSEOMetadata, generateStructuredData, pageSEO } from '@/lib/seo';
 
 export const metadata = generateSEOMetadata(pageSEO.home);
@@ -30,7 +31,7 @@ export default function HomePage() {
   });
 
   return (
-    <>
+    <ErrorBoundary>
       {/* Structured Data for FAQ */}
       {faqSchema && (
         <script
@@ -244,6 +245,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-    </>
+    </ErrorBoundary>
   );
 }
