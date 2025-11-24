@@ -2,11 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  i18n: {
-    locales: ['fi', 'en'],
-    defaultLocale: 'fi',
-    localeDetection: false,
-  },
+  // Note: i18n is not compatible with App Router - use middleware for locale handling instead
   experimental: {
     optimizePackageImports: ['lucide-react'],
     isrMemoryCacheSize: 0,
