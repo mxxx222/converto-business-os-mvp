@@ -1,6 +1,7 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import Link from 'next/link';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 interface Props {
@@ -100,12 +101,12 @@ export class ErrorBoundary extends Component<Props, State> {
                 <RefreshCw className="w-5 h-5" aria-hidden="true" />
                 Yritä uudelleen
               </button>
-              <a
+              <Link
                 href="/"
                 className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-900 px-6 py-3 rounded-lg font-semibold transition-colors"
               >
                 Palaa etusivulle
-              </a>
+              </Link>
             </div>
           </div>
         </div>
