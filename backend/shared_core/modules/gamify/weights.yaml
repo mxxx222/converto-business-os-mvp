@@ -1,0 +1,18 @@
+# Gamify Event Weights (points per event type)
+event_types:
+  ocr.upload: 10
+  ocr.success: 10
+  invoice.paid: 10
+  invoice.paid_early: 15
+  vat.filed_on_time: 20
+  report.weekly_sent: 10
+  cost_guard.within_budget_week: 15
+  ai.recommendation_accepted: 5
+  billing.checkout_completed: 20
+  streak.bonus_weekly: 25
+
+# Streak bonuses (consecutive days)
+streak:
+  enabled: true
+  bonus_per_week: 5
+  min_days: 7

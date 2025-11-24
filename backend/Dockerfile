@@ -10,17 +10,17 @@ RUN apt-get update && apt-get install -y \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements from project root
+# Copy requirements (from backend/requirements.txt or ../requirements.txt)
 COPY requirements.txt /app/requirements.txt
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Copy shared_core (needed by backend)
+# Copy shared_core (copied to backend/ before build)
 COPY shared_core /app/shared_core
 
 # Copy backend code
-COPY backend /app/backend
+COPY . /app/backend
 
 # Set environment variables
 ENV PYTHONPATH=/app
