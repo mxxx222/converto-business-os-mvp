@@ -1,7 +1,8 @@
 app = "docflow-admin-api"
 
 [build]
-  builder = "paketobuildpacks/builder:base"
+  dockerfile = "backend/Dockerfile"
+  docker_build_context = "."
 
 [env]
   PORT = "8080"
