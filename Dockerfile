@@ -43,4 +43,5 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
 WORKDIR /app
 
 # Start production server with backend.main:app entry point
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Use shell format to ensure PYTHONPATH is properly set
+CMD ["sh", "-c", "PYTHONPATH=/app:/app/backend uvicorn backend.main:app --host 0.0.0.0 --port 8080"]
