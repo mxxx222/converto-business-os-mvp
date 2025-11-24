@@ -40,10 +40,10 @@ echo ""
 # Check frontend lib files
 echo "📦 Checking frontend library files..."
 
-if [ -f "frontend/lib/adminAuth.ts" ]; then
+if [ -f "apps/marketing/lib/adminAuth.ts" ]; then
   echo "  ✅ frontend/lib/adminAuth.ts exists"
   # Check for RBAC functions
-  if grep -q "requireAdminAuth" frontend/lib/adminAuth.ts; then
+  if grep -q "requireAdminAuth" apps/marketing/lib/adminAuth.ts; then
     echo "    ✅ RBAC functions present"
   else
     echo "    ⚠️  RBAC functions missing"
@@ -54,10 +54,10 @@ else
   ERRORS=$((ERRORS + 1))
 fi
 
-if [ -f "frontend/lib/ratelimit.ts" ]; then
-  echo "  ✅ frontend/lib/ratelimit.ts exists"
+if [ -f "apps/marketing/lib/ratelimit.ts" ]; then
+  echo "  ✅ apps/marketing/lib/ratelimit.ts exists"
   # Check for rate limit functions
-  if grep -q "checkRateLimit" frontend/lib/ratelimit.ts && grep -q "Retry-After" frontend/lib/ratelimit.ts; then
+  if grep -q "checkRateLimit" apps/marketing/lib/ratelimit.ts && grep -q "Retry-After" apps/marketing/lib/ratelimit.ts; then
     echo "    ✅ Rate limiting functions present"
   else
     echo "    ⚠️  Rate limiting functions incomplete"
@@ -68,17 +68,17 @@ else
   ERRORS=$((ERRORS + 1))
 fi
 
-if [ -f "frontend/lib/export.ts" ]; then
-  echo "  ✅ frontend/lib/export.ts exists"
+if [ -f "apps/marketing/lib/export.ts" ]; then
+  echo "  ✅ apps/marketing/lib/export.ts exists"
   # Check for export functions
-  if grep -q "exportToCSV" frontend/lib/export.ts && grep -q "exportToPDF" frontend/lib/export.ts; then
+  if grep -q "exportToCSV" apps/marketing/lib/export.ts && grep -q "exportToPDF" apps/marketing/lib/export.ts; then
     echo "    ✅ Export functions present"
   else
     echo "    ⚠️  Export functions incomplete"
     WARNINGS=$((WARNINGS + 1))
   fi
   # Check for Finnish locale
-  if grep -q "fi-FI" frontend/lib/export.ts && grep -q "Europe/Helsinki" frontend/lib/export.ts; then
+  if grep -q "fi-FI" apps/marketing/lib/export.ts && grep -q "Europe/Helsinki" apps/marketing/lib/export.ts; then
     echo "    ✅ Finnish locale configured"
   else
     echo "    ⚠️  Finnish locale not configured"
@@ -94,24 +94,24 @@ echo ""
 # Check dashboard files
 echo "📊 Checking dashboard files..."
 
-if [ -f "frontend/app/admin/dashboard/types.ts" ]; then
-  echo "  ✅ frontend/app/admin/dashboard/types.ts exists"
+if [ -f "apps/marketing/app/admin/dashboard/types.ts" ]; then
+  echo "  ✅ apps/marketing/app/admin/dashboard/types.ts exists"
 else
-  echo "  ❌ frontend/app/admin/dashboard/types.ts missing"
+  echo "  ❌ apps/marketing/app/admin/dashboard/types.ts missing"
   ERRORS=$((ERRORS + 1))
 fi
 
-if [ -f "frontend/app/admin/dashboard/activityHelpers.ts" ]; then
-  echo "  ✅ frontend/app/admin/dashboard/activityHelpers.ts exists"
+if [ -f "apps/marketing/app/admin/dashboard/activityHelpers.ts" ]; then
+  echo "  ✅ apps/marketing/app/admin/dashboard/activityHelpers.ts exists"
 else
-  echo "  ❌ frontend/app/admin/dashboard/activityHelpers.ts missing"
+  echo "  ❌ apps/marketing/app/admin/dashboard/activityHelpers.ts missing"
   ERRORS=$((ERRORS + 1))
 fi
 
-if [ -f "frontend/app/admin/dashboard/styles.module.css" ]; then
-  echo "  ✅ frontend/app/admin/dashboard/styles.module.css exists"
+if [ -f "apps/marketing/app/admin/dashboard/styles.module.css" ]; then
+  echo "  ✅ apps/marketing/app/admin/dashboard/styles.module.css exists"
 else
-  echo "  ❌ frontend/app/admin/dashboard/styles.module.css missing"
+  echo "  ❌ apps/marketing/app/admin/dashboard/styles.module.css missing"
   ERRORS=$((ERRORS + 1))
 fi
 
