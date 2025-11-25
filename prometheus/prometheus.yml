@@ -3,6 +3,23 @@ global:
   evaluation_interval: 15s
 
 scrape_configs:
+  # Backend FastAPI metrics endpoint
+  - job_name: 'converto-backend'
+    static_configs:
+      - targets: ['api.converto.fi:443']
+    metrics_path: /metrics
+    scheme: https
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # Local development backend (if running locally)
+  - job_name: 'converto-backend-local'
+    static_configs:
+      - targets: ['localhost:8000']
+    metrics_path: /metrics
+    scheme: http
+    scrape_interval: 15s
+
   - job_name: 'api-gateway'
     static_configs:
       - targets: ['api-gateway:8000']
