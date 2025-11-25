@@ -102,6 +102,7 @@ class DocFlowValidator:
             await self.validate_security()
             await self.validate_performance()
             await self.validate_integrations()
+            await self.validate_observability()
         
         return self.generate_report()
     
@@ -541,6 +542,80 @@ class DocFlowValidator:
                 message=message,
                 duration=time.time() - start_time
             ))
+    
+    async def validate_observability(self):
+        """Validate observability configuration."""
+        # Check Sentry configuration
+        await self._validate_sentry()
+        
+        # Check metrics endpoint
+        await self._validate_metrics_endpoint()
+    
+    async def _validate_sentry(self):
+        """Validate Sentry configuration."""
+        start_time = time.time()
+        
+        frontend_dsn = os.getenv("NEXT_PUBLIC_SENTRY_DSN")
+        backend_dsn = os.getenv("SENTRY_DSN")
+        
+        if frontend_dsn and backend_dsn:
+            status = ValidationStatus.PASS
+            message = "Sentry configured for frontend and backend"
+        elif frontend_dsn or backend_dsn:
+            status = ValidationStatus.WARN
+            message = "Sentry partially configured (frontend or backend only)"
+        else:
+            status = ValidationStatus.WARN
+            message = "Sentry not configured (optional but recommended)"
+        
+        self.add_result(ValidationResult(
+            name="Sentry Configuration",
+            status=status,
+            message=message,
+            details={
+                "frontend_dsn_set": bool(frontend_dsn),
+                "backend_dsn_set": bool(backend_dsn)
+            },
+            duration=time.time() - start_time
+        ))
+    
+    async def _validate_metrics_endpoint(self):
+        """Validate metrics endpoint accessibility."""
+        start_time = time.time()
+        
+        base_url = os.getenv("BACKEND_BASE_URL", "http://localhost:8000")
+        metrics_url = f"{base_url}/metrics"
+        
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                response = await client.get(metrics_url)
+                
+                if response.status_code == 200:
+                    # Check if response looks like Prometheus format
+                    content = response.text
+                    if "http_requests_total" in content or "process_cpu_seconds_total" in content:
+                        status = ValidationStatus.PASS
+                        message = f"Metrics endpoint accessible and returns Prometheus format"
+                    else:
+                        status = ValidationStatus.WARN
+                        message = f"Metrics endpoint accessible but format unclear"
+                else:
+                    status = ValidationStatus.WARN
+                    message = f"Metrics endpoint returned {response.status_code}"
+        
+        except httpx.ConnectError:
+            status = ValidationStatus.SKIP
+            message = "Backend not running (cannot test metrics endpoint)"
+        except Exception as e:
+            status = ValidationStatus.WARN
+            message = f"Error testing metrics endpoint: {e}"
+        
+        self.add_result(ValidationResult(
+            name="Metrics Endpoint",
+            status=status,
+            message=message,
+            duration=time.time() - start_time
+        ))
     
     def generate_report(self) -> bool:
         """Generate validation report."""

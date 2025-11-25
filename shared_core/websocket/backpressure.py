@@ -14,7 +14,75 @@ from collections import deque
 from fastapi import WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
+# Prometheus metrics integration
+try:
+    from prometheus_client import Histogram, Gauge, Counter
+    PROMETHEUS_AVAILABLE = True
+except ImportError:
+    PROMETHEUS_AVAILABLE = False
+    # Dummy classes for when prometheus_client is not available
+    class Histogram:
+        def __init__(self, *args, **kwargs):
+            pass
+        def labels(self, **kwargs):
+            return self
+        def observe(self, value):
+            pass
+    class Gauge:
+        def __init__(self, *args, **kwargs):
+            pass
+        def labels(self, **kwargs):
+            return self
+        def set(self, value):
+            pass
+    class Counter:
+        def __init__(self, *args, **kwargs):
+            pass
+        def labels(self, **kwargs):
+            return self
+        def inc(self, value=1):
+            pass
+
 logger = logging.getLogger(__name__)
+
+# Prometheus metrics for WebSocket operations
+if PROMETHEUS_AVAILABLE:
+    WS_PUBLISH_LATENCY = Histogram(
+        'ws_publish_latency_seconds',
+        'WebSocket message publish latency in seconds',
+        ['client_id', 'priority'],
+        buckets=[0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.25, 0.5]
+    )
+    
+    WS_BACKPRESSURE_QUEUE_SIZE = Gauge(
+        'ws_backpressure_queue_size',
+        'Current WebSocket backpressure queue size',
+        ['client_id']
+    )
+    
+    WS_MESSAGES_SENT = Counter(
+        'ws_messages_sent_total',
+        'Total WebSocket messages sent',
+        ['client_id', 'priority']
+    )
+    
+    WS_MESSAGES_DROPPED = Counter(
+        'ws_messages_dropped_total',
+        'Total WebSocket messages dropped due to backpressure',
+        ['client_id', 'priority']
+    )
+    
+    WS_CONNECTIONS_ACTIVE = Gauge(
+        'ws_connections_active',
+        'Number of active WebSocket connections'
+    )
+else:
+    # Dummy metrics when Prometheus is not available
+    WS_PUBLISH_LATENCY = Histogram()
+    WS_BACKPRESSURE_QUEUE_SIZE = Gauge()
+    WS_MESSAGES_SENT = Counter()
+    WS_MESSAGES_DROPPED = Counter()
+    WS_CONNECTIONS_ACTIVE = Gauge()
 
 
 class ConnectionState(str, Enum):
@@ -96,6 +164,10 @@ class WebSocketManager:
             self.metrics[client_id] = ConnectionMetrics()
             self.active_connections.add(client_id)
             
+            # Update Prometheus metrics
+            if PROMETHEUS_AVAILABLE:
+                WS_CONNECTIONS_ACTIVE.set(len(self.active_connections))
+            
             # Start message flush task
             self.flush_tasks[client_id] = asyncio.create_task(
                 self._flush_queue_task(client_id)
@@ -129,6 +201,11 @@ class WebSocketManager:
         finally:
             # Clean up state
             self._cleanup_connection(client_id)
+            
+            # Update Prometheus metrics
+            if PROMETHEUS_AVAILABLE:
+                WS_CONNECTIONS_ACTIVE.set(len(self.active_connections))
+            
             self.logger.info(f"WebSocket disconnected: {client_id}")
     
     def _cleanup_connection(self, client_id: str):
@@ -172,6 +249,8 @@ class WebSocketManager:
         if queue_size >= self.config.max_queue_size:
             # Queue full - drop message
             self.metrics[client_id].messages_dropped += 1
+            if PROMETHEUS_AVAILABLE:
+                WS_MESSAGES_DROPPED.labels(client_id=client_id, priority=priority.value).inc()
             self.logger.warning(f"Queue full for client {client_id}, dropping message")
             return False
         
@@ -179,6 +258,8 @@ class WebSocketManager:
             # Critical backpressure - only allow critical messages
             if priority != MessagePriority.CRITICAL:
                 self.metrics[client_id].messages_dropped += 1
+                if PROMETHEUS_AVAILABLE:
+                    WS_MESSAGES_DROPPED.labels(client_id=client_id, priority=priority.value).inc()
                 return False
             
             # Drop oldest non-critical message to make room
@@ -188,6 +269,8 @@ class WebSocketManager:
             # High backpressure - drop low priority messages
             if priority == MessagePriority.LOW:
                 self.metrics[client_id].messages_dropped += 1
+                if PROMETHEUS_AVAILABLE:
+                    WS_MESSAGES_DROPPED.labels(client_id=client_id, priority=priority.value).inc()
                 return False
             
             # Drop some low priority messages
@@ -196,6 +279,10 @@ class WebSocketManager:
         # Add message to queue
         queue.append(message)
         self.metrics[client_id].messages_queued += 1
+        
+        # Update Prometheus metrics
+        if PROMETHEUS_AVAILABLE:
+            WS_BACKPRESSURE_QUEUE_SIZE.labels(client_id=client_id).set(len(queue))
         
         # Update connection state
         if queue_size >= self.config.high_water_mark:
@@ -266,15 +353,26 @@ class WebSocketManager:
                 start_time = time.time()
                 await websocket.send_json(message.data)
                 
-                # Update metrics
+                # Calculate latency
+                latency = time.time() - start_time
+                
+                # Update internal metrics
                 metrics = self.metrics[client_id]
                 metrics.messages_sent += 1
                 metrics.bytes_sent += len(json.dumps(message.data).encode())
                 metrics.last_activity = time.time()
-                
-                # Calculate latency
-                latency = time.time() - start_time
                 metrics.avg_latency = (metrics.avg_latency * 0.9) + (latency * 0.1)
+                
+                # Update Prometheus metrics
+                if PROMETHEUS_AVAILABLE:
+                    WS_PUBLISH_LATENCY.labels(
+                        client_id=client_id,
+                        priority=message.priority.value
+                    ).observe(latency)
+                    WS_MESSAGES_SENT.labels(
+                        client_id=client_id,
+                        priority=message.priority.value
+                    ).inc()
                 
             except WebSocketDisconnect:
                 self.logger.info(f"Client {client_id} disconnected during flush")
