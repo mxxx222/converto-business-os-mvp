@@ -116,18 +116,34 @@ def create_app() -> FastAPI:
     app.middleware("http")(tenant_context_middleware)
     
     # Sentry tenant context middleware
-    # Adds tenant_id and user_id tags to all Sentry events
+    # Adds tenant_id, user_id, and request_id tags to all Sentry events
     @app.middleware("http")
     async def sentry_tenant_middleware(request: Request, call_next):
-        """Add tenant context to Sentry events."""
-        user = getattr(request.state, 'user', None)
+        """Add tenant context and request ID to Sentry events."""
+        import uuid
+        from sentry_sdk import set_tag
         
+        # Generate or read request ID
+        request_id = request.headers.get("x-request-id")
+        if not request_id:
+            request_id = str(uuid.uuid4())
+        
+        # Set request_id tag for all Sentry events
+        set_tag("request_id", request_id)
+        
+        # Add tenant context if user is authenticated
+        user = getattr(request.state, 'user', None)
         if user and hasattr(user, 'tenant_id'):
             set_tenant_context(
                 tenant_id=str(user.tenant_id),
                 user_id=str(user.id),
                 role=str(user.role)
             )
+        
+        # Also set tenant_id from header if available (for unauthenticated requests)
+        tenant_id_header = request.headers.get("x-tenant-id")
+        if tenant_id_header:
+            set_tag("tenant_id", tenant_id_header)
         
         return await call_next(request)
 
